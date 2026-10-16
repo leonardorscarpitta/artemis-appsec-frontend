@@ -61,13 +61,14 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="primary-cell">
                 <strong>{{ repo.name }}</strong>
                 @if (repo.access === 'ssh') {
-                  @if (repo.accessStatus !== 'verified') {
-                    <a
-                      class="tag warn"
-                      [routerLink]="['/repositories', repo.name] | orgLink"
-                      [queryParams]="{ tab: 'access' }"
-                    >{{ i18n.t(repo.accessStatus === 'failed' ? 'access.status.failed' : 'access.status.pending') }}</a>
-                  }
+                  <a
+                    class="tag"
+                    [class.ok]="repo.accessStatus === 'verified'"
+                    [class.bad]="repo.accessStatus === 'failed'"
+                    [class.warn]="repo.accessStatus !== 'verified' && repo.accessStatus !== 'failed'"
+                    [routerLink]="['/repositories', repo.name] | orgLink"
+                    [queryParams]="{ tab: 'access' }"
+                  >{{ i18n.t(repo.accessStatus === 'verified' ? 'access.status.verified' : repo.accessStatus === 'failed' ? 'access.status.failed' : 'access.status.pending') }}</a>
                 }
                 <div class="mono muted url" [title]="repo.url">{{ repo.url }}</div>
               </td>
@@ -101,10 +102,23 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       vertical-align: middle;
     }
 
+    a.tag {
+      text-decoration: none;
+    }
+
     .tag.warn {
       color: var(--sev-medium);
       background: var(--sev-medium-bg);
-      text-decoration: none;
+    }
+
+    .tag.bad {
+      color: var(--sev-critical);
+      background: var(--sev-critical-bg);
+    }
+
+    .tag.ok {
+      color: var(--sev-low);
+      background: var(--sev-low-bg);
     }
 
     .url {

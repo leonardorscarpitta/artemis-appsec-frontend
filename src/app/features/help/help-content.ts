@@ -176,7 +176,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'How scanning works',
       blocks: [
-        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Connecting a public repository also queues its first scan; a private one is scanned once its access is verified. The new pipeline run opens so you can follow each stage.' },
+        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Run scan is available once the repository shows “Authenticated”, that is, after its deploy key was added and “Test access” succeeded in the Deploy Key tab. The new pipeline run opens so you can follow each stage.' },
         {
           kind: 'ol',
           items: [
@@ -213,7 +213,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'General tab: monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
-            'Access tab: for private repositories, the deploy key, setup steps, server identity and access test (see "Private repositories").',
+            'Deploy Key tab: for private repositories, the deploy key, setup steps, server identity and access test (see "Private repositories").',
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
@@ -224,11 +224,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'private-repositories',
       title: 'Private repositories',
       blocks: [
-        { kind: 'p', text: 'To scan a private repository, add it with its SSH URL (for example git@github.com:acme/app.git). Artemis generates a read-only SSH deploy key just for that repository and opens its Access tab. The first scan waits until access works.' },
+        { kind: 'p', text: 'To scan a private repository, add it with its SSH URL (for example git@github.com:acme/app.git). Artemis generates a read-only SSH deploy key just for that repository and opens its Deploy Key tab. The first scan waits until access works.' },
         {
           kind: 'ol',
           items: [
-            'Copy the public key shown in the Access tab.',
+            'Copy the public key shown in the Deploy Key tab.',
             'Add it to the repository as a deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Leave write access off.',
             'Select "Test access". Artemis checks that it can read the branch; the result appears in a few seconds.',
             'When access is OK, select "Run scan" to start the first scan.',
@@ -378,8 +378,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
-        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone private repositories, with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Access tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
-        { kind: 'note', text: 'Keys marked "Public key only" were added before Artemis generated keys. Artemis has no private key for them, so they are never used to clone; generate a key in the repository’s Access tab instead.' },
+        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone private repositories, with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Deploy Key tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
+        { kind: 'note', text: 'Keys marked "Public key only" were added before Artemis generated keys. Artemis has no private key for them, so they are never used to clone; generate a key in the repository’s Deploy Key tab instead.' },
       ],
     },
     {
@@ -638,7 +638,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'Como funcionam as análises',
       blocks: [
-        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. Conectar um repositório público também enfileira a primeira análise; um privado é analisado depois que o acesso for verificado. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
+        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. “Executar análise” fica disponível quando o repositório aparece como “Autenticado”, ou seja, depois que a deploy key foi adicionada e o “Testar acesso” deu certo na aba Deploy Key. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
         {
           kind: 'ol',
           items: [
@@ -686,11 +686,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'private-repositories',
       title: 'Repositórios privados',
       blocks: [
-        { kind: 'p', text: 'Para analisar um repositório privado, adicione-o com a URL SSH (por exemplo git@github.com:acme/app.git). O Artemis gera uma deploy key SSH somente leitura só para esse repositório e abre a aba Acesso. A primeira análise espera até o acesso funcionar.' },
+        { kind: 'p', text: 'Para analisar um repositório privado, adicione-o com a URL SSH (por exemplo git@github.com:acme/app.git). O Artemis gera uma deploy key SSH somente leitura só para esse repositório e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
         {
           kind: 'ol',
           items: [
-            'Copie a chave pública exibida na aba Acesso.',
+            'Copie a chave pública exibida na aba Deploy Key.',
             'Adicione-a ao repositório como deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Deixe o acesso de escrita desativado.',
             'Selecione "Testar acesso". O Artemis confere se consegue ler a branch; o resultado aparece em alguns segundos.',
             'Com o acesso OK, selecione "Executar análise" para iniciar a primeira análise.',
@@ -840,8 +840,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
-        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar repositórios privados, com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Acesso de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
-        { kind: 'note', text: 'Chaves marcadas como "Só chave pública" foram adicionadas antes de o Artemis gerar chaves. O Artemis não tem a chave privada delas, então nunca são usadas para clonar; gere uma chave na aba Acesso do repositório.' },
+        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar repositórios privados, com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Deploy Key de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
+        { kind: 'note', text: 'Chaves marcadas como "Só chave pública" foram adicionadas antes de o Artemis gerar chaves. O Artemis não tem a chave privada delas, então nunca são usadas para clonar; gere uma chave na aba Deploy Key do repositório.' },
       ],
     },
     {
