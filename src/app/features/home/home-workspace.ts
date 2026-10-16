@@ -19,6 +19,7 @@ export class HomeWorkspace {
   protected readonly org = inject(OrgContext);
 
   protected readonly invitations = httpResource<MyInvitation[]>(() => myInvitationsUrl(), { defaultValue: [] });
+  protected readonly pending = computed(() => (this.invitations.hasValue() ? this.invitations.value() : []));
   protected readonly firstName = computed(() => this.auth.profile()?.name.split(/\s+/)[0] ?? '');
   protected readonly failed = signal(false);
 

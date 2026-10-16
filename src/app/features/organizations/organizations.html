@@ -60,9 +60,9 @@
     @if (invitationError(); as message) {
       <p class="error pad" role="alert">{{ message }}</p>
     }
-    @if (invitations.value().length) {
+    @if (pending().length) {
       <ul class="list">
-        @for (inv of invitations.value(); track inv.id) {
+        @for (inv of pending(); track inv.id) {
           <li class="row invite">
             <span class="org-avatar" aria-hidden="true">{{ inv.organization.name.slice(0, 2).toUpperCase() }}</span>
             <span class="org-text">

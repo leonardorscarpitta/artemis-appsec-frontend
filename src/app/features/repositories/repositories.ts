@@ -8,6 +8,7 @@ import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { OrgContext } from '../../core/org/org-context';
+import { RoleNotice } from '../../shared/role-notice';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   push: 'ob.settings.interval.push',
@@ -18,7 +19,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice],
   template: `
     <header class="page-header">
       <div>
@@ -34,6 +35,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       </div>
     </header>
 
+    <app-role-notice permission="pipelines" />
     <app-request-state [resource]="repositories" />
     @if (repositories.hasValue()) {
     <div class="card table-card">

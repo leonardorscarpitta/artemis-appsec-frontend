@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { problemCode, problemMessage } from '../../core/api/api';
 import { MyInvitation, OrganizationApi, myInvitationsUrl } from '../../core/api/organization';
@@ -45,6 +45,7 @@ export class Organizations {
   private readonly router = inject(Router);
 
   protected readonly invitations = httpResource<MyInvitation[]>(() => myInvitationsUrl(), { defaultValue: [] });
+  protected readonly pending = computed(() => (this.invitations.hasValue() ? this.invitations.value() : []));
   protected readonly loadFailed = signal(false);
 
   protected readonly name = signal('');

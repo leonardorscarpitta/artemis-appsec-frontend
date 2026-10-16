@@ -8,9 +8,9 @@
       <a class="text-link" routerLink="/organizations">{{ i18n.t('home.ws.manage') }} →</a>
     </header>
 
-    @if (invitations.value().length) {
+    @if (pending().length) {
       <p class="info-notice">
-        {{ i18n.t('home.ws.invitations').replace('{n}', '' + invitations.value().length) }}
+        {{ i18n.t('home.ws.invitations').replace('{n}', '' + pending().length) }}
         <a routerLink="/organizations">{{ i18n.t('home.ws.review') }}</a>
       </p>
     }
