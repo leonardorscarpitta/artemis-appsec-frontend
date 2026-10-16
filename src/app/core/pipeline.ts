@@ -25,7 +25,7 @@ export const FAIL_THRESHOLDS: FailThreshold[] = ['never', 'critical', 'high', 'm
 const PRESETS: Record<Preset, StageId[]> = {
   minimal: ['secrets', 'sast', 'sca'],
   recommended: ['secrets', 'sast', 'sca', 'dockerfile', 'sbom'],
-  full: ['secrets', 'sast', 'sca', 'license', 'dockerfile', 'sbom', 'iac'],
+  full: ['secrets', 'sast', 'sca', 'license', 'dockerfile', 'image', 'sbom', 'iac'],
 };
 
 export function defaultPipeline(): PipelineStage[] {

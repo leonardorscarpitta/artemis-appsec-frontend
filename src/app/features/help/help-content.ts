@@ -165,7 +165,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['Essential', 'Secret scanning, SAST, SCA'],
             ['Recommended', 'Essential + Dockerfile audit, SBOM'],
-            ['Complete', 'Every available stage'],
+            ['Complete', 'Every available stage, including the container image scan'],
           ],
         },
         { kind: 'p', text: 'Any manual change shows the preset as "Custom". The summary shows how many stages are enabled and an estimated duration. Under "Pipeline as code" you can view and copy the equivalent configuration for GitHub Actions or GitLab CI.' },
@@ -310,6 +310,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Skipped', 'The stage did not run because an earlier stage failed or the run was cancelled.'],
           ],
         },
+        { kind: 'p', text: 'While a run is queued or running, its page updates by itself: a progress panel shows which step is running (for example "Step 3 of 7 — Dependency scanning"), the current stage is highlighted with a spinner and finished stages fill in as they complete. The Pipeline runs list also refreshes while any run is in progress.' },
         { kind: 'p', text: 'Select "View log" on a stage to read the tool output; logs of failed stages open automatically. Select the number of findings to go to Vulnerabilities. Use "Re-run" to start the pipeline again or "Cancel run" to stop a queued or running pipeline.' },
         { kind: 'p', text: '"Re-run" creates a new run of the same commit, triggered manually by you, using the repository\'s current pipeline settings — so it includes any stage you enabled or disabled since the original run — and opens it. Cancelling marks the stages that had not finished as skipped. Only queued or running pipelines can be cancelled.' },
       ],
@@ -626,7 +627,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['Essencial', 'Varredura de segredos, SAST, SCA'],
             ['Recomendado', 'Essencial + auditoria do Dockerfile, SBOM'],
-            ['Completo', 'Todas as etapas disponíveis'],
+            ['Completo', 'Todas as etapas disponíveis, incluindo a varredura de imagem de contêiner'],
           ],
         },
         { kind: 'p', text: 'Qualquer alteração manual mostra o modelo como "Personalizado". O resumo mostra quantas etapas estão ativas e uma duração estimada. Em "Pipeline como código" você pode ver e copiar a configuração equivalente para GitHub Actions ou GitLab CI.' },
@@ -771,6 +772,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Ignorada', 'A etapa não foi executada porque uma etapa anterior falhou ou a execução foi cancelada.'],
           ],
         },
+        { kind: 'p', text: 'Enquanto uma execução está na fila ou em andamento, a página dela se atualiza sozinha: um painel de progresso mostra qual etapa está rodando (por exemplo "Etapa 3 de 7 — Análise de dependências"), a etapa atual fica destacada com um indicador animado e as etapas concluídas são preenchidas conforme terminam. A lista de execuções de pipeline também se atualiza enquanto houver alguma em andamento.' },
         { kind: 'p', text: 'Selecione "Ver log" em uma etapa para ler a saída da ferramenta; os logs de etapas com falha abrem automaticamente. Selecione a quantidade de achados para ir até Vulnerabilidades. Use "Executar novamente" para iniciar o pipeline de novo ou "Cancelar execução" para interromper um pipeline na fila ou em execução.' },
         { kind: 'p', text: '"Executar novamente" cria uma nova execução do mesmo commit, disparada manualmente por você, usando as configurações atuais de pipeline do repositório — ou seja, inclui as etapas que você ativou ou desativou desde a execução original — e a abre. Cancelar marca como ignoradas as etapas que ainda não tinham terminado. Apenas pipelines na fila ou em execução podem ser cancelados.' },
       ],
