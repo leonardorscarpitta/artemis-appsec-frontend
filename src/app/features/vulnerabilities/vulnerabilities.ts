@@ -18,6 +18,8 @@ import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
@@ -31,11 +33,12 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })
 export class Vulnerabilities {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
 
   protected readonly severities: Severity[] = ['critical', 'high', 'medium', 'low'];

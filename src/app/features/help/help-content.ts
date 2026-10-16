@@ -205,6 +205,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Managing repositories',
       blocks: [
         { kind: 'p', text: 'The Repositories page lists every connected project with its stack, schedule, number of findings and last scan. "Run scan" starts a scan of a repository right away.' },
+        { kind: 'note', text: 'While an organization has no repositories, Vulnerabilities, Repositories, Pipeline runs and Reports show a short explanation instead of empty tables: with a role that can manage pipelines you get a "Connect a repository" button; otherwise ask an owner, admin or security analyst of the organization to connect one.' },
         { kind: 'p', text: 'Select "Settings" on a repository to change its configuration at any time:' },
         {
           kind: 'ul',
@@ -664,6 +665,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Gerenciando repositórios',
       blocks: [
         { kind: 'p', text: 'A página Repositórios lista todos os projetos conectados com stack, agendamento, quantidade de achados e última análise. "Executar análise" inicia uma análise do repositório na hora.' },
+        { kind: 'note', text: 'Enquanto uma organização não tiver repositórios, Vulnerabilidades, Repositórios, Execuções de pipeline e Relatórios mostram uma breve explicação em vez de tabelas vazias: com um papel que pode gerenciar pipelines, aparece o botão "Conectar um repositório"; caso contrário, peça a um proprietário, administrador ou analista de segurança da organização para conectar um.' },
         { kind: 'p', text: 'Selecione "Configurações" em um repositório para alterar sua configuração a qualquer momento:' },
         {
           kind: 'ul',

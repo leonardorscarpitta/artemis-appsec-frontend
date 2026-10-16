@@ -5,6 +5,10 @@
   </div>
 </header>
 
+@if (orgSummary.noRepositories()) {
+<app-no-repositories />
+} @else {
+
 @if (summary.value(); as summary) {
 <section class="stats" [attr.aria-label]="i18n.t('runs.summary')">
   <div class="card stat">
@@ -124,3 +128,4 @@
     <p class="empty muted">{{ i18n.t('runs.empty') }}</p>
   }
 </section>
+}

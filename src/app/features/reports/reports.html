@@ -18,6 +18,10 @@
   </div>
 </header>
 
+@if (orgSummary.noRepositories()) {
+<app-no-repositories />
+} @else {
+
 @if (formOpen()) {
   <form id="new-report" class="card form" (submit)="$event.preventDefault(); generate()">
     <h2>{{ i18n.t('reports.form.title') }}</h2>
@@ -105,4 +109,5 @@
     </tbody>
   </table>
 </div>
+}
 }

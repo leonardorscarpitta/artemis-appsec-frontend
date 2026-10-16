@@ -8,7 +8,7 @@ import { Auth } from '../core/auth/auth';
 import { OrgContext } from '../core/org/org-context';
 import { I18n, TranslationKey } from '../core/i18n';
 import { BillingOverview, billingUrl } from '../core/api/billing';
-import { DashboardSummary, dashboardUrl } from '../core/api/findings';
+import { OrgSummary } from '../core/org/org-summary';
 import { LangSwitch } from '../shared/lang-switch';
 import { Logo } from '../shared/logo';
 import { ThemeToggle } from '../shared/theme-toggle';
@@ -96,7 +96,7 @@ export class Shell {
 
   // Badge counts; refreshed on every navigation so status changes are reflected.
   // Reading the slug re-fetches both when the user switches organization.
-  private readonly counts = httpResource<DashboardSummary>(() => (this.org.slug() ? dashboardUrl() : undefined));
+  private readonly counts = inject(OrgSummary).summary;
   private readonly billing = httpResource<BillingOverview>(() => (this.org.slug() ? billingUrl() : undefined));
   protected readonly roleLabel = computed(() => {
     const role = this.org.current()?.role;

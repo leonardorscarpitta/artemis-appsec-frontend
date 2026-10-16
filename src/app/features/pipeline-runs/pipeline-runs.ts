@@ -16,17 +16,20 @@ import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 
 const STATUSES: RunStatus[] = ['success', 'failed', 'running', 'queued', 'cancelled'];
 
 @Component({
   selector: 'app-pipeline-runs',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories],
   templateUrl: './pipeline-runs.html',
   styleUrl: './pipeline-runs.scss',
 })
 export class PipelineRuns {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
 
   protected readonly statuses = STATUSES;
