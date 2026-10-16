@@ -8,6 +8,8 @@ import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { OrgContext } from '../../core/org/org-context';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { RoleNotice } from '../../shared/role-notice';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
@@ -19,7 +21,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories],
   template: `
     <header class="page-header">
       <div>
@@ -35,6 +37,9 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       </div>
     </header>
 
+    @if (orgSummary.noRepositories()) {
+      <app-no-repositories />
+    } @else {
     <app-role-notice permission="pipelines" />
     <app-request-state [resource]="repositories" />
     @if (repositories.hasValue()) {
@@ -89,6 +94,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       </table>
     </div>
     }
+    }
   `,
   styles: `
     .primary-cell .tag {
@@ -137,6 +143,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   `,
 })
 export class Repositories {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
   protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());

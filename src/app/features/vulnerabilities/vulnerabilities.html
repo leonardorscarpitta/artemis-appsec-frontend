@@ -5,6 +5,10 @@
   </div>
 </header>
 
+@if (orgSummary.noRepositories()) {
+<app-no-repositories />
+} @else {
+
 <section class="card filters" [attr.aria-label]="i18n.t('vuln.filters')">
   <div class="field search">
     <label for="vuln-search">{{ i18n.t('vuln.search') }}</label>
@@ -115,4 +119,5 @@
 </section>
 } @else {
   <app-request-state [resource]="results" />
+}
 }

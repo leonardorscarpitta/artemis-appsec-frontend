@@ -8,15 +8,18 @@ import { ReportAuthor, ReportPeriod, ReportStatus, ReportSummary, ReportType, Re
 import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 
 @Component({
   selector: 'app-reports',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })
 export class Reports {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
   protected readonly org = inject(OrgContext);
   private readonly api = inject(ReportsApi);
