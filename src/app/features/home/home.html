@@ -6,6 +6,7 @@
       <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
       <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
       <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
+      <a routerLink="/docs">{{ c().footer.docs }}</a>
     </nav>
     <div class="actions">
       <app-lang-switch />
@@ -171,7 +172,7 @@
     </nav>
     <nav [attr.aria-label]="c().footer.resources">
       <h2>{{ c().footer.resources }}</h2>
-      <a routerLink="/help">{{ c().footer.docs }}</a>
+      <a routerLink="/docs">{{ c().footer.docs }}</a>
       <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
       <a routerLink="/login">{{ c().footer.signIn }}</a>
     </nav>

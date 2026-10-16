@@ -4,6 +4,10 @@ import { Shell } from './layout/shell';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', loadComponent: () => import('./features/home/home').then((m) => m.Home) },
+  {
+    path: 'docs',
+    loadComponent: () => import('./features/public-docs/public-docs').then((m) => m.PublicDocs),
+  },
   { path: 'login', loadComponent: () => import('./features/login/login').then((m) => m.Login) },
   {
     path: 'auth/callback',
