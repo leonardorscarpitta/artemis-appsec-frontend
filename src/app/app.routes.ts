@@ -18,6 +18,11 @@ export const routes: Routes = [
           import('./features/repositories/repositories').then((m) => m.Repositories),
       },
       {
+        path: 'repositories/:name',
+        loadComponent: () =>
+          import('./features/repo-settings/repo-settings').then((m) => m.RepoSettings),
+      },
+      {
         path: 'onboarding',
         loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding),
       },

@@ -1,0 +1,49 @@
+<a class="back" routerLink="/repositories">
+  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" /></svg>
+  {{ i18n.t('rs.back') }}
+</a>
+
+@if (repo(); as repo) {
+  <header class="page-header">
+    <div>
+      <h1>{{ repo.name }} <span class="tag">{{ repo.stack }}</span></h1>
+      <p class="mono">{{ repo.url }}</p>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" [attr.aria-label]="i18n.t('rs.tabs')">
+    <button type="button" role="tab" id="tab-general" aria-controls="panel" [attr.aria-selected]="tab() === 'general'" (click)="tab.set('general')">
+      {{ i18n.t('rs.tab.general') }}
+    </button>
+    <button type="button" role="tab" id="tab-pipeline" aria-controls="panel" [attr.aria-selected]="tab() === 'pipeline'" (click)="tab.set('pipeline')">
+      {{ i18n.t('rs.tab.pipeline') }}
+    </button>
+  </div>
+
+  <section class="card" id="panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()">
+    @switch (tab()) {
+      @case ('general') {
+        <app-scan-settings />
+      }
+      @case ('pipeline') {
+        <app-pipeline-editor [(stages)]="pipeline" />
+      }
+    }
+  </section>
+
+  <footer class="save-bar">
+    <span class="muted hint" aria-live="polite">
+      @if (saved()) {
+        <span class="ok">{{ i18n.t('rs.saved') }}</span>
+      } @else {
+        {{ i18n.t('rs.subtitle') }}
+      }
+    </span>
+    <div class="buttons">
+      <a class="btn" routerLink="/repositories">{{ i18n.t('rs.cancel') }}</a>
+      <button type="button" class="btn primary" (click)="save()">{{ i18n.t('rs.save') }}</button>
+    </div>
+  </footer>
+} @else {
+  <p class="card">{{ i18n.t('rs.notFound') }}</p>
+}

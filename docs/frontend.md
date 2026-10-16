@@ -6,10 +6,11 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 
 - `src/app/core/i18n.ts` — translations (`en-US`, `pt-BR`); use `i18n.t('key')` in templates. Selected language is kept in `localStorage`.
 - `src/app/core/theme.ts` — light/dark theme; sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference. An inline script in `index.html` applies it before boot to avoid a flash.
+- `src/app/core/pipeline.ts` — DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation (GitHub Actions / GitLab CI).
 - `src/app/core/mock-data.ts` — placeholder findings and repositories until the API exists.
 - `src/app/layout/shell.ts` — authenticated layout (sidebar + top bar).
-- `src/app/shared/` — small reusable components (logo, language switch, theme toggle, severity badge).
-- `src/app/features/` — pages: `login`, `dashboard`, `repositories`, `onboarding`.
+- `src/app/shared/` — reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` (schedule, automatic actions, Dockerfile, AI triage) and `pipeline-editor` (two-way bound with `[(stages)]`). The last two are used both in onboarding and in repository settings.
+- `src/app/features/` — pages: `login`, `dashboard`, `repositories`, `repo-settings`, `onboarding`.
 
 ## Routes
 
@@ -18,7 +19,8 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 | `/login` | SSO sign-in (Authelia OIDC, not wired yet) |
 | `/dashboard` | CVE overview with CVSS severities |
 | `/repositories` | Connected repositories |
-| `/onboarding` | 4-step flow: SSH key → repository → settings → stack detection |
+| `/repositories/:name` | Repository settings (General / Pipeline tabs) |
+| `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
 
 ## Styling
 
@@ -34,3 +36,15 @@ Global primitives: `.card` (+ `.card-header`, `.table-card`), `.btn` (`.primary`
 The logo (`shared/logo.ts`) reads `--logo-color`; the favicon is `public/favicon.svg`.
 
 CVSS → severity follows NVD v3 ranges (`severityOf` in `mock-data.ts`).
+
+## DevSecOps pipeline
+
+Stages are grouped in three phases, each with a selectable tool and a fail threshold:
+
+| Phase | Stages |
+| --- | --- |
+| Source | Secret scanning, SAST, SCA, License compliance |
+| Build | Dockerfile audit, Container image scan, SBOM generation |
+| Pre-deploy | Infrastructure as code, DAST |
+
+Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Each stage's description and "why it matters" text lives in `i18n.ts` under `stage.<id>.*`. The generated YAML calls an `artemis` runner CLI that does not exist yet.

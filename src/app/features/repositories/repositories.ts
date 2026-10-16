@@ -24,6 +24,7 @@ import { REPOSITORIES } from '../../core/mock-data';
             <th scope="col">{{ i18n.t('col.schedule') }}</th>
             <th scope="col" class="num">{{ i18n.t('col.findings') }}</th>
             <th scope="col">{{ i18n.t('dash.lastScan') }}</th>
+            <th scope="col"><span class="sr-only">{{ i18n.t('repo.configure') }}</span></th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,11 @@ import { REPOSITORIES } from '../../core/mock-data';
               <td>{{ repo.schedule }}</td>
               <td class="num">{{ repo.findings }}</td>
               <td class="muted mono">{{ repo.lastScan }}</td>
+              <td class="num">
+                <a class="btn" [routerLink]="['/repositories', repo.name]" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
+                  {{ i18n.t('repo.configure') }}
+                </a>
+              </td>
             </tr>
           }
         </tbody>
@@ -46,6 +52,11 @@ import { REPOSITORIES } from '../../core/mock-data';
   styles: `
     .url {
       font-size: 0.8rem;
+    }
+
+    .btn {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.85rem;
     }
   `,
 })
