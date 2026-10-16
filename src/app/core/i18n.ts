@@ -206,6 +206,18 @@ const dictionary = {
     'rs.saved': 'Changes saved.',
     'rs.notFound': 'Repository not found.',
     'rs.subtitle': 'Changes apply from the next pipeline run.',
+
+    // --- vulnerabilities ---
+    // (keys for this area go here)
+
+    // --- pipeline runs ---
+    // (keys for this area go here)
+
+    // --- reports + policies ---
+    // (keys for this area go here)
+
+    // --- integrations + team + settings ---
+    // (keys for this area go here)
   },
   'pt-BR': {
     'nav.dashboard': 'Painel',
@@ -410,6 +422,18 @@ const dictionary = {
     'rs.saved': 'Alterações salvas.',
     'rs.notFound': 'Repositório não encontrado.',
     'rs.subtitle': 'As alterações valem a partir da próxima execução do pipeline.',
+
+    // --- vulnerabilities ---
+    // (keys for this area go here)
+
+    // --- pipeline runs ---
+    // (keys for this area go here)
+
+    // --- reports + policies ---
+    // (keys for this area go here)
+
+    // --- integrations + team + settings ---
+    // (keys for this area go here)
   },
 } satisfies Record<Lang, Record<string, string>>;
 

@@ -164,6 +164,18 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
       ],
     },
+    // --- vulnerabilities ---
+    // (help section for this area goes here)
+
+    // --- pipeline runs ---
+    // (help section for this area goes here)
+
+    // --- reports + policies ---
+    // (help section for this area goes here)
+
+    // --- integrations + team + settings ---
+    // (help section for this area goes here)
+
     {
       id: 'glossary',
       title: 'Glossary',
@@ -337,6 +349,18 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
       ],
     },
+    // --- vulnerabilities ---
+    // (help section for this area goes here)
+
+    // --- pipeline runs ---
+    // (help section for this area goes here)
+
+    // --- reports + policies ---
+    // (help section for this area goes here)
+
+    // --- integrations + team + settings ---
+    // (help section for this area goes here)
+
     {
       id: 'glossary',
       title: 'Glossário',
