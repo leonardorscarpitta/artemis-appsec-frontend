@@ -18,7 +18,7 @@
 
 ---
 
-Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline and reports vulnerabilities scored with CVSS from the NIST National Vulnerability Database. Supported stacks are React, Angular and Java + Spring.
+Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline with self-hosted open-source scanners and reports secrets, code issues, misconfigurations and dependency vulnerabilities (CVSS from the NIST National Vulnerability Database). Supported stacks are React, Angular and Java + Spring.
 
 This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
 
@@ -46,7 +46,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
+The app is served at http://localhost:4200 with live reload. The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
@@ -79,6 +79,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): organization, role, members and project shortcuts from the API |
 | `/docs` | Public user guide (same content as `/help`) for visitors who are not signed in |
 | `/privacy`, `/terms` | Privacy Policy and Terms of Use (text in `features/legal/legal-content.ts`, en-US + pt-BR) |
+| `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
 | `/login` | SSO sign-in (redirects to Authelia) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in and returns to the requested page |
 | `/dashboard` | Security overview with CVSS severities |
@@ -112,15 +113,21 @@ The logo (`shared/logo.ts`) reads `--logo-color` and `--logo-name-display`; the 
 
 ## DevSecOps pipeline
 
-Stages are grouped in three phases, each with a selectable tool and a fail threshold:
+Stages are grouped in three phases. Each stage has a tool (from the self-hosted scanner runner) and a fail threshold:
 
-| Phase | Stages |
+| Phase | Stage → tools |
 | --- | --- |
-| Source | Secret scanning, SAST, SCA, License compliance |
-| Build | Dockerfile audit, Container image scan, SBOM generation |
-| Pre-deploy | Infrastructure as code, DAST |
+| Source | Secret scanning → Gitleaks · SAST → Semgrep CE (Artemis rules) · SCA → Trivy / Grype · License → Trivy |
+| Build | Dockerfile audit → Hadolint / Trivy · Container image scan → Trivy (**not available yet**) · SBOM → Syft |
+| Pre-deploy | Infrastructure as code → Trivy · DAST → OWASP ZAP (**not available yet**) |
 
-Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The generated YAML (GitHub Actions / GitLab CI) calls an `artemis` runner CLI that does not exist yet.
+The catalog comes from the API (`GET /pipeline/stages`, field `available`); `core/pipeline.ts` holds the same defaults as a fallback. Unavailable stages are shown locked in the pipeline editor and are never enabled by presets. Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The "Pipeline as code" YAML is a preview for running the same runner in your own CI.
+
+### Scans
+
+- `shared/run-scan-button.ts` calls `POST /repositories/{name}/scans` and opens the new run; a 409 (monthly limit) is shown inline. It is used on the Repositories list and repository settings.
+- Onboarding accepts public `https://` URLs (scanned now) and SSH URLs (accepted, scanned once private-repository support lands).
+- Findings have a `kind` (`vulnerability`, `secret`, `code`, `config`, `license`). Only vulnerabilities carry CVE/CVSS/package; the others carry `ruleId` and `location`. Detail URLs are `/<org>/vulnerabilities/<CVE>` (all occurrences of a CVE) or `/<org>/vulnerabilities/<finding id>` for other kinds.
 
 ## Authentication
 

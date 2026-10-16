@@ -8,8 +8,9 @@ import { Logo } from '../../shared/logo';
 import { ThemeToggle } from '../../shared/theme-toggle';
 import { Help } from '../help/help';
 import { LEGAL, LegalDocument } from '../legal/legal-content';
+import { LICENSES } from '../legal/licenses-content';
 
-/** Public document pages (user guide, privacy policy, terms of use) for visitors who are not signed in. */
+/** Public document pages (user guide, privacy policy, terms of use, third-party notices) for visitors who are not signed in. */
 @Component({
   selector: 'app-public-docs',
   imports: [RouterLink, Logo, LangSwitch, ThemeToggle, Help],
@@ -39,6 +40,7 @@ import { LEGAL, LegalDocument } from '../legal/legal-content';
         <a routerLink="/docs">{{ i18n.t('nav.help') }}</a>
         <a routerLink="/privacy">{{ i18n.t('legal.privacy') }}</a>
         <a routerLink="/terms">{{ i18n.t('legal.terms') }}</a>
+        <a routerLink="/licenses">{{ i18n.t('legal.licenses') }}</a>
       </nav>
     </footer>
   `,
@@ -141,10 +143,11 @@ export class PublicDocs {
   protected readonly auth = inject(Auth);
 
   /** Set through the route's `data`; absent for the user guide. */
-  readonly doc = input<LegalDocument>();
+  readonly doc = input<LegalDocument | 'licenses'>();
   protected readonly legal = computed(() => {
     const doc = this.doc();
-    return doc ? LEGAL[doc][this.i18n.lang()] : null;
+    if (!doc) return null;
+    return doc === 'licenses' ? LICENSES[this.i18n.lang()] : LEGAL[doc][this.i18n.lang()];
   });
 
   constructor() {

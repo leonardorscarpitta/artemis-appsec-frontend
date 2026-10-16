@@ -5,7 +5,7 @@
   </div>
   <div class="page-actions">
     <button type="button" class="btn">{{ i18n.t('dash.export') }}</button>
-    <a class="btn primary" [routerLink]="'/onboarding' | orgLink">{{ i18n.t('dash.newScan') }}</a>
+    <a class="btn primary" [routerLink]="'/repositories' | orgLink">{{ i18n.t('dash.newScan') }}</a>
   </div>
 </header>
 
@@ -21,7 +21,7 @@
   </div>
   <div class="card stat">
     <span class="label">{{ i18n.t('dash.avgCvss') }}</span>
-    <span class="value">{{ s.averageCvss.toFixed(1) }}</span>
+    <span class="value">{{ s.averageCvss != null ? s.averageCvss.toFixed(1) : '—' }}</span>
   </div>
   <div class="card stat">
     <span class="label">{{ i18n.t('dash.lastScan') }}</span>
@@ -59,10 +59,10 @@
     <table class="table stack">
       <thead>
         <tr>
-          <th scope="col">{{ i18n.t('col.cve') }}</th>
-          <th scope="col">{{ i18n.t('col.package') }}</th>
+          <th scope="col">{{ i18n.t('col.finding') }}</th>
+          <th scope="col">{{ i18n.t('col.where') }}</th>
           <th scope="col">{{ i18n.t('col.repository') }}</th>
-          <th scope="col">{{ i18n.t('col.cvss') }}</th>
+          <th scope="col">{{ i18n.t('col.severity') }}</th>
           <th scope="col">{{ i18n.t('col.status') }}</th>
           <th scope="col">{{ i18n.t('col.detected') }}</th>
         </tr>
@@ -71,11 +71,11 @@
         @for (f of s.recent; track f.id) {
           <tr>
             <td class="primary-cell">
-              <a class="mono" [routerLink]="['/vulnerabilities', f.cve] | orgLink">{{ f.cve }}</a>
+              <a class="mono" [routerLink]="['/vulnerabilities', findingRoute(f)] | orgLink">{{ findingIdentifier(f) }}</a>
             </td>
-            <td class="mono" [attr.data-label]="i18n.t('col.package')">{{ packageLabel(f) }}</td>
+            <td class="mono" [attr.data-label]="i18n.t('col.where')">{{ packageLabel(f) }}</td>
             <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>
-            <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="f.cvss" /></td>
+            <td [attr.data-label]="i18n.t('col.severity')"><app-severity-badge [cvss]="f.cvss" [level]="f.severity" /></td>
             <td [attr.data-label]="i18n.t('col.status')"><app-status-label [status]="f.status" /></td>
             <td class="muted" [attr.data-label]="i18n.t('col.detected')">{{ f.detectedAt | date: 'yyyy-MM-dd' }}</td>
           </tr>

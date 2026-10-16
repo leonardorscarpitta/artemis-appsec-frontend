@@ -5,21 +5,36 @@ import { FindingStatus, Severity } from '../domain';
 import { StageId } from '../pipeline';
 import { apiUrl } from './api';
 
-export type Ecosystem = 'npm' | 'maven' | 'debian';
+/** Ecosystems reported by the scanners (npm, maven, pypi, go, debian, alpine…). */
+export type Ecosystem = string;
 export type FindingSort = 'cvss' | 'detected';
+export type FindingKind = 'vulnerability' | 'secret' | 'code' | 'config' | 'license';
+export const FINDING_KINDS: FindingKind[] = ['vulnerability', 'secret', 'code', 'config', 'license'];
 
+export interface FindingLocation {
+  path: string;
+  line: number | null;
+}
+
+/**
+ * Package, CVE and CVSS fields are only set for dependency vulnerabilities (and package for licenses);
+ * secrets, code and configuration findings carry a rule and a file location instead.
+ */
 export interface FindingSummary {
   id: string;
   reference: string;
-  cve: string;
+  kind: FindingKind;
+  ruleId: string | null;
+  location: FindingLocation | null;
+  cve: string | null;
   repository: string;
-  packageName: string;
+  packageName: string | null;
   packageGroup: string | null;
-  installedVersion: string;
+  installedVersion: string | null;
   fixedVersion: string | null;
-  ecosystem: Ecosystem;
+  ecosystem: Ecosystem | null;
   title: string;
-  cvss: number;
+  cvss: number | null;
   severity: Severity;
   status: FindingStatus;
   stage: StageId;
@@ -38,7 +53,7 @@ export interface FindingEvent {
 export interface FindingDetails {
   finding: FindingSummary;
   description: string;
-  vector: string;
+  vector: string | null;
   cwe: string | null;
   timeline: FindingEvent[];
   related: FindingSummary[];
@@ -46,6 +61,7 @@ export interface FindingDetails {
 
 export interface FindingFilters {
   q?: string;
+  kind?: FindingKind | '';
   severity?: Severity | '';
   status?: FindingStatus | '';
   repository?: string;
@@ -56,7 +72,8 @@ export interface FindingFilters {
 export interface DashboardSummary {
   openFindings: number;
   criticalFindings: number;
-  averageCvss: number;
+  // Null when no open finding has a CVSS score (e.g. only secrets or code issues).
+  averageCvss: number | null;
   lastScanAt: string | null;
   repositories: number;
   bySeverity: { severity: Severity; count: number }[];
@@ -74,8 +91,25 @@ export function findingParams(filters: FindingFilters): Record<string, string> {
   );
 }
 
-export function packageLabel(f: Pick<FindingSummary, 'packageName' | 'installedVersion'>): string {
-  return `${f.packageName}@${f.installedVersion}`;
+export function locationLabel(location: FindingLocation | null): string {
+  if (!location) return '';
+  return location.line ? `${location.path}:${location.line}` : location.path;
+}
+
+/** Package (dependency findings) or file location (everything else). */
+export function packageLabel(f: Pick<FindingSummary, 'packageName' | 'installedVersion' | 'location'>): string {
+  if (f.packageName) return f.installedVersion ? `${f.packageName}@${f.installedVersion}` : f.packageName;
+  return locationLabel(f.location) || '—';
+}
+
+/** Short identifier shown in lists: the CVE when there is one, otherwise the scanner rule. */
+export function findingIdentifier(f: Pick<FindingSummary, 'cve' | 'ruleId' | 'reference'>): string {
+  return f.cve ?? f.ruleId ?? f.reference;
+}
+
+/** Route segment for the detail page: CVE pages group every occurrence, other findings open by id. */
+export function findingRoute(f: Pick<FindingSummary, 'cve' | 'id'>): string {
+  return f.cve ?? f.id;
 }
 
 @Service()

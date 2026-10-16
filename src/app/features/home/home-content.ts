@@ -10,7 +10,7 @@ export interface HomeContent {
   pipeline: { title: string; lead: string; phases: { name: string; stages: string[] }[]; note: string };
   faq: { title: string; items: { q: string; a: string }[] };
   cta: { title: string; lead: string; button: string };
-  footer: { tagline: string; product: string; resources: string; docs: string; signIn: string; rights: string };
+  footer: { tagline: string; powered: string; product: string; resources: string; docs: string; signIn: string; rights: string };
   preview: { open: string; critical: string; avg: string; repos: string; recent: string };
 }
 
@@ -86,6 +86,7 @@ export const HOME: Record<Lang, HomeContent> = {
     },
     footer: {
       tagline: 'Continuous application security testing.',
+      powered: 'Powered by open-source tools — Gitleaks, Semgrep CE, Trivy, Grype, Syft and Hadolint — running on our own infrastructure.',
       product: 'Product',
       resources: 'Resources',
       docs: 'Documentation',
@@ -165,6 +166,7 @@ export const HOME: Record<Lang, HomeContent> = {
     },
     footer: {
       tagline: 'Testes contínuos de segurança de aplicações.',
+      powered: 'Movido por ferramentas de código aberto — Gitleaks, Semgrep CE, Trivy, Grype, Syft e Hadolint — rodando na nossa própria infraestrutura.',
       product: 'Produto',
       resources: 'Recursos',
       docs: 'Documentação',
