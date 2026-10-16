@@ -93,8 +93,8 @@ export class Vulnerabilities {
     return this.i18n.t(`sev.${severity}`);
   }
 
-  protected kindLabel(kind: FindingKind): string {
-    return this.i18n.t(`vuln.kind.${kind}`);
+  protected kindLabel(kind: FindingKind | undefined): string {
+    return this.i18n.t(`vuln.kind.${kind ?? 'vulnerability'}`);
   }
 
   protected statusLabel(status: FindingStatus): string {

@@ -9,7 +9,7 @@ import { OrgContext } from '../core/org/org-context';
 @Component({
   selector: 'app-run-scan-button',
   template: `
-    <button type="button" class="btn" [class.primary]="primary()" [disabled]="running()" (click)="run()">
+    <button type="button" class="btn" [class.primary]="primary()" [class.compact]="compact()" [disabled]="running()" (click)="run()">
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z" /></svg>
       {{ running() ? i18n.t('scan.starting') : i18n.t('scan.run') }}
     </button>
@@ -23,6 +23,11 @@ import { OrgContext } from '../core/org/org-context';
       flex-direction: column;
       align-items: flex-end;
       gap: 0.35rem;
+    }
+
+    .compact {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.85rem;
     }
 
     .error {
@@ -41,6 +46,7 @@ export class RunScanButton {
 
   readonly repository = input.required<string>();
   readonly primary = input(false);
+  readonly compact = input(false);
 
   protected readonly running = signal(false);
   protected readonly error = signal<string | null>(null);

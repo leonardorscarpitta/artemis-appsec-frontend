@@ -254,7 +254,7 @@ const dictionary = {
     'pipe.copied': 'Copied',
 
     'stage.secrets.name': 'Secret scanning',
-    'stage.secrets.desc': 'Detect leaked credentials, tokens and keys in code and commit history.',
+    'stage.secrets.desc': 'Detect leaked credentials, tokens and keys in the code.',
     'stage.sast.name': 'Static analysis (SAST)',
     'stage.sast.desc': 'Find insecure code patterns in the source code.',
     'stage.sca.name': 'Dependency scanning (SCA)',
@@ -902,7 +902,7 @@ const dictionary = {
     'pipe.copied': 'Copiado',
 
     'stage.secrets.name': 'Varredura de segredos',
-    'stage.secrets.desc': 'Detecta credenciais, tokens e chaves vazados no código e no histórico.',
+    'stage.secrets.desc': 'Detecta credenciais, tokens e chaves vazados no código.',
     'stage.sast.name': 'Análise estática (SAST)',
     'stage.sast.desc': 'Encontra padrões de código inseguros no código-fonte.',
     'stage.sca.name': 'Análise de dependências (SCA)',
