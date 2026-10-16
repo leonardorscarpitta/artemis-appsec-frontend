@@ -86,11 +86,11 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
-| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
+| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Access tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
 | `/pipelines`, `/pipelines/:id` | Pipeline runs and run detail (stages, logs) |
 | `/reports`, `/reports/:id` | Reports list and printable report view |
-| `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
-| `/integrations` | Integrations and SSH deploy keys |
+| `/onboarding` | 4-step flow: repository (HTTPS or SSH URL, branch, monorepo folders) → settings → pipeline → stack; SSH repositories land on their Access tab |
+| `/integrations` | Integrations and the list of SSH deploy keys (generated per repository; revoke only — no pasting) |
 | `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
 | `/team` | Members, invitations, roles and permissions, ownership transfer |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
@@ -128,7 +128,7 @@ The catalog comes from the API (`GET /pipeline/stages`, field `available`); `cor
 ### Scans
 
 - `shared/run-scan-button.ts` calls `POST /repositories/{name}/scans` and opens the new run; a 409 (monthly limit) is shown inline. It is used on the Repositories list and repository settings.
-- Onboarding accepts public `https://` URLs (scanned now) and SSH URLs (accepted, scanned once private-repository support lands).
+- Onboarding accepts public `https://` URLs (first scan queued on creation) and SSH URLs of private repositories. For SSH the API generates a read-only ed25519 deploy key and does not queue a scan; `features/repo-settings/repo-access.ts` (Access tab) shows the public key with per-provider steps (GitHub / GitLab / Bitbucket / other), the server host key (pinned or recorded on first use), **Test access** (`POST /repositories/{name}/access/checks`, polls `GET …/access` every 2 s while queued/running) and **Rotate key** (`POST …/access/key`). `ProjectSummary.access` (`public`/`ssh`) and `accessStatus` (`pending`/`verified`/`failed`) drive the list tags. The private key is never sent to the browser.
 - Findings have a `kind` (`vulnerability`, `secret`, `code`, `config`, `license`). Only vulnerabilities carry CVE/CVSS/package; the others carry `ruleId` and `location`. Detail URLs are `/<org>/vulnerabilities/<CVE>` (all occurrences of a CVE) or `/<org>/vulnerabilities/<finding id>` for other kinds.
 
 ## Authentication
