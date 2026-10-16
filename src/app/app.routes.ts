@@ -36,10 +36,17 @@ export const routes: Routes = [
       comingSoon('vulnerabilities', 'nav.vulnerabilities'),
       comingSoon('pipelines', 'nav.pipelines'),
       comingSoon('reports', 'nav.reports'),
-      comingSoon('integrations', 'nav.integrations'),
+      {
+        path: 'integrations',
+        loadComponent: () =>
+          import('./features/integrations/integrations').then((m) => m.Integrations),
+      },
       comingSoon('policies', 'nav.policies'),
-      comingSoon('team', 'nav.team'),
-      comingSoon('settings', 'nav.settings'),
+      { path: 'team', loadComponent: () => import('./features/team/team').then((m) => m.Team) },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
+      },
       { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
     ],
   },

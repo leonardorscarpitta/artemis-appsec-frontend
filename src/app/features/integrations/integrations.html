@@ -1,0 +1,142 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('int.title') }}</h1>
+    <p>{{ i18n.t('int.subtitle') }}</p>
+  </div>
+</header>
+
+@for (group of groups(); track group.category) {
+  <section class="group" [attr.aria-labelledby]="'cat-' + group.category">
+    <h2 [id]="'cat-' + group.category">{{ group.label }}</h2>
+    <ul class="grid">
+      @for (item of group.items; track item.id) {
+        <li class="card integration" [class]="item.status">
+          <div class="head">
+            <span class="mono-icon" aria-hidden="true">{{ item.short }}</span>
+            <div class="title">
+              <h3>{{ item.name }}</h3>
+              <span class="status">{{ statusLabel(item.status) }}</span>
+            </div>
+          </div>
+          <p class="muted">{{ desc(item) }}</p>
+
+          @if (item.id === 'nvd') {
+            <dl class="meta">
+              <div>
+                <dt>{{ i18n.t('int.lastSync') }}</dt>
+                <dd class="mono">{{ item.detail }}</dd>
+              </div>
+              <div>
+                <dt>{{ i18n.t('int.apiKey') }}</dt>
+                <dd>{{ i18n.t('int.apiKeyValid') }}</dd>
+              </div>
+            </dl>
+          } @else if (item.detail) {
+            <p class="detail mono">{{ item.detail }}</p>
+          }
+
+          <div class="actions">
+            @switch (item.status) {
+              @case ('connected') {
+                <button type="button" class="btn">{{ i18n.t('int.configure') }}</button>
+                @if (item.id !== 'nvd') {
+                  <button type="button" class="btn ghost" (click)="setStatus(item.id, 'disconnected')">
+                    {{ i18n.t('int.disconnect') }}
+                  </button>
+                }
+              }
+              @case ('error') {
+                <button type="button" class="btn primary" (click)="setStatus(item.id, 'connected')">
+                  {{ i18n.t('int.reconnect') }}
+                </button>
+                <button type="button" class="btn ghost" (click)="setStatus(item.id, 'disconnected')">
+                  {{ i18n.t('int.disconnect') }}
+                </button>
+              }
+              @default {
+                <button type="button" class="btn" (click)="setStatus(item.id, 'connected')">
+                  {{ i18n.t('int.connect') }}
+                </button>
+              }
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+<section class="card table-card" aria-labelledby="keys-title">
+  <div class="card-header">
+    <div>
+      <h2 id="keys-title">{{ i18n.t('int.keys.title') }}</h2>
+      <p class="muted sub">{{ i18n.t('int.keys.desc') }}</p>
+    </div>
+    @if (!adding()) {
+      <button type="button" class="btn" (click)="adding.set(true)">{{ i18n.t('int.keys.add') }}</button>
+    }
+  </div>
+
+  @if (adding()) {
+    <form class="add-key" (submit)="addKey($event)">
+      <div class="field">
+        <label for="key-name">{{ i18n.t('int.keys.name') }}</label>
+        <input id="key-name" name="name" class="input" required autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="key-repo">{{ i18n.t('int.keys.repository') }}</label>
+        <select id="key-repo" name="repository" class="input">
+          @for (repo of repositories; track repo) {
+            <option [value]="repo">{{ repo }}</option>
+          }
+        </select>
+      </div>
+      <div class="field wide">
+        <label for="key-public">{{ i18n.t('int.keys.publicKey') }}</label>
+        <textarea id="key-public" name="publicKey" class="input" required placeholder="ssh-ed25519 AAAA..."></textarea>
+      </div>
+      <div class="form-actions wide">
+        <button type="button" class="btn ghost" (click)="adding.set(false)">{{ i18n.t('int.keys.cancel') }}</button>
+        <button type="submit" class="btn primary">{{ i18n.t('int.keys.add') }}</button>
+      </div>
+    </form>
+  }
+
+  @if (keys().length) {
+    <table class="table stack">
+      <thead>
+        <tr>
+          <th scope="col">{{ i18n.t('int.keys.name') }}</th>
+          <th scope="col">{{ i18n.t('int.keys.fingerprint') }}</th>
+          <th scope="col">{{ i18n.t('int.keys.repository') }}</th>
+          <th scope="col">{{ i18n.t('int.keys.added') }}</th>
+          <th scope="col">{{ i18n.t('int.keys.lastUsed') }}</th>
+          <th scope="col"><span class="sr-only">{{ i18n.t('int.keys.revoke') }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (key of keys(); track key.id) {
+          <tr>
+            <td class="primary-cell"><strong>{{ key.name }}</strong></td>
+            <td class="mono fingerprint" [attr.data-label]="i18n.t('int.keys.fingerprint')">{{ key.fingerprint }}</td>
+            <td [attr.data-label]="i18n.t('int.keys.repository')">{{ key.repository }}</td>
+            <td class="muted" [attr.data-label]="i18n.t('int.keys.added')">{{ key.added }}</td>
+            <td class="muted" [attr.data-label]="i18n.t('int.keys.lastUsed')">{{ key.lastUsed || i18n.t('int.keys.never') }}</td>
+            <td class="num" data-label="">
+              <button
+                type="button"
+                class="btn danger-text"
+                [attr.aria-label]="i18n.t('int.keys.revoke') + ': ' + key.name"
+                (click)="revoke(key.id)"
+              >
+                {{ i18n.t('int.keys.revoke') }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="muted empty">{{ i18n.t('int.keys.empty') }}</p>
+  }
+</section>
