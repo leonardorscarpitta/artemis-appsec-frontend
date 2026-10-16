@@ -21,6 +21,39 @@ export interface ProjectSummary {
   schedule: ScanSchedule;
   lastScanAt: string | null;
   openFindings?: number;
+  /** `ssh` = private repository cloned with an Artemis-generated deploy key. */
+  access: RepositoryAccessType;
+  /** Result of the last access check (SSH only); `pending` until one succeeds. */
+  accessStatus?: AccessStatus | null;
+}
+
+export type RepositoryAccessType = 'public' | 'ssh';
+export type AccessStatus = 'pending' | 'verified' | 'failed';
+export type AccessCheckStatus = 'queued' | 'running' | 'ok' | 'failed';
+
+export interface ManagedDeployKey {
+  id: string;
+  publicKey: string;
+  fingerprint: string;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface AccessCheck {
+  id: string;
+  status: AccessCheckStatus;
+  message: string | null;
+  requestedAt: string;
+  finishedAt: string | null;
+}
+
+export interface RepositoryAccess {
+  type: RepositoryAccessType;
+  deployKey?: ManagedDeployKey | null;
+  host?: string;
+  hostKeyFingerprint?: string | null;
+  hostKeyPinned?: boolean;
+  lastCheck?: AccessCheck | null;
 }
 
 export interface ProjectSettings {
@@ -66,6 +99,7 @@ export const DEFAULT_SETTINGS: ProjectSettings = {
 
 export const repositoriesUrl = () => apiUrl('/repositories');
 export const repositoryUrl = (name: string) => apiUrl(`/repositories/${encodeURIComponent(name)}`);
+export const repositoryAccessUrl = (name: string) => `${repositoryUrl(name)}/access`;
 export const stageCatalogUrl = () => apiUrl('/pipeline/stages');
 
 @Service()
@@ -83,6 +117,14 @@ export class ProjectsApi {
   /** Queues a scan of the repository's default branch; 409 when the monthly scan limit is reached. */
   runScan(name: string): Observable<RunDetails> {
     return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, null);
+  }
+
+  rotateKey(name: string): Observable<RepositoryAccess> {
+    return this.http.post<RepositoryAccess>(`${repositoryUrl(name)}/access/key`, null);
+  }
+
+  checkAccess(name: string): Observable<RepositoryAccess> {
+    return this.http.post<RepositoryAccess>(`${repositoryUrl(name)}/access/checks`, null);
   }
 
   /** Removes the repository with its findings, runs and reports. */

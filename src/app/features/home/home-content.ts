@@ -35,8 +35,8 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'From repository to report in four steps',
       lead: 'No agents to install. Artemis only needs read access to your code.',
       steps: [
-        { title: 'Connect an SSH key', text: 'Add a read-only deploy key so Artemis can clone the repository.' },
-        { title: 'Choose a repository', text: 'Point to the SSH URL and branch. The stack is detected automatically.' },
+        { title: 'Choose a repository', text: 'Paste its HTTPS or SSH URL, pick the branch and its stack — or several folders for a monorepo.' },
+        { title: 'Grant read-only access', text: 'Public repositories need nothing. For private ones, add the read-only deploy key Artemis generates for you.' },
         { title: 'Configure the pipeline', text: 'Pick the security stages, tools and fail thresholds, or start from a preset.' },
         { title: 'Monitor and respond', text: 'Scans run on your schedule; new CVEs open issues, notify maintainers or block merges.' },
       ],
@@ -73,7 +73,7 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'Frequently asked questions',
       items: [
         { q: 'Which technologies are supported?', a: 'React and Angular front ends and Java + Spring back ends. Artemis detects the stack automatically when you connect a repository.' },
-        { q: 'What access does Artemis need to my code?', a: 'A read-only SSH deploy key for each repository. You never share a private key with Artemis.' },
+        { q: 'What access does Artemis need to my code?', a: 'None for public repositories — they are cloned over HTTPS. For a private repository, Artemis generates a read-only SSH deploy key just for it; you add the public key to the repository and can revoke it at any time. You never share your passwords or personal keys.' },
         { q: 'How do I get started?', a: 'Create an account with your e-mail address and confirm it from the message we send. Then create an organization — you become its owner, on the Free plan — or accept an invitation to join an existing one.' },
         { q: 'How does my team work together?', a: 'Invite colleagues by e-mail and give each one a role — owner, admin, security analyst, developer or viewer. Every person can belong to several organizations, and each organization’s data is kept separate.' },
         { q: 'How do users sign in?', a: 'With an Artemis account (OpenID Connect, with a strong password policy and optional two-factor authentication). Artemis itself never sees or stores your password.' },
@@ -117,8 +117,8 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'Do repositório ao relatório em quatro passos',
       lead: 'Nenhum agente para instalar. O Artemis só precisa de acesso de leitura ao seu código.',
       steps: [
-        { title: 'Conecte uma chave SSH', text: 'Adicione uma deploy key somente leitura para o Artemis clonar o repositório.' },
-        { title: 'Escolha um repositório', text: 'Informe a URL SSH e a branch. A stack é detectada automaticamente.' },
+        { title: 'Escolha um repositório', text: 'Cole a URL HTTPS ou SSH, escolha a branch e a stack — ou várias pastas em um monorepo.' },
+        { title: 'Libere acesso de leitura', text: 'Repositórios públicos não precisam de nada. Para os privados, adicione a deploy key somente leitura que o Artemis gera para você.' },
         { title: 'Configure o pipeline', text: 'Escolha etapas de segurança, ferramentas e critérios de falha, ou comece por um modelo.' },
         { title: 'Monitore e responda', text: 'As análises rodam no seu agendamento; novas CVEs abrem issues, notificam mantenedores ou bloqueiam merges.' },
       ],
@@ -155,7 +155,7 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'Perguntas frequentes',
       items: [
         { q: 'Quais tecnologias são suportadas?', a: 'Front-ends React e Angular e back-ends Java + Spring. O Artemis detecta a stack automaticamente ao conectar um repositório.' },
-        { q: 'Que acesso o Artemis precisa ao meu código?', a: 'Uma deploy key SSH somente leitura por repositório. Você nunca compartilha uma chave privada com o Artemis.' },
+        { q: 'Que acesso o Artemis precisa ao meu código?', a: 'Nenhum para repositórios públicos — eles são clonados via HTTPS. Para um repositório privado, o Artemis gera uma deploy key SSH somente leitura só para ele; você adiciona a chave pública ao repositório e pode revogá-la quando quiser. Você nunca compartilha suas senhas ou chaves pessoais.' },
         { q: 'Como começo?', a: 'Crie uma conta com seu e-mail e confirme-o pela mensagem que enviamos. Depois crie uma organização — você será o proprietário, no plano Free — ou aceite um convite para entrar em uma existente.' },
         { q: 'Como minha equipe trabalha junto?', a: 'Convide colegas por e-mail e dê a cada um um papel — proprietário, administrador, analista de segurança, desenvolvedor ou leitor. Cada pessoa pode participar de várias organizações, e os dados de cada organização ficam separados.' },
         { q: 'Como os usuários entram?', a: 'Com uma conta Artemis (OpenID Connect, com política de senhas forte e verificação em duas etapas opcional). O próprio Artemis nunca vê nem armazena sua senha.' },

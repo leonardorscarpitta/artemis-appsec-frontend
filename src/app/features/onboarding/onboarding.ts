@@ -12,7 +12,7 @@ import { OrgContext } from '../../core/org/org-context';
 import { RoleNotice } from '../../shared/role-notice';
 import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
-// Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
+// Public HTTPS URLs (no embedded credentials) or SSH URLs of private repositories (cloned with an Artemis deploy key).
 const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({
@@ -27,7 +27,7 @@ export class Onboarding {
   private readonly api = inject(ProjectsApi);
   protected readonly org = inject(OrgContext);
 
-  protected readonly steps: TranslationKey[] = ['ob.step1', 'ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
+  protected readonly steps: TranslationKey[] = ['ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
   protected readonly step = signal(0);
   protected readonly isLast = computed(() => this.step() === this.steps.length - 1);
 
@@ -47,7 +47,7 @@ export class Onboarding {
   protected readonly submitError = signal<string | null>(null);
 
   protected next(): void {
-    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim() || !foldersValid(this.settings().folders))) {
+    if (this.step() === 0 && (!this.urlValid() || !this.branch().trim() || !foldersValid(this.settings().folders))) {
       this.showErrors.set(true);
       return;
     }
@@ -89,7 +89,10 @@ export class Onboarding {
         pipeline: this.pipeline().map(toStageUpdate),
       })
       .subscribe({
-        next: (created) => this.router.navigate([this.org.url('/repositories'), created.project.name]),
+        next: (created) =>
+          this.router.navigate([this.org.url('/repositories'), created.project.name], {
+            queryParams: created.project.access === 'ssh' ? { tab: 'access' } : {},
+          }),
         error: (err) => {
           this.submitting.set(false);
           this.submitError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));

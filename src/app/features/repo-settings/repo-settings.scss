@@ -179,3 +179,13 @@ hr {
   border: 0;
   border-top: 1px solid var(--border);
 }
+
+.dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: 0.3rem;
+  border-radius: 50%;
+  background: var(--sev-medium);
+  vertical-align: middle;
+}

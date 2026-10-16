@@ -20,16 +20,6 @@
 <section class="card panel">
   @switch (step()) {
     @case (0) {
-      <h2>{{ i18n.t('ob.ssh.title') }}</h2>
-      <p class="muted">{{ i18n.t('ob.ssh.desc') }}</p>
-      <div class="field">
-        <label for="ssh">{{ i18n.t('ob.ssh.label') }}</label>
-        <textarea id="ssh" class="input" aria-describedby="ssh-hint" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... dev@acme"></textarea>
-        <span id="ssh-hint" class="hint">{{ i18n.t('ob.ssh.hint') }}</span>
-      </div>
-      <button type="button" class="btn">{{ i18n.t('ob.ssh.generate') }}</button>
-    }
-    @case (1) {
       <h2>{{ i18n.t('ob.repo.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.repo.desc') }}</p>
       <div class="grid-2">
@@ -49,7 +39,7 @@
           @if (showErrors() && !urlValid()) {
             <span id="repo-error" class="error-text">{{ i18n.t('ob.repo.invalid') }}</span>
           } @else if (isSsh()) {
-            <span class="hint warn">{{ i18n.t('ob.repo.sshLater') }}</span>
+            <span class="hint">{{ i18n.t('ob.repo.sshHint') }}</span>
           } @else {
             <span class="hint">{{ i18n.t('ob.repo.publicHint') }}</span>
           }
@@ -61,18 +51,18 @@
         <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
       </div>
     }
-    @case (2) {
+    @case (1) {
       <h2>{{ i18n.t('ob.settings.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.settings.desc') }}</p>
 
       <app-scan-settings [(settings)]="settings" />
     }
-    @case (3) {
+    @case (2) {
       <h2>{{ i18n.t('ob.pipeline.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.pipeline.desc') }}</p>
       <app-pipeline-editor [(stages)]="pipeline" />
     }
-    @case (4) {
+    @case (3) {
       <h2>{{ i18n.t('ob.detect.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
       @if (monorepo()) {

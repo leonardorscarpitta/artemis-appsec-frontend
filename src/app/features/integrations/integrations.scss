@@ -151,27 +151,9 @@
   }
 }
 
-.add-key {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1.25rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-alt);
-
-  .wide {
-    grid-column: 1 / -1;
-  }
-
-  textarea {
-    min-height: 5rem;
-  }
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
+.tag.muted {
+  color: var(--text-muted);
+  background: var(--surface-hover);
 }
 
 .fingerprint {
@@ -192,11 +174,6 @@
 }
 
 @media (max-width: 599px) {
-  .add-key {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-  }
-
   .card-header {
     flex-direction: column;
   }
@@ -205,7 +182,6 @@
     max-width: 60%;
   }
 
-  .form-actions .btn,
   .actions .btn {
     flex: 1 1 auto;
   }

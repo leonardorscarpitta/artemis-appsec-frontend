@@ -100,12 +100,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'new-project',
       title: 'Connecting a new project',
       blocks: [
-        { kind: 'p', text: 'Select "New project" in the sidebar and complete the five steps:' },
+        { kind: 'p', text: 'Select "New project" in the sidebar and complete the four steps:' },
         {
           kind: 'ol',
           items: [
-            'SSH key: paste the public part of an ed25519 or RSA key, or let Artemis generate one. Add it to your repository as a read-only deploy key. Never paste a private key.',
-            'Repository: enter the public HTTPS URL (for example https://github.com/acme/project.git) and the branch to analyze. SSH URLs for private repositories are accepted but not scanned yet. If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
+            'Repository: enter the URL and the branch to analyze — the HTTPS URL of a public repository (for example https://github.com/acme/project.git) or the SSH URL of a private one (for example git@github.com:acme/project.git; see "Private repositories"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: select the technology used by the repository — React, Angular or Java + Spring. Automatic detection will be available soon.',
@@ -176,11 +175,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'How scanning works',
       blocks: [
-        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Connecting a new repository also queues its first scan. The new pipeline run opens so you can follow each stage.' },
+        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Connecting a public repository also queues its first scan; a private one is scanned once its access is verified. The new pipeline run opens so you can follow each stage.' },
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch (public HTTPS repositories only, for now) into an isolated, temporary workspace. For a monorepo, every listed folder is scanned by each stage (one after the other) and the results are combined; file paths in findings stay relative to the repository root.',
+            'The scanner clones the latest commit of the chosen branch (over HTTPS for public repositories, over SSH with the repository’s deploy key for private ones — the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, every listed folder is scanned by each stage (one after the other) and the results are combined; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
@@ -212,10 +211,40 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'General tab: monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
+            'Access tab: for private repositories, the deploy key, setup steps, server identity and access test (see "Private repositories").',
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
         { kind: 'p', text: 'To stop monitoring a repository, open its General tab and use "Remove repository": type the repository name to confirm. Its findings, pipeline runs, reports, deploy keys and risk acceptances are deleted permanently; the repository itself is not touched. Removing requires a role that can manage pipelines.' },
+      ],
+    },
+    {
+      id: 'private-repositories',
+      title: 'Private repositories',
+      blocks: [
+        { kind: 'p', text: 'To scan a private repository, add it with its SSH URL (for example git@github.com:acme/app.git). Artemis generates a read-only SSH deploy key just for that repository and opens its Access tab. The first scan waits until access works.' },
+        {
+          kind: 'ol',
+          items: [
+            'Copy the public key shown in the Access tab.',
+            'Add it to the repository as a deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Leave write access off.',
+            'Select "Test access". Artemis checks that it can read the branch; the result appears in a few seconds.',
+            'When access is OK, select "Run scan" to start the first scan.',
+          ],
+        },
+        { kind: 'p', text: 'Server identity: Artemis only connects to a Git server whose host key it trusts. GitHub, GitLab and Bitbucket are verified against the keys they publish. For other servers the key is recorded the first time you test access and shown with its fingerprint — check that it matches your server; later connections must present the same key.' },
+        { kind: 'p', text: '"Rotate key" generates a new key and deletes the old one immediately: add the new public key to the repository and remove the old one. Removing the repository deletes its key too.' },
+        {
+          kind: 'table',
+          head: ['Test result', 'What to do'],
+          rows: [
+            ['Permission denied', 'The public key is not on the repository yet, or was added to another repository. Add it as a deploy key and test again.'],
+            ['Repository or branch not found', 'Check the SSH URL and the branch name in the repository settings.'],
+            ['Host key mismatch', 'The server presented a different key than the one recorded. If you changed servers on purpose, contact support; otherwise do not continue.'],
+            ['Timeout or unreachable', 'The server must be reachable from the internet on its SSH port.'],
+          ],
+        },
+        { kind: 'note', text: 'The private key never leaves Artemis: it is encrypted on our servers, is never shown or sent to you, and is only handed to the isolated scanner while it clones. Your code is deleted after every scan.' },
       ],
     },
     // --- vulnerabilities ---
@@ -346,8 +375,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
-        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis uses to clone repositories, with its fingerprint, repository and last use. Select "Add key" to register a new public key for a repository, or "Revoke" to remove a key you no longer need. Also remove the key from the repository on your Git provider.' },
-        { kind: 'note', text: 'Paste only the public key (the contents of the .pub file). Artemis accepts ed25519, ECDSA and RSA keys of at least 2048 bits, computes the SHA256 fingerprint itself and rejects private keys and keys already registered for the same repository.' },
+        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone private repositories, with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Access tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
+        { kind: 'note', text: 'Keys marked "Public key only" were added before Artemis generated keys. Artemis has no private key for them, so they are never used to clone; generate a key in the repository’s Access tab instead.' },
       ],
     },
     {
@@ -374,8 +403,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['View findings and reports', 'See every page of the organization', 'All roles'],
             ['Triage findings', 'Change finding status, manage risk acceptances, generate reports', 'Owner, Admin, Security analyst, Developer'],
-            ['Configure pipelines', 'Add repositories, run and cancel scans, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
-            ['Manage integrations', 'Integrations, deploy keys and API tokens', 'Owner, Admin'],
+            ['Configure pipelines', 'Add repositories, run and cancel scans, test repository access, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
+            ['Manage integrations', 'Integrations, generating, rotating and revoking deploy keys, API tokens', 'Owner, Admin'],
             ['Manage team', 'Invitations, roles and organization settings', 'Owner, Admin'],
             ['Manage billing', 'Change the plan, transfer ownership, delete the organization', 'Owner'],
           ],
@@ -530,12 +559,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'new-project',
       title: 'Conectando um novo projeto',
       blocks: [
-        { kind: 'p', text: 'Selecione "Novo projeto" na barra lateral e conclua os cinco passos:' },
+        { kind: 'p', text: 'Selecione "Novo projeto" na barra lateral e conclua os quatro passos:' },
         {
           kind: 'ol',
           items: [
-            'Chave SSH: cole a parte pública de uma chave ed25519 ou RSA, ou deixe o Artemis gerar uma. Adicione-a ao repositório como deploy key somente leitura. Nunca cole uma chave privada.',
-            'Repositório: informe a URL HTTPS pública (por exemplo https://github.com/acme/projeto.git) e a branch a ser analisada. URLs SSH de repositórios privados são aceitas, mas ainda não são analisadas. Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
+            'Repositório: informe a URL e a branch a ser analisada — a URL HTTPS de um repositório público (por exemplo https://github.com/acme/projeto.git) ou a URL SSH de um privado (por exemplo git@github.com:acme/projeto.git; veja "Repositórios privados"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: selecione a tecnologia usada pelo repositório — React, Angular ou Java + Spring. A detecção automática estará disponível em breve.',
@@ -606,11 +634,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'Como funcionam as análises',
       blocks: [
-        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. Conectar um novo repositório também enfileira a primeira análise. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
+        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. Conectar um repositório público também enfileira a primeira análise; um privado é analisado depois que o acesso for verificado. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida (por enquanto, apenas repositórios públicos via HTTPS) em um espaço de trabalho isolado e temporário. Em um monorepo, cada etapa analisa todas as pastas listadas (uma após a outra) e junta os resultados; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
+            'O scanner clona o último commit da branch escolhida (via HTTPS para repositórios públicos e via SSH com a deploy key do repositório para os privados — a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, cada etapa analisa todas as pastas listadas (uma após a outra) e junta os resultados; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
@@ -642,10 +670,40 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Aba Geral: pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
+            'Aba Acesso: para repositórios privados, a deploy key, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Repositórios privados").',
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
         { kind: 'p', text: 'Para parar de monitorar um repositório, abra a aba Geral e use "Remover repositório": digite o nome do repositório para confirmar. Os achados, execuções de pipeline, relatórios, deploy keys e aceites de risco dele são apagados definitivamente; o repositório em si não é alterado. Remover exige um papel que possa gerenciar pipelines.' },
+      ],
+    },
+    {
+      id: 'private-repositories',
+      title: 'Repositórios privados',
+      blocks: [
+        { kind: 'p', text: 'Para analisar um repositório privado, adicione-o com a URL SSH (por exemplo git@github.com:acme/app.git). O Artemis gera uma deploy key SSH somente leitura só para esse repositório e abre a aba Acesso. A primeira análise espera até o acesso funcionar.' },
+        {
+          kind: 'ol',
+          items: [
+            'Copie a chave pública exibida na aba Acesso.',
+            'Adicione-a ao repositório como deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Deixe o acesso de escrita desativado.',
+            'Selecione "Testar acesso". O Artemis confere se consegue ler a branch; o resultado aparece em alguns segundos.',
+            'Com o acesso OK, selecione "Executar análise" para iniciar a primeira análise.',
+          ],
+        },
+        { kind: 'p', text: 'Identidade do servidor: o Artemis só se conecta a um servidor Git cuja chave de host ele confia. GitHub, GitLab e Bitbucket são verificados com as chaves que eles publicam. Para outros servidores, a chave é registrada na primeira vez que você testa o acesso e exibida com a impressão digital — confira se ela corresponde ao seu servidor; as conexões seguintes precisam apresentar a mesma chave.' },
+        { kind: 'p', text: '"Trocar chave" gera uma nova chave e apaga a antiga na hora: adicione a nova chave pública ao repositório e remova a antiga. Remover o repositório também apaga a chave dele.' },
+        {
+          kind: 'table',
+          head: ['Resultado do teste', 'O que fazer'],
+          rows: [
+            ['Permissão negada', 'A chave pública ainda não está no repositório ou foi adicionada a outro repositório. Adicione-a como deploy key e teste de novo.'],
+            ['Repositório ou branch não encontrado', 'Confira a URL SSH e o nome da branch nas configurações do repositório.'],
+            ['Chave de host diferente', 'O servidor apresentou uma chave diferente da registrada. Se você trocou de servidor de propósito, fale com o suporte; caso contrário, não continue.'],
+            ['Tempo esgotado ou inacessível', 'O servidor precisa estar acessível pela internet na porta SSH.'],
+          ],
+        },
+        { kind: 'note', text: 'A chave privada nunca sai do Artemis: ela fica criptografada nos nossos servidores, nunca é exibida nem enviada a você e só é entregue ao scanner isolado durante o clone. Seu código é apagado após cada análise.' },
       ],
     },
     // --- vulnerabilities ---
@@ -776,8 +834,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
-        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis usa para clonar repositórios, com impressão digital, repositório e último uso. Selecione "Adicionar chave" para registrar uma nova chave pública para um repositório, ou "Revogar" para remover uma chave que não é mais necessária. Remova a chave também do repositório no seu provedor Git.' },
-        { kind: 'note', text: 'Cole apenas a chave pública (o conteúdo do arquivo .pub). O Artemis aceita chaves ed25519, ECDSA e RSA de pelo menos 2048 bits, calcula a impressão digital SHA256 e rejeita chaves privadas e chaves já cadastradas para o mesmo repositório.' },
+        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar repositórios privados, com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Acesso de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
+        { kind: 'note', text: 'Chaves marcadas como "Só chave pública" foram adicionadas antes de o Artemis gerar chaves. O Artemis não tem a chave privada delas, então nunca são usadas para clonar; gere uma chave na aba Acesso do repositório.' },
       ],
     },
     {
@@ -804,8 +862,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['Ver achados e relatórios', 'Ver todas as páginas da organização', 'Todos os papéis'],
             ['Triar achados', 'Mudar o status de achados, gerenciar aceites de risco, gerar relatórios', 'Proprietário, Administrador, Analista de segurança, Desenvolvedor'],
-            ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
-            ['Gerenciar integrações', 'Integrações, deploy keys e tokens de API', 'Proprietário, Administrador'],
+            ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, testar o acesso a repositórios, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
+            ['Gerenciar integrações', 'Integrações, gerar, trocar e revogar deploy keys, tokens de API', 'Proprietário, Administrador'],
             ['Gerenciar equipe', 'Convites, papéis e configurações da organização', 'Proprietário, Administrador'],
             ['Gerenciar cobrança', 'Mudar o plano, transferir a propriedade, excluir a organização', 'Proprietário'],
           ],
