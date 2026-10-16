@@ -94,7 +94,7 @@ Enterprise-style light and dark themes. Design tokens are CSS variables in `src/
 
 Global primitives: `.card` (`.card-header`, `.table-card`), `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.tag`, `.segmented`, `.switch`, `.table` (`.num`, and `.stack` with `data-label` for stacked rows on phones).
 
-Responsive breakpoints: `599px` (phone), `899px` (tablet — sidebar becomes a drawer), `1199px` (sidebar becomes an icon rail), `1600px` (wide). Grid columns use `minmax(0, 1fr)` to avoid horizontal overflow.
+Responsive breakpoints: `599px` (phone), `899px` (tablet — sidebar becomes a drawer), `1199px` (sidebar becomes an icon rail that expands over the page on hover/focus), `1600px` (wide). Grid columns use `minmax(0, 1fr)` to avoid horizontal overflow.
 
 The logo (`shared/logo.ts`) reads `--logo-color` and `--logo-name-display`; the favicon is `public/favicon.svg`. CVSS → severity follows the NVD v3 ranges (`severityOf` in `domain.ts`).
 
