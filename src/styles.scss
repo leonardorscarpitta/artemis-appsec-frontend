@@ -148,6 +148,12 @@ code,
   }
 }
 
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -394,6 +400,109 @@ input[type='radio'] {
       background: var(--primary-soft);
       color: var(--primary);
       font-weight: 600;
+    }
+  }
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+@media (max-width: 599px), (pointer: coarse) {
+  .btn,
+  .input,
+  select.input,
+  .segmented button {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 599px) {
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .card:not(.table-card) {
+    padding: 1rem;
+
+    > .card-header {
+      margin: -1rem -1rem 1rem;
+    }
+  }
+
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .page-actions > .btn {
+    flex: 1 1 auto;
+  }
+
+  // Tables marked `.stack` turn into labelled cards; each cell needs a data-label.
+  .table.stack {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    tbody,
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:last-child {
+      border-bottom: 0;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.3rem 0;
+      border: 0;
+      white-space: normal;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-family: var(--font);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-align: left;
+      }
+
+      &.primary-cell {
+        display: block;
+        text-align: left;
+        padding-bottom: 0.5rem;
+
+        &::before {
+          content: none;
+        }
+      }
+
+      &[data-label='']::before {
+        content: none;
+      }
     }
   }
 }

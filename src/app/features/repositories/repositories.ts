@@ -12,11 +12,13 @@ import { REPOSITORIES } from '../../core/mock-data';
         <h1>{{ i18n.t('repo.title') }}</h1>
         <p>{{ i18n.t('repo.subtitle') }}</p>
       </div>
-      <a class="btn primary" routerLink="/onboarding">{{ i18n.t('repo.add') }}</a>
+      <div class="page-actions">
+        <a class="btn primary" routerLink="/onboarding">{{ i18n.t('repo.add') }}</a>
+      </div>
     </header>
 
     <div class="card table-card">
-      <table class="table">
+      <table class="table stack">
         <thead>
           <tr>
             <th scope="col">{{ i18n.t('col.repository') }}</th>
@@ -30,15 +32,15 @@ import { REPOSITORIES } from '../../core/mock-data';
         <tbody>
           @for (repo of repositories; track repo.url) {
             <tr>
-              <td>
+              <td class="primary-cell">
                 <strong>{{ repo.name }}</strong>
                 <div class="mono muted url">{{ repo.url }}</div>
               </td>
-              <td><span class="tag">{{ repo.stack }}</span></td>
-              <td>{{ repo.schedule }}</td>
-              <td class="num">{{ repo.findings }}</td>
-              <td class="muted mono">{{ repo.lastScan }}</td>
-              <td class="num">
+              <td [attr.data-label]="i18n.t('col.stack')"><span class="tag">{{ repo.stack }}</span></td>
+              <td [attr.data-label]="i18n.t('col.schedule')">{{ repo.schedule }}</td>
+              <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.findings }}</td>
+              <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ repo.lastScan }}</td>
+              <td class="num actions" data-label="">
                 <a class="btn" [routerLink]="['/repositories', repo.name]" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
                 </a>
@@ -52,11 +54,22 @@ import { REPOSITORIES } from '../../core/mock-data';
   styles: `
     .url {
       font-size: 0.8rem;
+      overflow-wrap: anywhere;
     }
 
     .btn {
       padding: 0.3rem 0.7rem;
       font-size: 0.85rem;
+    }
+
+    @media (max-width: 599px) {
+      .actions {
+        padding-top: 0.6rem;
+
+        .btn {
+          flex: 1;
+        }
+      }
     }
   `,
 })

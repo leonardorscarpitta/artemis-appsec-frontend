@@ -242,7 +242,27 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1199px) {
+  .stages > li {
+    grid-template-columns: auto 1fr 1fr;
+    row-gap: 0.75rem;
+
+    .info {
+      grid-column: 2 / -1;
+    }
+
+    .field {
+      grid-row: 2;
+      grid-column: 2;
+
+      & + .field {
+        grid-column: 3;
+      }
+    }
+  }
+}
+
+@media (max-width: 899px) {
   .flow {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -250,13 +270,71 @@
     > li::after {
       display: none;
     }
+
+    ul {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 599px) {
+  :host {
+    gap: 1.25rem;
+  }
+
+  .toolbar,
+  .presets {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .segmented {
+    display: flex;
+    overflow-x: auto;
+
+    button {
+      flex: 1 0 auto;
+    }
+  }
+
+  .summary {
+    justify-content: space-between;
+  }
+
+  .flow {
+    padding: 0.75rem;
+  }
+
+  .phase header p {
+    padding-left: 0;
   }
 
   .stages > li {
     grid-template-columns: auto 1fr;
+    padding: 0.85rem;
 
-    .field {
+    .info {
       grid-column: 2;
+    }
+
+    .field,
+    .field + .field {
+      grid-row: auto;
+      grid-column: 1 / -1;
+    }
+  }
+
+  .code {
+    .code-bar select {
+      flex: 1;
+    }
+
+    pre {
+      margin: 0.75rem;
+      padding: 0.75rem;
     }
   }
 }
