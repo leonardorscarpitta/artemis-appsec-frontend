@@ -83,7 +83,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
               <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
               <td class="num actions" data-label="">
-                <app-run-scan-button [repository]="repo.name" [compact]="true" />
+                <app-run-scan-button [repository]="repo.name" [compact]="true" [folders]="folderPaths(repo.folders)" />
                 <a class="btn" [routerLink]="['/repositories', repo.name] | orgLink" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
                 </a>
@@ -148,6 +148,10 @@ export class Repositories {
   protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
   protected readonly scheduleLabels = SCHEDULE_LABELS;
+
+  protected folderPaths(folders: ProjectFolder[]): string[] {
+    return folders.map((f) => f.path);
+  }
 
   protected folderSummary(folders: ProjectFolder[]): string {
     return folders.map((f) => `${f.path} · ${f.stack}`).join(', ');

@@ -180,7 +180,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch (over HTTPS for public repositories, over SSH with the repository’s deploy key for private ones — the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, every listed folder is scanned by each stage (one after the other) and the results are combined; file paths in findings stay relative to the repository root.',
+            'The scanner clones the latest commit of the chosen branch (over HTTPS for public repositories, over SSH with the repository’s deploy key for private ones — the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
@@ -642,7 +642,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida (via HTTPS para repositórios públicos e via SSH com a deploy key do repositório para os privados — a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, cada etapa analisa todas as pastas listadas (uma após a outra) e junta os resultados; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
+            'O scanner clona o último commit da branch escolhida (via HTTPS para repositórios públicos e via SSH com a deploy key do repositório para os privados — a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
