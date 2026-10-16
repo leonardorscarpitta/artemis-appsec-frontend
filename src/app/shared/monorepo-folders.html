@@ -1,0 +1,46 @@
+<label class="switch-row">
+  <input type="checkbox" role="switch" [checked]="monorepo()" [attr.aria-checked]="monorepo()" (change)="setMonorepo($any($event.target).checked)" />
+  <span>
+    <strong>{{ i18n.t('mono.toggle') }}</strong>
+    <span class="muted">{{ i18n.t('mono.toggleDesc') }}</span>
+  </span>
+</label>
+
+@if (monorepo()) {
+  <fieldset class="folders">
+    <legend>{{ i18n.t('mono.folders') }}</legend>
+    @for (folder of folders(); track $index; let i = $index) {
+      <div class="row">
+        <div class="field">
+          <label [for]="'folder-path-' + i">{{ i18n.t('mono.path') }}</label>
+          <input
+            [id]="'folder-path-' + i"
+            class="input mono"
+            type="text"
+            placeholder="frontend"
+            [value]="folder.path"
+            (input)="setPath(i, $event)"
+            [attr.aria-invalid]="showErrors() && pathError(i)"
+          />
+        </div>
+        <div class="field">
+          <label [for]="'folder-stack-' + i">{{ i18n.t('mono.stack') }}</label>
+          <select [id]="'folder-stack-' + i" class="input" (change)="setStack(i, $event)" [attr.aria-invalid]="showErrors() && !folder.stack">
+            <option value="" [selected]="!folder.stack">{{ i18n.t('mono.stackPick') }}</option>
+            @for (s of stacks; track s) {
+              <option [value]="s" [selected]="s === folder.stack">{{ s }}</option>
+            }
+          </select>
+        </div>
+        <button type="button" class="btn ghost remove" [attr.aria-label]="i18n.t('mono.remove') + ' ' + folder.path" (click)="remove(i)">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z" /></svg>
+        </button>
+      </div>
+      @if (showErrors() && (pathError(i) || !folder.stack)) {
+        <span class="error-text" role="alert">{{ i18n.t('mono.invalid') }}</span>
+      }
+    }
+    <button type="button" class="btn add" [disabled]="folders().length >= max" (click)="add()">{{ i18n.t('mono.add') }}</button>
+    <span class="hint">{{ i18n.t('mono.hint') }}</span>
+  </fieldset>
+}

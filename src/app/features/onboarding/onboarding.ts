@@ -2,7 +2,7 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
-import { DEFAULT_SETTINGS, ProjectsApi, stageCatalogUrl, toStageUpdate } from '../../core/api/projects';
+import { DEFAULT_SETTINGS, ProjectFolder, ProjectsApi, stageCatalogUrl, toStageUpdate } from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { Stack } from '../../core/domain';
 import { PipelineStage, defaultPipeline } from '../../core/pipeline';
@@ -10,16 +10,14 @@ import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';
 import { OrgContext } from '../../core/org/org-context';
 import { RoleNotice } from '../../shared/role-notice';
+import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
 // Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
 const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
-/** Relative folder such as `frontend` or `apps/web`; no `.`/`..` segments (same rule as the API). */
-const DIRECTORY = /^(?!\.{1,2}(\/|$))(?!.*\/\.{1,2}(\/|$))[\w.-]+(\/[\w.-]+)*$/;
-
 @Component({
   selector: 'app-onboarding',
-  imports: [ScanSettings, PipelineEditor, RoleNotice],
+  imports: [ScanSettings, PipelineEditor, RoleNotice, MonorepoFolders],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.scss',
 })
@@ -35,22 +33,21 @@ export class Onboarding {
 
   protected readonly url = signal('');
   protected readonly branch = signal('main');
-  protected readonly directory = signal('');
   protected readonly settings = signal(DEFAULT_SETTINGS);
   private readonly catalog = httpResource<PipelineStage[]>(() => stageCatalogUrl());
   protected readonly pipeline = linkedSignal(() => this.catalog.value() ?? defaultPipeline());
-  protected readonly stacks: Stack[] = ['React', 'Angular', 'Java + Spring'];
+  protected readonly stacks: Stack[] = STACKS;
   protected readonly stack = signal<Stack | null>(null);
 
   protected readonly isSsh = computed(() => /^(git@|ssh:\/\/)/.test(this.url().trim()));
   protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
-  protected readonly directoryValid = computed(() => !normalizeDirectory(this.directory()) || (normalizeDirectory(this.directory()).length <= 120 && DIRECTORY.test(normalizeDirectory(this.directory()))));
+  protected readonly monorepo = computed(() => this.settings().folders.length > 0);
   protected readonly showErrors = signal(false);
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);
 
   protected next(): void {
-    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim() || !this.directoryValid())) {
+    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim() || !foldersValid(this.settings().folders))) {
       this.showErrors.set(true);
       return;
     }
@@ -66,12 +63,17 @@ export class Onboarding {
     this.step.update((s) => Math.max(0, s - 1));
   }
 
+  protected setFolders(folders: ProjectFolder[]): void {
+    this.settings.update((s) => ({ ...s, folders }));
+  }
+
   protected input(target: EventTarget | null): string {
     return (target as HTMLInputElement).value;
   }
 
   private submit(): void {
-    const stack = this.stack();
+    const folders = this.settings().folders.map((f) => ({ ...f, path: normalizeFolder(f.path) }));
+    const stack = folders[0]?.stack ?? this.stack();
     if (!stack) {
       this.showErrors.set(true);
       return;
@@ -82,9 +84,8 @@ export class Onboarding {
       .create({
         url: this.url().trim(),
         branch: this.branch().trim(),
-        directory: normalizeDirectory(this.directory()) || null,
         stack,
-        settings: this.settings(),
+        settings: { ...this.settings(), folders },
         pipeline: this.pipeline().map(toStageUpdate),
       })
       .subscribe({
@@ -95,8 +96,4 @@ export class Onboarding {
         },
       });
   }
-}
-
-function normalizeDirectory(value: string): string {
-  return value.trim().replace(/^(\.\/)+/, '').replace(/^\/+|\/+$/g, '');
 }

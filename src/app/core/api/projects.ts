@@ -15,9 +15,9 @@ export interface ProjectSummary {
   name: string;
   url: string;
   branch: string;
-  /** Folder scanned inside the repository (monorepos); null scans everything. */
-  directory: string | null;
   stack: Stack;
+  /** Monorepo folders scanned on their own stack; empty scans the whole repository. */
+  folders: ProjectFolder[];
   schedule: ScanSchedule;
   lastScanAt: string | null;
   openFindings?: number;
@@ -28,6 +28,13 @@ export interface ProjectSettings {
   automaticActions: AutomaticAction[];
   dockerfileMode: DockerfileMode;
   customDockerfile: string | null;
+  folders: ProjectFolder[];
+}
+
+/** `stack` is null only while the user has not picked one in the form. */
+export interface ProjectFolder {
+  path: string;
+  stack: Stack | null;
 }
 
 export interface ProjectDetails {
@@ -39,7 +46,6 @@ export interface ProjectDetails {
 export interface CreateProject {
   url: string;
   branch: string;
-  directory: string | null;
   stack: Stack;
   settings: ProjectSettings;
   pipeline: StageUpdate[];
@@ -52,6 +58,7 @@ export const DEFAULT_SETTINGS: ProjectSettings = {
   automaticActions: ['issue', 'email'],
   dockerfileMode: 'recommended',
   customDockerfile: null,
+  folders: [],
 };
 
 export const repositoriesUrl = () => apiUrl('/repositories');

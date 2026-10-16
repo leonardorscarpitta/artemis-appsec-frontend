@@ -3,7 +3,7 @@ import { Component, computed, inject, input, linkedSignal, signal } from '@angul
 import { Router, RouterLink } from '@angular/router';
 import { concatMap } from 'rxjs';
 import { problemMessage } from '../../core/api/api';
-import { DEFAULT_SETTINGS, ProjectDetails, ProjectsApi, repositoryUrl } from '../../core/api/projects';
+import { DEFAULT_SETTINGS, ProjectDetails, ProjectFolder, ProjectsApi, repositoryUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
 import { OrgContext } from '../../core/org/org-context';
 import { PipelineEditor } from '../../shared/pipeline-editor';
@@ -12,12 +12,13 @@ import { ScanSettings } from '../../shared/scan-settings';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { RoleNotice } from '../../shared/role-notice';
+import { MonorepoFolders, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
 type Tab = 'general' | 'pipeline';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })
@@ -39,6 +40,7 @@ export class RepoSettings {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  protected readonly showErrors = signal(false);
   protected readonly confirmName = signal('');
   protected readonly removing = signal(false);
   protected readonly removeError = signal<string | null>(null);
@@ -60,11 +62,23 @@ export class RepoSettings {
     });
   }
 
+  protected setFolders(folders: ProjectFolder[]): void {
+    this.settings.update((s) => ({ ...s, folders }));
+  }
+
   protected save(): void {
+    if (!foldersValid(this.settings().folders)) {
+      this.showErrors.set(true);
+      this.tab.set('general');
+      this.saveError.set(this.i18n.t('mono.invalid'));
+      return;
+    }
+    this.showErrors.set(false);
+    const settings = { ...this.settings(), folders: this.settings().folders.map((f) => ({ ...f, path: normalizeFolder(f.path) })) };
     this.saving.set(true);
     this.saveError.set(null);
     this.api
-      .updateSettings(this.name(), this.settings())
+      .updateSettings(this.name(), settings)
       .pipe(concatMap(() => this.api.updatePipeline(this.name(), this.pipeline())))
       .subscribe({
         next: (updated) => {

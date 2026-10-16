@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
+import { ProjectFolder, ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
@@ -57,7 +57,13 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
                 <strong>{{ repo.name }}</strong>
                 <div class="mono muted url">{{ repo.url }}</div>
               </td>
-              <td [attr.data-label]="i18n.t('col.stack')"><span class="tag">{{ repo.stack }}</span></td>
+              <td [attr.data-label]="i18n.t('col.stack')">
+                @if (repo.folders.length) {
+                  <span class="tag" [title]="folderSummary(repo.folders)">{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
+                } @else {
+                  <span class="tag">{{ repo.stack }}</span>
+                }
+              </td>
               <td [attr.data-label]="i18n.t('col.schedule')">{{ i18n.t(scheduleLabels[repo.schedule]) }}</td>
               <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
               <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
@@ -114,4 +120,8 @@ export class Repositories {
   protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
   protected readonly scheduleLabels = SCHEDULE_LABELS;
+
+  protected folderSummary(folders: ProjectFolder[]): string {
+    return folders.map((f) => `${f.path} · ${f.stack}`).join(', ');
+  }
 }
