@@ -96,11 +96,6 @@
           </td>
           @if (canManage()) {
             <td class="row-actions">
-              @if (isOwner() && member.role !== 'owner' && member.active) {
-                <button type="button" class="btn ghost" (click)="transferOwnership(member)" [attr.aria-label]="i18n.t('team.transfer') + ': ' + member.name">
-                  {{ i18n.t('team.transfer') }}
-                </button>
-              }
               @if (canEdit(member)) {
                 <button type="button" class="btn ghost danger" (click)="remove(member)" [attr.aria-label]="i18n.t('team.remove') + ': ' + member.name">
                   {{ i18n.t('team.remove') }}

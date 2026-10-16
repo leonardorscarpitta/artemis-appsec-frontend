@@ -72,17 +72,7 @@ export class Team {
     return member.email.toLowerCase() === this.auth.profile()?.email?.toLowerCase();
   }
 
-  protected transferOwnership(member: Member): void {
-    if (!confirm(this.i18n.t('team.transferConfirm').replace('{name}', member.name))) return;
-    this.error.set(null);
-    this.api.transferOwnership(member.id).subscribe({
-      next: () => {
-        this.members.reload();
-        void this.org.load(true);
-      },
-      error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
-    });
-  }
+
 
   protected initials(name: string): string {
     return name
