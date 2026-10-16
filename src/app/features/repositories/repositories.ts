@@ -70,7 +70,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
                     >{{ i18n.t(repo.accessStatus === 'failed' ? 'access.status.failed' : 'access.status.pending') }}</a>
                   }
                 }
-                <div class="mono muted url">{{ repo.url }}</div>
+                <div class="mono muted url" [title]="repo.url">{{ repo.url }}</div>
               </td>
               <td [attr.data-label]="i18n.t('col.stack')">
                 @if (repo.folders.length) {
@@ -83,7 +83,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
               <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
               <td class="num actions" data-label="">
-                <app-run-scan-button [repository]="repo.name" [compact]="true" [folders]="folderPaths(repo.folders)" />
+                <app-run-scan-button [repository]="repo.name" [compact]="true" [folders]="folderPaths(repo.folders)" [stacks]="folderStacks(repo.folders)" />
                 <a class="btn" [routerLink]="['/repositories', repo.name] | orgLink" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
                 </a>
@@ -109,8 +109,11 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     }
 
     .url {
+      max-width: 16rem;
+      overflow: hidden;
       font-size: 0.8rem;
-      overflow-wrap: anywhere;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .btn {
@@ -151,6 +154,10 @@ export class Repositories {
 
   protected folderPaths(folders: ProjectFolder[]): string[] {
     return folders.map((f) => f.path);
+  }
+
+  protected folderStacks(folders: ProjectFolder[]): Record<string, string> {
+    return Object.fromEntries(folders.map((f) => [f.path, f.stack ?? '']));
   }
 
   protected folderSummary(folders: ProjectFolder[]): string {
