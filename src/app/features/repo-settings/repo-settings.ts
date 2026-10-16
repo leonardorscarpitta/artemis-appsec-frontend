@@ -1,6 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { concatMap } from 'rxjs';
 import { problemMessage } from '../../core/api/api';
 import { DEFAULT_SETTINGS, ProjectDetails, ProjectsApi, repositoryUrl } from '../../core/api/projects';
@@ -25,6 +25,7 @@ export class RepoSettings {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(ProjectsApi);
   private readonly org = inject(OrgContext);
+  private readonly router = inject(Router);
   protected readonly canEdit = computed(() => this.org.can('pipelines'));
 
   readonly name = input.required<string>();
@@ -38,6 +39,26 @@ export class RepoSettings {
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  protected readonly confirmName = signal('');
+  protected readonly removing = signal(false);
+  protected readonly removeError = signal<string | null>(null);
+
+  protected setConfirmName(event: Event): void {
+    this.confirmName.set((event.target as HTMLInputElement).value.trim());
+    this.removeError.set(null);
+  }
+
+  protected remove(): void {
+    this.removing.set(true);
+    this.removeError.set(null);
+    this.api.remove(this.name()).subscribe({
+      next: () => void this.router.navigateByUrl(this.org.url('/repositories')),
+      error: (err) => {
+        this.removing.set(false);
+        this.removeError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
 
   protected save(): void {
     this.saving.set(true);

@@ -187,6 +187,9 @@ const dictionary = {
     'ob.repo.desc': 'Provide the URL of the repository you want to analyze. Public repositories over HTTPS are supported today.',
     'ob.repo.label': 'Repository URL',
     'ob.repo.branch': 'Branch',
+    'ob.repo.directory': 'Folder (optional)',
+    'ob.repo.directoryHint': 'For monorepos: scan only this folder, e.g. frontend or apps/web. Leave empty to scan the whole repository. Add the repository again with another folder to scan it separately.',
+    'ob.repo.directoryInvalid': 'Use a relative folder path such as frontend or apps/web (letters, numbers, ".", "_" and "-"; no ".." ).',
 
     'ob.settings.title': 'Scan settings',
     'ob.settings.desc': 'Decide how often Artemis runs and what it does when it finds something.',
@@ -280,6 +283,11 @@ const dictionary = {
     'rs.save': 'Save changes',
     'rs.cancel': 'Cancel',
     'rs.saved': 'Changes saved.',
+    'rs.directory': 'Folder scanned in this repository',
+    'rs.remove.title': 'Remove repository',
+    'rs.remove.desc': 'Stops monitoring this repository and permanently deletes its findings, pipeline runs, reports, deploy keys and risk acceptances. The repository itself is not touched. This cannot be undone.',
+    'rs.remove.confirm': 'Type the repository name to confirm',
+    'rs.remove.button': 'Remove repository',
     'rs.notFound': 'Repository not found.',
     'rs.subtitle': 'Changes apply from the next pipeline run.',
 
@@ -881,6 +889,9 @@ const dictionary = {
     'ob.repo.desc': 'Informe a URL do repositório que deseja analisar. Hoje são suportados repositórios públicos via HTTPS.',
     'ob.repo.label': 'URL do repositório',
     'ob.repo.branch': 'Branch',
+    'ob.repo.directory': 'Pasta (opcional)',
+    'ob.repo.directoryHint': 'Para monorepos: analisa só esta pasta, por exemplo frontend ou apps/web. Deixe vazio para analisar o repositório inteiro. Adicione o repositório de novo com outra pasta para analisá-la separadamente.',
+    'ob.repo.directoryInvalid': 'Use um caminho de pasta relativo como frontend ou apps/web (letras, números, ".", "_" e "-"; sem "..").',
 
     'ob.settings.title': 'Configurações da análise',
     'ob.settings.desc': 'Defina a frequência das análises e o que fazer ao encontrar algo.',
@@ -974,6 +985,11 @@ const dictionary = {
     'rs.save': 'Salvar alterações',
     'rs.cancel': 'Cancelar',
     'rs.saved': 'Alterações salvas.',
+    'rs.directory': 'Pasta analisada neste repositório',
+    'rs.remove.title': 'Remover repositório',
+    'rs.remove.desc': 'Para de monitorar este repositório e apaga definitivamente seus achados, execuções de pipeline, relatórios, deploy keys e aceites de risco. O repositório em si não é alterado. Não é possível desfazer.',
+    'rs.remove.confirm': 'Digite o nome do repositório para confirmar',
+    'rs.remove.button': 'Remover repositório',
     'rs.notFound': 'Repositório não encontrado.',
     'rs.subtitle': 'As alterações valem a partir da próxima execução do pipeline.',
 

@@ -58,6 +58,24 @@
           <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
           <input id="branch" class="input mono" type="text" required [value]="branch()" (input)="branch.set(input($event.target))" />
         </div>
+        <div class="field">
+          <label for="directory">{{ i18n.t('ob.repo.directory') }}</label>
+          <input
+            id="directory"
+            class="input mono"
+            type="text"
+            placeholder="frontend"
+            [value]="directory()"
+            (input)="directory.set(input($event.target))"
+            [attr.aria-invalid]="showErrors() && !directoryValid()"
+            aria-describedby="directory-hint"
+          />
+          @if (showErrors() && !directoryValid()) {
+            <span id="directory-hint" class="error-text">{{ i18n.t('ob.repo.directoryInvalid') }}</span>
+          } @else {
+            <span id="directory-hint" class="hint">{{ i18n.t('ob.repo.directoryHint') }}</span>
+          }
+        </div>
       </div>
     }
     @case (2) {
