@@ -1,11 +1,13 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { I18n } from '../core/i18n';
-import { severityOf } from '../core/domain';
+import { Severity, severityOf } from '../core/domain';
 
 @Component({
   selector: 'app-severity-badge',
   template: `
-    <span class="score">{{ cvss().toFixed(1) }}</span>
+    @if (cvss() != null) {
+      <span class="score">{{ cvss()!.toFixed(1) }}</span>
+    }
     <span class="tag" [style.color]="'var(--sev-' + severity() + ')'" [style.background]="'var(--sev-' + severity() + '-bg)'">
       {{ label() }}
     </span>
@@ -26,8 +28,14 @@ import { severityOf } from '../core/domain';
 })
 export class SeverityBadge {
   private readonly i18n = inject(I18n);
-  readonly cvss = input.required<number>();
+  /** CVSS score when known (dependency vulnerabilities). */
+  readonly cvss = input<number | null>(null);
+  /** Severity reported by the scanner; used when there is no CVSS score. */
+  readonly level = input<Severity | null>(null);
 
-  protected readonly severity = computed(() => severityOf(this.cvss()));
+  protected readonly severity = computed(() => {
+    const score = this.cvss();
+    return score != null ? severityOf(score) : (this.level() ?? 'low');
+  });
   protected readonly label = computed(() => this.i18n.t(`sev.${this.severity()}`));
 }

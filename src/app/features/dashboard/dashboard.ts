@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DashboardSummary, dashboardUrl, packageLabel } from '../../core/api/findings';
+import { DashboardSummary, dashboardUrl, findingIdentifier, findingRoute, packageLabel } from '../../core/api/findings';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
@@ -19,6 +19,8 @@ export class Dashboard {
   protected readonly i18n = inject(I18n);
   protected readonly summary = httpResource<DashboardSummary>(() => dashboardUrl());
   protected readonly packageLabel = packageLabel;
+  protected readonly findingIdentifier = findingIdentifier;
+  protected readonly findingRoute = findingRoute;
 
   protected readonly distribution = computed(() => {
     const summary = this.summary.value();

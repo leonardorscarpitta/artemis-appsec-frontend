@@ -338,3 +338,18 @@
     }
   }
 }
+
+.stages > li.unavailable {
+  .switch {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
