@@ -105,7 +105,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repository: enter the URL and the branch to analyze — the HTTPS URL of a public repository (for example https://github.com/acme/project.git) or the SSH URL of a private one (for example git@github.com:acme/project.git; see "Private repositories"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
+            'Repository: enter the repository’s SSH URL (for example git@github.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Private repositories"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: select the technology used by the repository — React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. Automatic detection will be available soon.',
@@ -180,7 +180,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch (over HTTPS for public repositories, over SSH with the repository’s deploy key for private ones — the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
+            'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
@@ -567,7 +567,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repositório: informe a URL e a branch a ser analisada — a URL HTTPS de um repositório público (por exemplo https://github.com/acme/projeto.git) ou a URL SSH de um privado (por exemplo git@github.com:acme/projeto.git; veja "Repositórios privados"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
+            'Repositório: informe a URL SSH do repositório (por exemplo git@github.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Repositórios privados"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: selecione a tecnologia usada pelo repositório — React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. A detecção automática estará disponível em breve.',
@@ -642,7 +642,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida (via HTTPS para repositórios públicos e via SSH com a deploy key do repositório para os privados — a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
+            'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',

@@ -61,7 +61,6 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="primary-cell">
                 <strong>{{ repo.name }}</strong>
                 @if (repo.access === 'ssh') {
-                  <span class="tag">{{ i18n.t('access.private') }}</span>
                   @if (repo.accessStatus !== 'verified') {
                     <a
                       class="tag warn"
@@ -83,7 +82,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
               <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
               <td class="num actions" data-label="">
-                <app-run-scan-button [repository]="repo.name" [compact]="true" [folders]="folderPaths(repo.folders)" [stacks]="folderStacks(repo.folders)" />
+                <app-run-scan-button [repository]="repo.name" [compact]="true" [folders]="folderPaths(repo.folders)" [stacks]="folderStacks(repo.folders)" [ready]="repo.accessStatus === 'verified'" />
                 <a class="btn" [routerLink]="['/repositories', repo.name] | orgLink" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
                 </a>

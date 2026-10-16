@@ -29,7 +29,7 @@
             id="repo"
             class="input mono"
             type="text"
-            placeholder="https://github.com/acme/project.git"
+            placeholder="git@github.com:acme/project.git"
             required
             [value]="url()"
             (input)="url.set(input($event.target))"
@@ -38,10 +38,8 @@
           />
           @if (showErrors() && !urlValid()) {
             <span id="repo-error" class="error-text">{{ i18n.t('ob.repo.invalid') }}</span>
-          } @else if (isSsh()) {
-            <span class="hint">{{ i18n.t('ob.repo.sshHint') }}</span>
           } @else {
-            <span class="hint">{{ i18n.t('ob.repo.publicHint') }}</span>
+            <span class="hint">{{ i18n.t('ob.repo.sshHint') }}</span>
           }
         </div>
         <div class="field">
