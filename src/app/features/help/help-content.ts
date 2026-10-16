@@ -203,7 +203,52 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
 
     // --- reports + policies ---
-    // (help section for this area goes here)
+    {
+      id: 'reports',
+      title: 'Reports',
+      blocks: [
+        { kind: 'p', text: 'The Reports page lists every report generated for your organization or for a single repository. There are three types:' },
+        {
+          kind: 'table',
+          head: ['Type', 'Contents'],
+          rows: [
+            ['Security summary', 'Weekly or monthly overview of new, fixed and open findings. Generated automatically by schedule.'],
+            ['AI triage', 'Findings reviewed by AI triage, including the ones dismissed as false positives and the confidence of each decision.'],
+            ['Compliance', 'Findings mapped to the OWASP Top 10 categories, useful for audits.'],
+          ],
+        },
+        { kind: 'p', text: 'To create a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period, then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready".' },
+        { kind: 'p', text: 'A report contains:' },
+        {
+          kind: 'ul',
+          items: [
+            'Executive summary: a short, non-technical overview for managers.',
+            'Key indicators: new, fixed and still open findings, mean time to remediate and the percentage of findings fixed within the SLA.',
+            'Findings trend: new and fixed findings per week. Hover over (or focus and use the arrow keys on) the chart to see each week; "Show data table" lists the same values.',
+            'Open findings by severity, top risks, AI triage results, OWASP Top 10 mapping and recommendations.',
+          ],
+        },
+        { kind: 'p', text: 'Select "Export PDF" to print or save the report as PDF, or "Copy link" to share it with someone who has access to Artemis.' },
+      ],
+    },
+
+    {
+      id: 'policies',
+      title: 'Policies',
+      blocks: [
+        { kind: 'p', text: 'Policies are organization-wide rules applied to every repository. Only administrators should change them.' },
+        {
+          kind: 'ul',
+          items: [
+            'Pipeline gates: the default fail threshold of each pipeline stage. Mark a stage as "Required" to prevent repositories from disabling it.',
+            'Remediation SLA: the maximum number of days to fix a finding of each severity. Reports measure SLA compliance against these values.',
+            'License policy: licenses that are allowed or denied. Type a license identifier (for example MPL-2.0) and select "Add"; use the X on a license to remove it. Licenses not listed are reported for review.',
+            'Risk acceptances: findings accepted as known risks, with a justification and an expiry date. They do not fail pipelines until they expire. Select "Revoke" to remove one.',
+          ],
+        },
+        { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" restores the saved policies.' },
+      ],
+    },
 
     // --- integrations + team + settings ---
     // (help section for this area goes here)
@@ -420,7 +465,52 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
 
     // --- reports + policies ---
-    // (help section for this area goes here)
+    {
+      id: 'reports',
+      title: 'Relatórios',
+      blocks: [
+        { kind: 'p', text: 'A página Relatórios lista todos os relatórios gerados para a organização ou para um único repositório. Há três tipos:' },
+        {
+          kind: 'table',
+          head: ['Tipo', 'Conteúdo'],
+          rows: [
+            ['Resumo de segurança', 'Visão semanal ou mensal dos achados novos, corrigidos e abertos. Gerado automaticamente por agendamento.'],
+            ['Triagem com IA', 'Achados revisados pela triagem com IA, incluindo os descartados como falsos positivos e a confiança de cada decisão.'],
+            ['Conformidade', 'Achados mapeados para as categorias do OWASP Top 10, útil para auditorias.'],
+          ],
+        },
+        { kind: 'p', text: 'Para criar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período, e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto".' },
+        { kind: 'p', text: 'Um relatório contém:' },
+        {
+          kind: 'ul',
+          items: [
+            'Resumo executivo: uma visão curta e não técnica para gestores.',
+            'Indicadores: achados novos, corrigidos e ainda abertos, tempo médio de correção e o percentual de achados corrigidos dentro do SLA.',
+            'Tendência de achados: achados novos e corrigidos por semana. Passe o mouse sobre o gráfico (ou foque nele e use as setas) para ver cada semana; "Mostrar tabela de dados" lista os mesmos valores.',
+            'Achados abertos por severidade, principais riscos, resultados da triagem com IA, mapeamento OWASP Top 10 e recomendações.',
+          ],
+        },
+        { kind: 'p', text: 'Selecione "Exportar PDF" para imprimir ou salvar o relatório em PDF, ou "Copiar link" para compartilhá-lo com alguém que tenha acesso ao Artemis.' },
+      ],
+    },
+
+    {
+      id: 'policies',
+      title: 'Políticas',
+      blocks: [
+        { kind: 'p', text: 'Políticas são regras da organização aplicadas a todos os repositórios. Apenas administradores devem alterá-las.' },
+        {
+          kind: 'ul',
+          items: [
+            'Critérios do pipeline: o critério de falha padrão de cada etapa. Marque uma etapa como "Obrigatória" para impedir que os repositórios a desativem.',
+            'SLA de correção: o número máximo de dias para corrigir um achado de cada severidade. Os relatórios medem o cumprimento do SLA com base nesses valores.',
+            'Política de licenças: licenças permitidas ou proibidas. Digite o identificador da licença (por exemplo MPL-2.0) e selecione "Adicionar"; use o X de uma licença para removê-la. Licenças não listadas são reportadas para revisão.',
+            'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa e data de expiração. Eles não falham pipelines até expirarem. Selecione "Revogar" para remover uma aceitação.',
+          ],
+        },
+        { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" restaura as políticas salvas.' },
+      ],
+    },
 
     // --- integrations + team + settings ---
     // (help section for this area goes here)
