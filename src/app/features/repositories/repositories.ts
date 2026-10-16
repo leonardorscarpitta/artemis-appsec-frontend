@@ -55,6 +55,16 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
             <tr>
               <td class="primary-cell">
                 <strong>{{ repo.name }}</strong>
+                @if (repo.access === 'ssh') {
+                  <span class="tag">{{ i18n.t('access.private') }}</span>
+                  @if (repo.accessStatus !== 'verified') {
+                    <a
+                      class="tag warn"
+                      [routerLink]="['/repositories', repo.name] | orgLink"
+                      [queryParams]="{ tab: 'access' }"
+                    >{{ i18n.t(repo.accessStatus === 'failed' ? 'access.status.failed' : 'access.status.pending') }}</a>
+                  }
+                }
                 <div class="mono muted url">{{ repo.url }}</div>
               </td>
               <td [attr.data-label]="i18n.t('col.stack')">
@@ -81,6 +91,17 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     }
   `,
   styles: `
+    .primary-cell .tag {
+      margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .tag.warn {
+      color: var(--sev-medium);
+      background: var(--sev-medium-bg);
+      text-decoration: none;
+    }
+
     .url {
       font-size: 0.8rem;
       overflow-wrap: anywhere;

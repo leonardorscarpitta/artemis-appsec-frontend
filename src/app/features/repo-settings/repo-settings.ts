@@ -13,12 +13,13 @@ import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { RoleNotice } from '../../shared/role-notice';
 import { MonorepoFolders, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
+import { RepoAccess } from './repo-access';
 
-type Tab = 'general' | 'pipeline';
+type Tab = 'general' | 'pipeline' | 'access';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders, RepoAccess],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })
@@ -30,13 +31,15 @@ export class RepoSettings {
   protected readonly canEdit = computed(() => this.org.can('pipelines'));
 
   readonly name = input.required<string>();
+  /** `?tab=access` opens the Access tab (e.g. right after adding a private repository). */
+  readonly initialTab = input<string | undefined>(undefined, { alias: 'tab' });
 
   protected readonly details = httpResource<ProjectDetails>(() => repositoryUrl(this.name()));
   protected readonly notFound = computed(() => (this.details.error() as { status?: number } | undefined)?.status === 404);
   protected readonly repo = computed(() => this.details.value()?.project);
   protected readonly settings = linkedSignal(() => this.details.value()?.settings ?? DEFAULT_SETTINGS);
   protected readonly pipeline = linkedSignal(() => this.details.value()?.pipeline ?? []);
-  protected readonly tab = signal<Tab>('pipeline');
+  protected readonly tab = linkedSignal<Tab>(() => (this.initialTab() === 'access' ? 'access' : 'pipeline'));
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);

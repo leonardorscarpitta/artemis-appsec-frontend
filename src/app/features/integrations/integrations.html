@@ -96,44 +96,7 @@
       <h2 id="keys-title">{{ i18n.t('int.keys.title') }}</h2>
       <p class="muted sub">{{ i18n.t('int.keys.desc') }}</p>
     </div>
-    @if (!adding()) {
-      <button type="button" class="btn" (click)="adding.set(true)">{{ i18n.t('int.keys.add') }}</button>
-    }
   </div>
-
-  @if (adding()) {
-    <form class="add-key" (submit)="addKey($event)">
-      <div class="field">
-        <label for="key-name">{{ i18n.t('int.keys.name') }}</label>
-        <input id="key-name" name="name" class="input" required autocomplete="off" />
-      </div>
-      <div class="field">
-        <label for="key-repo">{{ i18n.t('int.keys.repository') }}</label>
-        <select id="key-repo" name="repository" class="input">
-          @for (repo of repositories(); track repo) {
-            <option [value]="repo">{{ repo }}</option>
-          }
-        </select>
-      </div>
-      <div class="field wide">
-        <label for="key-public">{{ i18n.t('int.keys.publicKey') }}</label>
-        <textarea
-          id="key-public"
-          name="publicKey"
-          class="input"
-          required
-          spellcheck="false"
-          placeholder="ssh-ed25519 AAAA..."
-          aria-describedby="key-public-hint"
-        ></textarea>
-        <span id="key-public-hint" class="hint">{{ i18n.t('int.keys.publicKeyHint') }}</span>
-      </div>
-      <div class="form-actions wide">
-        <button type="button" class="btn ghost" (click)="adding.set(false)">{{ i18n.t('int.keys.cancel') }}</button>
-        <button type="submit" class="btn primary" [disabled]="busy()">{{ i18n.t('int.keys.add') }}</button>
-      </div>
-    </form>
-  }
 
   @if (keyError(); as message) {
     <p class="key-error" role="alert">{{ message }}</p>
@@ -144,6 +107,7 @@
       <thead>
         <tr>
           <th scope="col">{{ i18n.t('int.keys.name') }}</th>
+          <th scope="col">{{ i18n.t('int.keys.type') }}</th>
           <th scope="col">{{ i18n.t('int.keys.fingerprint') }}</th>
           <th scope="col">{{ i18n.t('int.keys.repository') }}</th>
           <th scope="col">{{ i18n.t('int.keys.added') }}</th>
@@ -155,21 +119,32 @@
         @for (key of keys.value(); track key.id) {
           <tr>
             <td class="primary-cell"><strong>{{ key.name }}</strong></td>
+            <td [attr.data-label]="i18n.t('int.keys.type')">
+              @if (key.managed) {
+                <span class="tag">{{ i18n.t('int.keys.managed') }}</span>
+              } @else {
+                <span class="tag muted" [title]="i18n.t('int.keys.legacyHint')">{{ i18n.t('int.keys.legacy') }}</span>
+              }
+            </td>
             <td class="mono fingerprint" [attr.data-label]="i18n.t('int.keys.fingerprint')">{{ key.fingerprint }}</td>
-            <td [attr.data-label]="i18n.t('int.keys.repository')">{{ key.repository }}</td>
+            <td [attr.data-label]="i18n.t('int.keys.repository')">
+              <a [routerLink]="['/repositories', key.repository] | orgLink" [queryParams]="{ tab: 'access' }">{{ key.repository }}</a>
+            </td>
             <td class="muted" [attr.data-label]="i18n.t('int.keys.added')">{{ key.addedAt | date: 'yyyy-MM-dd' }}</td>
             <td class="muted" [attr.data-label]="i18n.t('int.keys.lastUsed')">
               {{ key.lastUsedAt ? (key.lastUsedAt | date: 'yyyy-MM-dd') : i18n.t('int.keys.never') }}
             </td>
             <td class="num" data-label="">
-              <button
-                type="button"
-                class="btn danger-text"
-                [attr.aria-label]="i18n.t('int.keys.revoke') + ': ' + key.name"
-                (click)="revoke(key.id)"
-              >
-                {{ i18n.t('int.keys.revoke') }}
-              </button>
+              @if (canManage()) {
+                <button
+                  type="button"
+                  class="btn danger-text"
+                  [attr.aria-label]="i18n.t('int.keys.revoke') + ': ' + key.name"
+                  (click)="revoke(key.id)"
+                >
+                  {{ i18n.t('int.keys.revoke') }}
+                </button>
+              }
             </td>
           </tr>
         }
