@@ -1,6 +1,6 @@
 :host {
   display: grid;
-  grid-template-columns: 232px 1fr;
+  grid-template-columns: 232px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -338,7 +338,7 @@ main {
 // Compact desktop: icon rail.
 @media (max-width: 1199px) and (min-width: 900px) {
   :host {
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 64px minmax(0, 1fr);
   }
 
   .brand {
@@ -409,7 +409,7 @@ main {
 // Tablet and phone: off-canvas drawer.
 @media (max-width: 899px) {
   :host {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {

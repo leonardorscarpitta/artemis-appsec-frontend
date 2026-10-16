@@ -1,4 +1,5 @@
 import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -50,6 +51,9 @@ export class Shell {
   private wasOpen = false;
 
   constructor() {
+    // Keeps anchor targets (e.g. Help sections) clear of the sticky top bar.
+    inject(ViewportScroller).setOffset([0, 72]);
+
     inject(Router)
       .events.pipe(
         filter((e) => e instanceof NavigationEnd),
