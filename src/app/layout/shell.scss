@@ -305,6 +305,19 @@
   border-left: 1px solid var(--border);
 }
 
+.user-name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+
+  strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+}
+
 .avatar {
   display: grid;
   place-items: center;
@@ -467,6 +480,10 @@ main {
   }
 
   .avatar {
+    display: none;
+  }
+
+  .user-name {
     display: none;
   }
 

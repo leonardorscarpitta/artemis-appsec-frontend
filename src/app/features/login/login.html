@@ -48,7 +48,12 @@
     <div class="card">
       <h2>{{ i18n.t('login.title') }}</h2>
       <p class="muted">{{ i18n.t('login.subtitle') }}</p>
-      <a class="btn primary" routerLink="/dashboard">{{ i18n.t('login.sso') }}</a>
+      <button type="button" class="btn primary" [disabled]="redirecting()" (click)="signIn()">
+        {{ redirecting() ? i18n.t('auth.redirecting') : i18n.t('login.sso') }}
+      </button>
+      @if (failed()) {
+        <p class="error" role="alert">{{ i18n.t('auth.unreachable') }}</p>
+      }
       <p class="provider">{{ i18n.t('login.provider') }}</p>
     </div>
     <p class="help muted">{{ i18n.t('login.help') }}</p>

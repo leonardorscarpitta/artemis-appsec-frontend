@@ -40,7 +40,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. It expects the backend API at http://localhost:8080 (start the backend's own `docker compose up -d`). A development build check:
+The app is served at http://localhost:4200 with live reload. It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemis.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemis.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
@@ -55,7 +55,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/i18n.ts` | Translations (`en-US`, `pt-BR`), grouped by `// --- area ---` comments; use `i18n.t('key')` in templates |
 | `src/app/core/theme.ts` | Light/dark theme: sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference (an inline script in `index.html` applies it before boot) |
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
-| `src/environments/` | `apiUrl` per build: `http://localhost:8080/api/v1` in development, `/api/v1` in production |
+| `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
+| `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
@@ -67,7 +68,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | Path | Page |
 | --- | --- |
 | `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`) |
-| `/login` | SSO sign-in (Authelia / OpenID Connect, not wired yet) |
+| `/login` | SSO sign-in (redirects to Authelia) |
+| `/auth/callback` | OpenID Connect redirect target; completes sign-in and returns to the requested page |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
 | `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs) |
@@ -106,6 +108,10 @@ Stages are grouped in three phases, each with a selectable tool and a fail thres
 | Pre-deploy | Infrastructure as code, DAST |
 
 Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The generated YAML (GitHub Actions / GitLab CI) calls an `artemis` runner CLI that does not exist yet.
+
+## Authentication
+
+Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `sessionStorage` and sent as a Bearer token to the API only. Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
 
 ## Talking to the API
 

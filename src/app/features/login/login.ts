@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Auth } from '../../core/auth/auth';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { LangSwitch } from '../../shared/lang-switch';
 import { Logo } from '../../shared/logo';
@@ -19,6 +20,24 @@ interface Capability {
 })
 export class Login {
   protected readonly i18n = inject(I18n);
+  private readonly auth = inject(Auth);
+
+  /** Where to go after signing in; set by the auth guard. */
+  readonly returnUrl = input<string>();
+  protected readonly redirecting = signal(false);
+  protected readonly failed = signal(false);
+
+  protected async signIn(): Promise<void> {
+    this.redirecting.set(true);
+    this.failed.set(false);
+    try {
+      await this.auth.login(this.returnUrl() ?? '/dashboard');
+    } catch (error) {
+      console.error('Could not reach the identity provider', error);
+      this.redirecting.set(false);
+      this.failed.set(true);
+    }
+  }
 
   protected readonly capabilities: Capability[] = [
     {

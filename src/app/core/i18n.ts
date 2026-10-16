@@ -38,6 +38,11 @@ const dictionary = {
     'api.errorDesc': 'The server could not be reached. Check your connection and try again.',
     'api.retry': 'Try again',
     'api.saveError': 'Could not save changes.',
+    'auth.redirecting': 'Redirecting…',
+    'auth.unreachable': 'The sign-in service could not be reached. Try again in a moment.',
+    'auth.signingIn': 'Signing you in…',
+    'auth.failed': 'Sign-in failed',
+    'auth.failedDesc': 'The sign-in could not be completed. Start it again from the sign-in page.',
     'ob.settings.aiLocked': 'Not available yet',
 
     'login.title': 'Sign in',
@@ -615,6 +620,11 @@ const dictionary = {
     'api.errorDesc': 'Não foi possível acessar o servidor. Verifique sua conexão e tente novamente.',
     'api.retry': 'Tentar novamente',
     'api.saveError': 'Não foi possível salvar as alterações.',
+    'auth.redirecting': 'Redirecionando…',
+    'auth.unreachable': 'Não foi possível acessar o serviço de login. Tente novamente em instantes.',
+    'auth.signingIn': 'Entrando…',
+    'auth.failed': 'Falha no login',
+    'auth.failedDesc': 'Não foi possível concluir o login. Inicie novamente pela tela de login.',
     'ob.settings.aiLocked': 'Ainda não disponível',
 
     'login.title': 'Entrar',
