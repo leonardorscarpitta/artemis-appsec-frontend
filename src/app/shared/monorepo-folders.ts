@@ -3,7 +3,7 @@ import { ProjectFolder } from '../core/api/projects';
 import { Stack } from '../core/domain';
 import { I18n } from '../core/i18n';
 
-export const STACKS: Stack[] = ['React', 'Angular', 'Java + Spring'];
+export const STACKS: Stack[] = ['React', 'Angular', 'Java + Spring', 'Python + Flask', 'Python + FastAPI', 'Python + Django'];
 const MAX_FOLDERS = 20;
 /** Relative folder such as `frontend` or `apps/web`; no `.`/`..` segments (same rule as the API). */
 const FOLDER_PATH = /^(?!\.{1,2}(\/|$))(?!.*\/\.{1,2}(\/|$))[\w.-]+(\/[\w.-]+)*$/;
