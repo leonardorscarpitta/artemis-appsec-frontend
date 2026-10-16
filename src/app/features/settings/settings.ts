@@ -1,65 +1,74 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { problemMessage } from '../../core/api/api';
+import {
+  ApiToken,
+  NotificationChannel,
+  NotificationEvent,
+  OrganizationApi,
+  OrganizationSettings,
+  RetentionPeriod,
+  SessionTimeout,
+  TokenScope,
+  apiTokensUrl,
+  organizationSettingsUrl,
+} from '../../core/api/organization';
 import { I18n, TranslationKey } from '../../core/i18n';
-import { API_TOKENS, ApiToken, ORG } from '../../core/mock-org';
+import { RequestState } from '../../shared/request-state';
 
 type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'danger';
-type NotifEvent = 'criticalCve' | 'pipelineFailed' | 'weeklyReport' | 'slaBreach';
-type RetentionOption = '90' | '180' | '365' | '730' | 'forever';
+type RetentionField = keyof OrganizationSettings['retention'];
 
-const SCOPES = ['findings:read', 'scans:write', 'reports:read', 'pipelines:write'];
+const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'pipelines:write'];
 
 @Component({
   selector: 'app-settings',
-  imports: [RouterLink],
+  imports: [DatePipe, RequestState],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings {
   protected readonly i18n = inject(I18n);
+  private readonly api = inject(OrganizationApi);
 
-  protected readonly org = ORG;
+  protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
+  protected readonly form = linkedSignal(() => this.remote.value());
+
   protected readonly tabs: Tab[] = ['general', 'auth', 'notifications', 'tokens', 'retention', 'danger'];
   protected readonly tab = signal<Tab>('general');
   // Tokens and deletion act immediately, so they have no save bar.
   protected readonly hasSaveBar = computed(() => !['tokens', 'danger'].includes(this.tab()));
+  protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly saveError = signal<string | null>(null);
 
   protected readonly timezones = ['America/Sao_Paulo', 'UTC', 'America/New_York', 'Europe/London', 'Europe/Lisbon'];
-  protected readonly sessions: TranslationKey[] = [
-    'settings.auth.session.1h',
-    'settings.auth.session.8h',
-    'settings.auth.session.24h',
-    'settings.auth.session.7d',
-  ];
-  protected readonly enforceSso = signal(true);
+  protected readonly sessions: SessionTimeout[] = ['1h', '8h', '24h', '7d'];
 
-  protected readonly events: NotifEvent[] = ['criticalCve', 'pipelineFailed', 'weeklyReport', 'slaBreach'];
-  protected readonly channels = ['E-mail', 'Slack', 'Microsoft Teams'];
-  protected readonly notifications = signal<Record<string, boolean>>({
-    'criticalCve:E-mail': true,
-    'criticalCve:Slack': true,
-    'pipelineFailed:Slack': true,
-    'weeklyReport:E-mail': true,
-    'slaBreach:E-mail': true,
-    'slaBreach:Slack': true,
-  });
+  protected readonly events: NotificationEvent[] = ['criticalCve', 'pipelineFailed', 'weeklyReport', 'slaBreach'];
+  protected readonly channels: { id: NotificationChannel; label: string }[] = [
+    { id: 'email', label: 'E-mail' },
+    { id: 'slack', label: 'Slack' },
+    { id: 'teams', label: 'Microsoft Teams' },
+  ];
 
   protected readonly scopes = SCOPES;
-  protected readonly tokens = signal<ApiToken[]>(API_TOKENS);
+  protected readonly tokens = httpResource<ApiToken[]>(() => apiTokensUrl(), { defaultValue: [] });
   protected readonly creatingToken = signal(false);
   protected readonly newToken = signal<string | null>(null);
   protected readonly copied = signal(false);
+  protected readonly tokenError = signal<string | null>(null);
 
-  protected readonly retention: { key: TranslationKey; value: string }[] = [
-    { key: 'settings.retention.findings', value: '730' },
-    { key: 'settings.retention.logs', value: '90' },
-    { key: 'settings.retention.reports', value: 'forever' },
+  protected readonly retention: { key: TranslationKey; field: RetentionField }[] = [
+    { key: 'settings.retention.findings', field: 'findings' },
+    { key: 'settings.retention.logs', field: 'logs' },
+    { key: 'settings.retention.reports', field: 'reports' },
   ];
-  protected readonly retentionOptions: RetentionOption[] = ['90', '180', '365', '730', 'forever'];
+  protected readonly retentionOptions: RetentionPeriod[] = ['90', '180', '365', '730', 'forever'];
 
   protected readonly confirmName = signal('');
-  protected readonly deleteRequested = signal(false);
+  protected readonly deleteMessage = signal<string | null>(null);
 
   protected selectTab(tab: Tab, event: Event): void {
     this.tab.set(tab);
@@ -70,44 +79,92 @@ export class Settings {
     return this.i18n.t(`settings.tab.${tab}`);
   }
 
-  protected eventLabel(event: NotifEvent): string {
+  protected eventLabel(event: NotificationEvent): string {
     return this.i18n.t(`settings.notif.${event}`);
   }
 
-  protected retentionLabel(option: RetentionOption): string {
+  protected sessionLabel(session: SessionTimeout): string {
+    return this.i18n.t(`settings.auth.session.${session}`);
+  }
+
+  protected retentionLabel(option: RetentionPeriod): string {
     return this.i18n.t(`settings.retention.${option}`);
   }
 
-  protected toggleNotification(key: string): void {
-    this.notifications.update((n) => ({ ...n, [key]: !n[key] }));
+  protected value(event: Event): string {
+    return (event.target as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  protected patchGeneral(change: Partial<OrganizationSettings['general']>): void {
+    this.form.update((f) => f && { ...f, general: { ...f.general, ...change } });
+  }
+
+  protected patchAuth(change: Partial<OrganizationSettings['authentication']>): void {
+    this.form.update((f) => f && { ...f, authentication: { ...f.authentication, ...change } });
+  }
+
+  protected setRetention(field: RetentionField, event: Event): void {
+    const period = this.value(event) as RetentionPeriod;
+    this.form.update((f) => f && { ...f, retention: { ...f.retention, [field]: period } });
+  }
+
+  protected notifies(event: NotificationEvent, channel: NotificationChannel): boolean {
+    return this.form()?.notifications.some((n) => n.event === event && n.channel === channel) ?? false;
+  }
+
+  protected toggleNotification(event: NotificationEvent, channel: NotificationChannel): void {
+    this.form.update((f) => {
+      if (!f) return f;
+      const others = f.notifications.filter((n) => !(n.event === event && n.channel === channel));
+      const notifications = this.notifies(event, channel) ? others : [...others, { event, channel }];
+      return { ...f, notifications };
+    });
   }
 
   protected save(): void {
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 3000);
+    const form = this.form();
+    if (!form) return;
+    this.saving.set(true);
+    this.saveError.set(null);
+    this.api.updateSettings(form).subscribe({
+      next: (updated) => {
+        this.remote.set(updated);
+        this.saving.set(false);
+        this.saved.set(true);
+        setTimeout(() => this.saved.set(false), 3000);
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.saveError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
+
+  protected cancel(): void {
+    this.form.set(this.remote.value());
+    this.saveError.set(null);
   }
 
   protected createToken(event: SubmitEvent): void {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     const data = new FormData(form);
-    const name = String(data.get('name') ?? '').trim();
-    if (!name) return;
-    const days = Number(data.get('expiry'));
-    this.tokens.update((list) => [
-      ...list,
-      {
-        id: crypto.randomUUID(),
-        name,
-        scopes: data.getAll('scopes').map(String),
-        created: '2026-10-16',
-        expires: days === 30 ? '2026-11-15' : days === 90 ? '2027-01-14' : '2027-10-16',
-        lastUsed: '',
-      },
-    ]);
-    this.newToken.set('art_' + crypto.randomUUID().replace(/-/g, ''));
-    this.creatingToken.set(false);
-    form.reset();
+    this.tokenError.set(null);
+    this.api
+      .createToken(
+        String(data.get('name') ?? '').trim(),
+        data.getAll('scopes').map(String) as TokenScope[],
+        Number(data.get('expiry')),
+      )
+      .subscribe({
+        next: (created) => {
+          this.tokens.update((list) => [...list, created.token]);
+          this.newToken.set(created.secret);
+          this.creatingToken.set(false);
+          form.reset();
+        },
+        error: (err) => this.tokenError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+      });
   }
 
   protected async copyToken(): Promise<void> {
@@ -122,11 +179,21 @@ export class Settings {
   }
 
   protected revokeToken(id: string): void {
-    this.tokens.update((list) => list.filter((t) => t.id !== id));
+    this.tokenError.set(null);
+    this.api.revokeToken(id).subscribe({
+      next: () => this.tokens.update((list) => list.filter((t) => t.id !== id)),
+      error: (err) => this.tokenError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
   }
 
   protected setConfirmName(event: Event): void {
-    this.confirmName.set((event.target as HTMLInputElement).value);
-    this.deleteRequested.set(false);
+    this.confirmName.set(this.value(event));
+    this.deleteMessage.set(null);
+  }
+
+  protected deleteOrganization(): void {
+    this.api.deleteOrganization().subscribe({
+      error: (err) => this.deleteMessage.set(problemMessage(err) ?? this.i18n.t('settings.danger.requested')),
+    });
   }
 }
