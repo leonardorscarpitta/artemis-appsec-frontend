@@ -19,11 +19,29 @@
   }
 
   <section class="card current" aria-labelledby="current-title">
-    <div>
-      <h2 id="current-title">{{ i18n.t('billing.current') }}</h2>
-      <p class="muted">{{ i18n.t('billing.since') }} {{ b.since | date: 'yyyy-MM-dd' }}</p>
+    <div class="current-head">
+      <div>
+        <h2 id="current-title">{{ i18n.t('billing.current') }}</h2>
+        <p class="muted">{{ i18n.t('billing.since') }} {{ b.since | date: 'yyyy-MM-dd' }}</p>
+      </div>
+      <span class="plan-badge" [class.pro]="b.currentPlan === 'pro'">{{ planName(b.currentPlan) }}</span>
     </div>
-    <span class="plan-badge" [class.pro]="b.currentPlan === 'pro'">{{ planName(b.currentPlan) }}</span>
+    <div class="usage">
+      <div class="usage-head">
+        <span>{{ i18n.t('nav.usage') }}</span>
+        <span class="mono">{{ b.usage.scansThisMonth }} / {{ b.usage.scanLimit }}</span>
+      </div>
+      <div
+        class="meter"
+        role="meter"
+        [attr.aria-label]="i18n.t('nav.usage')"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="b.usage.scanLimit"
+        [attr.aria-valuenow]="b.usage.scansThisMonth"
+      >
+        <span [style.width.%]="usagePercent()"></span>
+      </div>
+    </div>
   </section>
 
   <section class="plans" aria-labelledby="plans-title">
@@ -39,6 +57,10 @@
           <span class="muted">/ {{ i18n.t('billing.month') }}</span>
         </p>
         <ul>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4z" /></svg>
+            <strong>{{ scans(plan) }}</strong>
+          </li>
           @for (f of features[plan.id]; track f) {
             <li>
               <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m9 16.2-4.2-4.2-1.4 1.4L9 19 21 7l-1.4-1.4z" /></svg>

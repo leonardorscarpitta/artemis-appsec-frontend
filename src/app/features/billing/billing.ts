@@ -2,15 +2,9 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { problemMessage } from '../../core/api/api';
-import { BillingApi, BillingOverview, Plan, PlanId, billingUrl } from '../../core/api/billing';
-import { I18n, TranslationKey } from '../../core/i18n';
+import { BillingApi, BillingOverview, PLAN_FEATURES, Plan, PlanId, billingUrl, formatPrice } from '../../core/api/billing';
+import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
-
-/** What each plan includes; AI triage is the PRO differentiator. */
-const PLAN_FEATURES: Record<PlanId, TranslationKey[]> = {
-  free: ['billing.f.scanning', 'billing.f.pipeline', 'billing.f.dashboard', 'billing.f.reports', 'billing.f.team'],
-  pro: ['billing.f.everythingFree', 'billing.f.aiTriage', 'billing.f.aiReports'],
-};
 
 @Component({
   selector: 'app-billing',
@@ -29,10 +23,17 @@ export class Billing {
 
   protected readonly currentPlan = computed(() => this.billing.value()?.currentPlan);
 
+  protected readonly usagePercent = computed(() => {
+    const usage = this.billing.value()?.usage;
+    return usage ? Math.min(100, (usage.scansThisMonth / usage.scanLimit) * 100) : 0;
+  });
+
   protected price(plan: Plan): string {
-    return new Intl.NumberFormat(this.i18n.lang(), { style: 'currency', currency: plan.currency }).format(
-      plan.monthlyPriceCents / 100,
-    );
+    return formatPrice(plan, this.i18n.lang());
+  }
+
+  protected scans(plan: Plan): string {
+    return this.i18n.t('billing.f.scans').replace('{n}', String(plan.monthlyScanLimit));
   }
 
   protected planName(id: PlanId): string {

@@ -46,22 +46,24 @@
   </div>
 
   <div class="bottom">
-    <div class="usage">
-      <div class="usage-head">
-        <span>{{ i18n.t('nav.usage') }}</span>
-        <span class="mono">{{ usage.used }} / {{ usage.limit }}</span>
+    @if (usage(); as u) {
+      <div class="usage">
+        <div class="usage-head">
+          <span>{{ i18n.t('nav.usage') }}</span>
+          <span class="mono">{{ u.used }} / {{ u.limit }}</span>
+        </div>
+        <div
+          class="meter"
+          role="meter"
+          [attr.aria-label]="i18n.t('nav.usage')"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="u.limit"
+          [attr.aria-valuenow]="u.used"
+        >
+          <span [style.width.%]="(u.used / u.limit) * 100 > 100 ? 100 : (u.used / u.limit) * 100"></span>
+        </div>
       </div>
-      <div
-        class="meter"
-        role="meter"
-        [attr.aria-label]="i18n.t('nav.usage')"
-        aria-valuemin="0"
-        [attr.aria-valuemax]="usage.limit"
-        [attr.aria-valuenow]="usage.used"
-      >
-        <span [style.width.%]="(usage.used / usage.limit) * 100"></span>
-      </div>
-    </div>
+    }
 
     <a class="help" [routerLink]="'/help' | orgLink" routerLinkActive="active" [title]="i18n.t('nav.help')">
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">

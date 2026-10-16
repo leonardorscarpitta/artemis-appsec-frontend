@@ -1,7 +1,8 @@
 import { Lang } from '../../core/i18n';
 
 export interface HomeContent {
-  nav: { product: string; how: string; pipeline: string; faq: string; signIn: string; cta: string; menu: string };
+  nav: { product: string; how: string; pipeline: string; pricing: string; faq: string; signIn: string; cta: string; menu: string };
+  pricing: { title: string; lead: string; freeCta: string; note: string };
   hero: { eyebrow: string; title: string; lead: string; primary: string; secondary: string; previewLabel: string };
   facts: { label: string; value: string }[];
   how: { title: string; lead: string; steps: { title: string; text: string }[] };
@@ -15,7 +16,7 @@ export interface HomeContent {
 
 export const HOME: Record<Lang, HomeContent> = {
   'en-US': {
-    nav: { product: 'Product', how: 'How it works', pipeline: 'Pipeline', faq: 'FAQ', signIn: 'Sign in', cta: 'Get started', menu: 'Page sections' },
+    nav: { product: 'Product', how: 'How it works', pipeline: 'Pipeline', pricing: 'Pricing', faq: 'FAQ', signIn: 'Sign in', cta: 'Get started', menu: 'Page sections' },
     hero: {
       eyebrow: 'Application Security Testing',
       title: 'Find and fix vulnerabilities before they reach production',
@@ -62,6 +63,12 @@ export const HOME: Record<Lang, HomeContent> = {
       ],
       note: 'Bring your own Dockerfile — it is audited before use — or use the one recommended for your stack.',
     },
+    pricing: {
+      title: 'Simple pricing',
+      lead: 'Start for free. Upgrade when you want AI to help triage findings.',
+      freeCta: 'Get started for free',
+      note: 'Prices in Brazilian reais (BRL), billed monthly. Paid plans are not available yet — nothing is charged.',
+    },
     faq: {
       title: 'Frequently asked questions',
       items: [
@@ -88,7 +95,7 @@ export const HOME: Record<Lang, HomeContent> = {
     preview: { open: 'Open findings', critical: 'Critical', avg: 'Avg. CVSS', repos: 'Repositories', recent: 'Recent vulnerabilities' },
   },
   'pt-BR': {
-    nav: { product: 'Produto', how: 'Como funciona', pipeline: 'Pipeline', faq: 'Dúvidas', signIn: 'Entrar', cta: 'Começar', menu: 'Seções da página' },
+    nav: { product: 'Produto', how: 'Como funciona', pipeline: 'Pipeline', pricing: 'Preços', faq: 'Dúvidas', signIn: 'Entrar', cta: 'Começar', menu: 'Seções da página' },
     hero: {
       eyebrow: 'Testes de Segurança de Aplicações',
       title: 'Encontre e corrija vulnerabilidades antes que cheguem à produção',
@@ -134,6 +141,12 @@ export const HOME: Record<Lang, HomeContent> = {
         { name: 'Pré-deploy', stages: ['Infraestrutura como código', 'Análise dinâmica (DAST)'] },
       ],
       note: 'Use seu próprio Dockerfile — ele é auditado antes do uso — ou o recomendado para a sua stack.',
+    },
+    pricing: {
+      title: 'Preços simples',
+      lead: 'Comece de graça. Assine quando quiser que a IA ajude na triagem dos achados.',
+      freeCta: 'Começar de graça',
+      note: 'Preços em reais (BRL), cobrança mensal. Os planos pagos ainda não estão disponíveis — nada é cobrado.',
     },
     faq: {
       title: 'Perguntas frequentes',

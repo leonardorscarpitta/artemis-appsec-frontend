@@ -33,12 +33,39 @@
 
 .current {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 1.25rem;
 
   p {
     font-size: 0.85rem;
+  }
+}
+
+.current-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.usage-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.meter {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-hover);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
   }
 }
 

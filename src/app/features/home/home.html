@@ -5,6 +5,7 @@
       <a routerLink="/" fragment="product">{{ c().nav.product }}</a>
       <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
       <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
+      <a routerLink="/" fragment="pricing">{{ c().nav.pricing }}</a>
       <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
       <a routerLink="/docs">{{ c().footer.docs }}</a>
     </nav>
@@ -138,6 +139,40 @@
         }
       </ol>
       <p class="note">{{ c().pipeline.note }}</p>
+    </div>
+  </section>
+
+  <section id="pricing" class="section" aria-labelledby="pricing-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 id="pricing-title">{{ c().pricing.title }}</h2>
+        <p>{{ c().pricing.lead }}</p>
+      </header>
+      @if (plans.value(); as list) {
+        <div class="pricing">
+          @for (plan of list; track plan.id) {
+            <article class="price-card" [class.highlight]="plan.id === 'pro'" [attr.aria-labelledby]="'price-' + plan.id">
+              <h3 [id]="'price-' + plan.id">{{ planName(plan.id) }}</h3>
+              <p class="tagline">{{ tagline(plan.id) }}</p>
+              <p class="amount"><strong>{{ price(plan) }}</strong> <span>/ {{ i18n.t('billing.month') }}</span></p>
+              <ul>
+                <li><strong>{{ scans(plan) }}</strong></li>
+                @for (f of planFeatures[plan.id]; track f) {
+                  <li>{{ i18n.t(f) }}</li>
+                }
+              </ul>
+              @if (plan.id === 'free') {
+                <a class="btn primary" [routerLink]="auth.isAuthenticated() ? '/dashboard' : '/login'">
+                  {{ auth.isAuthenticated() ? i18n.t('nav.openApp') : c().pricing.freeCta }}
+                </a>
+              } @else {
+                <button type="button" class="btn" disabled>{{ i18n.t('billing.comingSoon') }}</button>
+              }
+            </article>
+          }
+        </div>
+        <p class="note">{{ c().pricing.note }}</p>
+      }
     </div>
   </section>
 
