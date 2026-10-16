@@ -81,6 +81,11 @@ fieldset {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary);
+    }
   }
 
   .switch:disabled {

@@ -104,7 +104,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
             'Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
             'Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
-            'AI triage: automatic review of findings to flag likely false positives and generate reports. Not available yet — the option is shown locked.',
+            'AI triage: automatic review of findings to flag likely false positives and generate reports. It will be part of the PRO plan and is not available yet — the option is shown locked and links to Billing.',
           ],
         },
       ],
@@ -342,6 +342,22 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
 
     {
+      id: 'billing',
+      title: 'Billing and plans',
+      blocks: [
+        { kind: 'p', text: 'Configuration → Billing shows your organization’s current plan and compares the available plans.' },
+        {
+          kind: 'table',
+          head: ['Plan', 'Price', 'Includes'],
+          rows: [
+            ['Free', 'R$ 0', 'Scanning (secrets, SAST, dependencies, containers), DevSecOps pipeline and policies, dashboard, findings, reports, team, integrations and API tokens.'],
+            ['PRO', 'R$ 24,99 per month', 'Everything in Free plus AI triage of findings and AI-generated triage reports.'],
+          ],
+        },
+        { kind: 'note', text: 'Billing is not enabled yet: every organization is on the Free plan and the upgrade button is locked. Nothing is ever charged without your explicit agreement.' },
+      ],
+    },
+    {
       id: 'glossary',
       title: 'Glossary',
       blocks: [
@@ -454,7 +470,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
             'Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
             'Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
-            'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Ainda não disponível — a opção aparece bloqueada.',
+            'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Fará parte do plano PRO e ainda não está disponível — a opção aparece bloqueada e leva à página de Assinatura.',
           ],
         },
       ],
@@ -691,6 +707,22 @@ export const HELP: Record<Lang, HelpSection[]> = {
       ],
     },
 
+    {
+      id: 'billing',
+      title: 'Assinatura e planos',
+      blocks: [
+        { kind: 'p', text: 'Configuração → Assinatura mostra o plano atual da sua organização e compara os planos disponíveis.' },
+        {
+          kind: 'table',
+          head: ['Plano', 'Preço', 'Inclui'],
+          rows: [
+            ['Free', 'R$ 0', 'Varreduras (segredos, SAST, dependências, contêineres), pipeline DevSecOps e políticas, painel, achados, relatórios, equipe, integrações e tokens de API.'],
+            ['PRO', 'R$ 24,99 por mês', 'Tudo do Free mais triagem de achados com IA e relatórios de triagem gerados por IA.'],
+          ],
+        },
+        { kind: 'note', text: 'A cobrança ainda não está habilitada: todas as organizações estão no plano Free e o botão de assinatura está bloqueado. Nada é cobrado sem a sua concordância expressa.' },
+      ],
+    },
     {
       id: 'glossary',
       title: 'Glossário',

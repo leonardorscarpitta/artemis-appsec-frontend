@@ -42,10 +42,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Repository addresses, branches and public SSH deploy keys', 'To read your code and run the security pipeline you configured. We only accept public keys and never ask for private keys or passwords to your repositories.'],
                 ['Findings, pipeline runs, logs, reports, policies and risk acceptances', 'To show the security posture of your projects and their history.'],
                 ['API tokens', 'Stored only as a one-way hash plus the last four characters, so nobody — including us — can read them back.'],
+                ['Your organization’s plan (Free or PRO) and since when', 'To provide the features included in your plan.'],
                 ['Language, theme and session in your browser’s local storage', 'To remember your preferences and keep you signed in. This stays on your device.'],
               ],
             },
-            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts.' },
+            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts. Artemis does not collect or store payment information: payments are not enabled yet, and when they are, this policy will be updated before anything changes.' },
           ],
         },
         {
@@ -135,10 +136,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Endereços de repositórios, branches e chaves SSH públicas de deploy', 'Para ler seu código e executar o pipeline de segurança que você configurou. Aceitamos apenas chaves públicas e nunca pedimos chaves privadas ou senhas dos seus repositórios.'],
                 ['Achados, execuções de pipeline, logs, relatórios, políticas e aceitações de risco', 'Para mostrar a postura de segurança dos seus projetos e o histórico.'],
                 ['Tokens de API', 'Armazenados apenas como hash irreversível e os quatro últimos caracteres, para que ninguém — nem nós — consiga lê-los novamente.'],
+                ['O plano da sua organização (Free ou PRO) e desde quando', 'Para oferecer as funcionalidades incluídas no seu plano.'],
                 ['Idioma, tema e sessão no armazenamento local do navegador', 'Para lembrar suas preferências e manter você conectado. Isso fica no seu dispositivo.'],
               ],
             },
-            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros.' },
+            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros. O Artemis não coleta nem armazena dados de pagamento: os pagamentos ainda não estão habilitados e, quando estiverem, esta política será atualizada antes de qualquer mudança.' },
           ],
         },
         {
@@ -277,9 +279,10 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
         },
         {
           id: 'payments',
-          title: 'Paid plans',
+          title: 'Plans and payments',
           blocks: [
-            { kind: 'p', text: 'Paid plans may be introduced in the future. Prices and conditions will always be shown before you are charged, and nothing will be charged without your explicit agreement.' },
+            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0) and PRO (R$ 24,99 per month, in Brazilian reais), which adds AI-assisted triage. Billing is not enabled yet, so every organization currently uses the Free plan.' },
+            { kind: 'p', text: 'When payments become available, prices and conditions will always be shown before any charge, nothing will be charged without your explicit agreement, and you will be able to cancel or switch back to Free at any time.' },
           ],
         },
         {
@@ -380,9 +383,10 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
         },
         {
           id: 'payments',
-          title: 'Planos pagos',
+          title: 'Planos e pagamentos',
           blocks: [
-            { kind: 'p', text: 'Planos pagos poderão ser introduzidos no futuro. Preços e condições serão sempre exibidos antes de qualquer cobrança, e nada será cobrado sem a sua concordância expressa.' },
+            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0) e PRO (R$ 24,99 por mês), que adiciona triagem com IA. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
+            { kind: 'p', text: 'Quando os pagamentos estiverem disponíveis, preços e condições serão sempre exibidos antes de qualquer cobrança, nada será cobrado sem a sua concordância expressa e você poderá cancelar ou voltar ao Free a qualquer momento.' },
           ],
         },
         {
