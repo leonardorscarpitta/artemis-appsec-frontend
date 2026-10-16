@@ -12,14 +12,14 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Angular-22-0b4f8a" alt="Angular 22">
   <img src="https://img.shields.io/badge/i18n-en--US%20%7C%20pt--BR-0b4f8a" alt="Languages: en-US and pt-BR">
-  <img src="https://img.shields.io/badge/data-mocked-5a6474" alt="Data is mocked">
+  <img src="https://img.shields.io/badge/API-artemis--backend-0b4f8a" alt="API: artemis-backend">
 </p>
 
 ---
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline and reports vulnerabilities scored with CVSS from the NIST National Vulnerability Database. Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend; the API lives in the `artemis` backend repository. Screens are being moved from mock data to the API one area at a time.
+This repository is the frontend; the API lives in the `artemis` backend repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
 
 ## Contents
 
@@ -93,7 +93,7 @@ Global primitives: `.card` (`.card-header`, `.table-card`), `.btn` (`.primary`, 
 
 Responsive breakpoints: `599px` (phone), `899px` (tablet — sidebar becomes a drawer), `1199px` (sidebar becomes an icon rail), `1600px` (wide). Grid columns use `minmax(0, 1fr)` to avoid horizontal overflow.
 
-The logo (`shared/logo.ts`) reads `--logo-color` and `--logo-name-display`; the favicon is `public/favicon.svg`. CVSS → severity follows the NVD v3 ranges (`severityOf` in `mock-data.ts`).
+The logo (`shared/logo.ts`) reads `--logo-color` and `--logo-name-display`; the favicon is `public/favicon.svg`. CVSS → severity follows the NVD v3 ranges (`severityOf` in `domain.ts`).
 
 ## DevSecOps pipeline
 
