@@ -3,7 +3,7 @@ import { Component, computed, inject, linkedSignal, signal } from '@angular/core
 import { problemMessage } from '../../core/api/api';
 import { Policies as PolicyModel, PoliciesApi, RiskAcceptance, policiesUrl, riskAcceptancesUrl } from '../../core/api/policies';
 import { I18n } from '../../core/i18n';
-import { Severity } from '../../core/mock-data';
+import { Severity } from '../../core/domain';
 import { FAIL_THRESHOLDS, FailThreshold, StageId } from '../../core/pipeline';
 import { RequestState } from '../../shared/request-state';
 

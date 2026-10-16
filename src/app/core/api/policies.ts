@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Severity } from '../mock-data';
+import { Severity } from '../domain';
 import { FailThreshold, StageId } from '../pipeline';
 import { apiUrl } from './api';
 

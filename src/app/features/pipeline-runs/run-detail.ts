@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
 import { PipelineRunsApi, RunDetails, RunTrigger, formatDuration, runUrl } from '../../core/api/pipeline-runs';
 import { I18n } from '../../core/i18n';
-import { Severity } from '../../core/mock-data';
+import { Severity } from '../../core/domain';
 import { PHASES, Phase, StageId } from '../../core/pipeline';
 import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';

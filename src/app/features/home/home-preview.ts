@@ -1,4 +1,4 @@
-import { Severity } from '../../core/mock-data';
+import { Severity } from '../../core/domain';
 
 /** Static sample shown in the public home page's product preview (not real customer data). */
 export const HOME_PREVIEW = {

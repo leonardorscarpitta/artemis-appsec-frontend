@@ -4,7 +4,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReportDetails, ReportType, reportUrl } from '../../core/api/reports';
 import { I18n } from '../../core/i18n';
-import { Severity } from '../../core/mock-data';
+import { Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { TrendChart } from './trend-chart';

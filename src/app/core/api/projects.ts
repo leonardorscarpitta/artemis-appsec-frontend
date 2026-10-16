@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PipelineStage } from '../pipeline';
-import { Stack } from '../mock-data';
+import { Stack } from '../domain';
 import { apiUrl } from './api';
 
 export type ScanSchedule = 'push' | '6h' | '24h' | '7d';

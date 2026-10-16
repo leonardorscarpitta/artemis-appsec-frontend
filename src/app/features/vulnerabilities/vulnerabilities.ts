@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { FindingSummary, findingParams, findingsUrl, packageLabel } from '../../core/api/findings';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
-import { FindingStatus, STATUS_KEYS, Severity } from '../../core/mock-data';
+import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';

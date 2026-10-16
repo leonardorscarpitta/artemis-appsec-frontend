@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
 import { DEFAULT_SETTINGS, ProjectsApi, stageCatalogUrl, toStageUpdate } from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
-import { Stack } from '../../core/mock-data';
+import { Stack } from '../../core/domain';
 import { PipelineStage, defaultPipeline } from '../../core/pipeline';
 import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';

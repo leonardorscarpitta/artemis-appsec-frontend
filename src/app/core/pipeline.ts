@@ -1,4 +1,4 @@
-import { Severity } from './mock-data';
+import { Severity } from './domain';
 
 export type Phase = 'source' | 'build' | 'deploy';
 export type StageId = 'secrets' | 'sast' | 'sca' | 'license' | 'dockerfile' | 'image' | 'sbom' | 'iac' | 'dast';

@@ -57,7 +57,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
 | `src/environments/` | `apiUrl` per build: `http://localhost:8080/api/v1` in development, `/api/v1` in production |
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
-| `src/app/core/mock-data.ts` | Shared finding/severity types and helpers |
+| `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
 | `src/app/features/` | One folder per page: `home`, `login`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |

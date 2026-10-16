@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { I18n } from '../core/i18n';
-import { severityOf } from '../core/mock-data';
+import { severityOf } from '../core/domain';
 
 @Component({
   selector: 'app-severity-badge',
