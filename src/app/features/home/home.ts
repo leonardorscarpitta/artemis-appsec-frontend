@@ -8,12 +8,13 @@ import { Logo } from '../../shared/logo';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { ThemeToggle } from '../../shared/theme-toggle';
 import { HOME } from './home-content';
+import { HomeWorkspace } from './home-workspace';
 import { HOME_PREVIEW } from './home-preview';
 import { UserBadge } from '../../shared/user-badge';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, Logo, LangSwitch, ThemeToggle, SeverityBadge, UserBadge],
+  imports: [RouterLink, Logo, LangSwitch, ThemeToggle, SeverityBadge, UserBadge, HomeWorkspace],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
