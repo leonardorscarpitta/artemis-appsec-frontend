@@ -1,0 +1,176 @@
+import { HttpClient } from '@angular/common/http';
+import { Service, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { apiUrl } from './api';
+
+export type IntegrationCategory = 'scm' | 'ci' | 'notifications' | 'issues' | 'vulnData';
+export type IntegrationStatus = 'connected' | 'disconnected' | 'error';
+export type IntegrationId =
+  | 'github'
+  | 'gitlab'
+  | 'bitbucket'
+  | 'githubActions'
+  | 'gitlabCi'
+  | 'jenkins'
+  | 'slack'
+  | 'teams'
+  | 'email'
+  | 'webhook'
+  | 'jira'
+  | 'githubIssues'
+  | 'nvd';
+
+export interface Integration {
+  id: IntegrationId;
+  name: string;
+  shortCode: string;
+  category: IntegrationCategory;
+  status: IntegrationStatus;
+  detail: string | null;
+  removable: boolean;
+  lastSyncAt: string | null;
+}
+
+export interface DeployKey {
+  id: string;
+  name: string;
+  keyType: string;
+  fingerprint: string;
+  repository: string;
+  addedAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface AddDeployKey {
+  name: string;
+  repository: string;
+  publicKey: string;
+}
+
+export type Role = 'owner' | 'admin' | 'analyst' | 'developer' | 'viewer';
+export type Permission = 'viewFindings' | 'triage' | 'pipelines' | 'integrations' | 'team' | 'billing';
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  active: boolean;
+  lastActiveAt: string | null;
+}
+
+export interface Invitation {
+  id: string;
+  email: string;
+  role: Role;
+  sentAt: string;
+}
+
+export interface RoleInfo {
+  role: Role;
+  permissions: Permission[];
+  assignable: boolean;
+}
+
+export type SessionTimeout = '1h' | '8h' | '24h' | '7d';
+export type RetentionPeriod = '90' | '180' | '365' | '730' | 'forever';
+export type NotificationEvent = 'criticalCve' | 'pipelineFailed' | 'weeklyReport' | 'slaBreach';
+export type NotificationChannel = 'email' | 'slack' | 'teams';
+
+export interface OrganizationSettings {
+  general: { name: string; slug: string; defaultLanguage: 'en-US' | 'pt-BR'; timezone: string };
+  authentication: {
+    provider: string;
+    issuer: string;
+    clientId: string;
+    clientSecretConfigured: boolean;
+    sessionTimeout: SessionTimeout;
+    enforceSso: boolean;
+  };
+  notifications: { event: NotificationEvent; channel: NotificationChannel }[];
+  retention: { findings: RetentionPeriod; logs: RetentionPeriod; reports: RetentionPeriod };
+  updatedAt: string;
+}
+
+export type TokenScope = 'findings:read' | 'scans:write' | 'reports:read' | 'pipelines:write';
+
+export interface ApiToken {
+  id: string;
+  name: string;
+  scopes: TokenScope[];
+  hint: string;
+  createdAt: string;
+  expiresAt: string;
+  lastUsedAt: string | null;
+  expired: boolean;
+}
+
+export interface CreatedApiToken {
+  token: ApiToken;
+  secret: string;
+}
+
+export const integrationsUrl = () => apiUrl('/integrations');
+export const deployKeysUrl = () => apiUrl('/deploy-keys');
+export const membersUrl = () => apiUrl('/members');
+export const invitationsUrl = () => apiUrl('/invitations');
+export const rolesUrl = () => apiUrl('/roles');
+export const organizationSettingsUrl = () => apiUrl('/organization/settings');
+export const apiTokensUrl = () => apiUrl('/api-tokens');
+
+@Service()
+export class OrganizationApi {
+  private readonly http = inject(HttpClient);
+
+  connect(id: IntegrationId): Observable<Integration> {
+    return this.http.post<Integration>(`${integrationsUrl()}/${id}/connect`, null);
+  }
+
+  disconnect(id: IntegrationId): Observable<Integration> {
+    return this.http.post<Integration>(`${integrationsUrl()}/${id}/disconnect`, null);
+  }
+
+  configure(id: IntegrationId, detail: string): Observable<Integration> {
+    return this.http.put<Integration>(`${integrationsUrl()}/${id}`, { detail });
+  }
+
+  addDeployKey(body: AddDeployKey): Observable<DeployKey> {
+    return this.http.post<DeployKey>(deployKeysUrl(), body);
+  }
+
+  revokeDeployKey(id: string): Observable<void> {
+    return this.http.delete<void>(`${deployKeysUrl()}/${id}`);
+  }
+
+  changeRole(memberId: string, role: Role): Observable<Member> {
+    return this.http.patch<Member>(`${membersUrl()}/${memberId}`, { role });
+  }
+
+  invite(email: string, role: Role): Observable<Invitation> {
+    return this.http.post<Invitation>(invitationsUrl(), { email, role });
+  }
+
+  resendInvitation(id: string): Observable<Invitation> {
+    return this.http.post<Invitation>(`${invitationsUrl()}/${id}/resend`, null);
+  }
+
+  revokeInvitation(id: string): Observable<void> {
+    return this.http.delete<void>(`${invitationsUrl()}/${id}`);
+  }
+
+  updateSettings(settings: OrganizationSettings): Observable<OrganizationSettings> {
+    return this.http.put<OrganizationSettings>(organizationSettingsUrl(), settings);
+  }
+
+  deleteOrganization(): Observable<void> {
+    return this.http.delete<void>(apiUrl('/organization'));
+  }
+
+  createToken(name: string, scopes: TokenScope[], expiresInDays: number): Observable<CreatedApiToken> {
+    return this.http.post<CreatedApiToken>(apiTokensUrl(), { name, scopes, expiresInDays });
+  }
+
+  revokeToken(id: string): Observable<void> {
+    return this.http.delete<void>(`${apiTokensUrl()}/${id}`);
+  }
+}

@@ -210,3 +210,24 @@
     flex: 1 1 auto;
   }
 }
+
+.alert,
+.key-error {
+  color: var(--sev-critical);
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+.key-error {
+  margin: 0;
+  padding: 0.75rem 1.25rem 0;
+}
+
+.detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+}

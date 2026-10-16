@@ -13,6 +13,9 @@
 @if (inviting()) {
   <section class="card invite" aria-labelledby="invite-title">
     <h2 id="invite-title">{{ i18n.t('team.inviteTitle') }}</h2>
+    @if (inviteError(); as message) {
+      <p class="error-text" role="alert">{{ message }}</p>
+    }
     <form (submit)="invite($event)">
       <div class="field">
         <label for="invite-email">{{ i18n.t('team.email') }}</label>
@@ -21,23 +24,29 @@
       <div class="field">
         <label for="invite-role">{{ i18n.t('team.role') }}</label>
         <select id="invite-role" name="role" class="input">
-          @for (role of assignableRoles; track role) {
+          @for (role of assignableRoles(); track role) {
             <option [value]="role" [selected]="role === 'developer'">{{ roleLabel(role) }}</option>
           }
         </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn ghost" (click)="inviting.set(false)">{{ i18n.t('team.cancel') }}</button>
-        <button type="submit" class="btn primary">{{ i18n.t('team.send') }}</button>
+        <button type="submit" class="btn primary" [disabled]="busy()">{{ i18n.t('team.send') }}</button>
       </div>
     </form>
   </section>
 }
 
+@if (error(); as message) {
+  <p class="card error-text" role="alert">{{ message }}</p>
+}
+
+<app-request-state [resource]="members" />
+
 <section class="card table-card" aria-labelledby="members-title">
   <div class="card-header">
     <h2 id="members-title">{{ i18n.t('team.members') }}</h2>
-    <span class="muted count">{{ members().length }}</span>
+    <span class="muted count">{{ members.value().length }}</span>
   </div>
   <table class="table stack">
     <thead>
@@ -49,7 +58,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (member of members(); track member.id) {
+      @for (member of members.value(); track member.id) {
         <tr>
           <td class="primary-cell">
             <div class="person">
@@ -65,14 +74,14 @@
               <span class="tag owner" [title]="i18n.t('team.ownerHint')">{{ roleLabel('owner') }}</span>
             } @else {
               <label class="sr-only" [for]="'role-' + member.id">{{ i18n.t('team.roleOf') }} {{ member.name }}</label>
-              <select class="input role" [id]="'role-' + member.id" (change)="setRole(member.id, $event)">
-                @for (role of assignableRoles; track role) {
+              <select class="input role" [id]="'role-' + member.id" (change)="setRole(member, $event)">
+                @for (role of assignableRoles(); track role) {
                   <option [value]="role" [selected]="role === member.role">{{ roleLabel(role) }}</option>
                 }
               </select>
             }
           </td>
-          <td class="muted" [attr.data-label]="i18n.t('team.lastActive')">{{ member.lastActive }}</td>
+          <td class="muted" [attr.data-label]="i18n.t('team.lastActive')">{{ (member.lastActiveAt | date: 'yyyy-MM-dd') ?? '—' }}</td>
           <td [attr.data-label]="i18n.t('team.status')">
             <span class="state" [class.active]="member.active">
               {{ member.active ? i18n.t('team.active') : i18n.t('team.inactive') }}
@@ -87,21 +96,21 @@
 <section class="card table-card" aria-labelledby="pending-title">
   <div class="card-header">
     <h2 id="pending-title">{{ i18n.t('team.pending') }}</h2>
-    <span class="muted count">{{ invitations().length }}</span>
+    <span class="muted count">{{ invitations.value().length }}</span>
   </div>
-  @if (invitations().length) {
+  @if (invitations.value().length) {
     <ul class="invites">
-      @for (inv of invitations(); track inv.email) {
+      @for (inv of invitations.value(); track inv.id) {
         <li>
           <div class="who">
             <strong>{{ inv.email }}</strong>
-            <span class="muted">{{ roleLabel(inv.role) }} · {{ i18n.t('team.sent') }} {{ inv.sent }}</span>
+            <span class="muted">{{ roleLabel(inv.role) }} · {{ i18n.t('team.sent') }} {{ inv.sentAt | date: 'yyyy-MM-dd' }}</span>
           </div>
           <div class="inv-actions">
-            <button type="button" class="btn" (click)="resend(inv.email)" [attr.aria-label]="i18n.t('team.resend') + ': ' + inv.email">
-              {{ resent() === inv.email ? i18n.t('team.resent') : i18n.t('team.resend') }}
+            <button type="button" class="btn" (click)="resend(inv)" [attr.aria-label]="i18n.t('team.resend') + ': ' + inv.email">
+              {{ resent() === inv.id ? i18n.t('team.resent') : i18n.t('team.resend') }}
             </button>
-            <button type="button" class="btn ghost danger-text" (click)="revoke(inv.email)" [attr.aria-label]="i18n.t('team.revoke') + ': ' + inv.email">
+            <button type="button" class="btn ghost danger-text" (click)="revoke(inv)" [attr.aria-label]="i18n.t('team.revoke') + ': ' + inv.email">
               {{ i18n.t('team.revoke') }}
             </button>
           </div>
@@ -125,7 +134,7 @@
       <thead>
         <tr>
           <th scope="col">{{ i18n.t('team.permission') }}</th>
-          @for (role of roles; track role) {
+          @for (role of roles(); track role) {
             <th scope="col" class="center">{{ roleLabel(role) }}</th>
           }
         </tr>
@@ -134,7 +143,7 @@
         @for (perm of permissions; track perm) {
           <tr>
             <th scope="row">{{ permLabel(perm) }}</th>
-            @for (role of roles; track role) {
+            @for (role of roles(); track role) {
               <td class="center">
                 @if (can(role, perm)) {
                   <svg class="yes" width="18" height="18" viewBox="0 0 24 24" role="img" [attr.aria-label]="i18n.t('team.allowed')">

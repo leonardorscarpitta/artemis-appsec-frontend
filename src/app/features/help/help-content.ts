@@ -288,13 +288,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Connected (green): the integration is active. Use "Configure" to change its options or "Disconnect" to remove it.',
+            'Connected (green): the integration is active. Use "Configure" to set the account, channel or project it uses, or "Disconnect" to remove it.',
             'Not connected: select "Connect" to authorize Artemis in the external tool.',
             'Connection error (red): the credentials expired or were revoked. Select "Reconnect" to authorize again.',
           ],
         },
-        { kind: 'p', text: 'The NIST NVD integration is always active: it provides CVE records and CVSS scores. Its card shows the last synchronization and whether the API key is valid.' },
+        { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
         { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis uses to clone repositories, with its fingerprint, repository and last use. Select "Add key" to register a new public key for a repository, or "Revoke" to remove a key you no longer need. Also remove the key from the repository on your Git provider.' },
+        { kind: 'note', text: 'Paste only the public key (the contents of the .pub file). Artemis accepts ed25519, ECDSA and RSA keys of at least 2048 bits, computes the SHA256 fingerprint itself and rejects private keys and keys already registered for the same repository.' },
       ],
     },
     {
@@ -302,7 +303,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Team and roles',
       blocks: [
         { kind: 'p', text: 'The Team page lists every member of the organization with their role, last activity and status. To change a member\'s role, pick a new one in the Role column. The owner role cannot be changed there; only the owner can transfer ownership.' },
-        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. Pending invitations appear in their own list, where you can resend or revoke them.' },
+        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. An address that already belongs to a member or has a pending invitation is rejected. Pending invitations appear in their own list, where you can resend or revoke them.' },
         {
           kind: 'table',
           head: ['Role', 'Intended for'],
@@ -326,11 +327,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'General: organization name, URL slug, default language and time zone. Each member can still choose their own language in the top bar.',
-            'Authentication: the OpenID Connect identity provider (Authelia), issuer URL, client ID and session timeout. The client secret is never displayed. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
+            'Authentication: the OpenID Connect identity provider (Authelia), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
             'Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
-            'API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Revoke tokens you no longer use.',
+            'API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
             'Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
-            'Danger zone: delete the organization. To confirm, type the organization name exactly.',
+            'Danger zone: deleting the organization requires typing its name exactly. Deletion is not available yet; contact support if you need it.',
           ],
         },
         { kind: 'p', text: 'On the General, Authentication, Notifications and Data retention tabs, select "Save changes" to apply. API tokens and the danger zone take effect immediately.' },
@@ -635,13 +636,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Conectado (verde): a integração está ativa. Use "Configurar" para alterar as opções ou "Desconectar" para removê-la.',
+            'Conectado (verde): a integração está ativa. Use "Configurar" para definir a conta, o canal ou o projeto usado, ou "Desconectar" para removê-la.',
             'Não conectado: selecione "Conectar" para autorizar o Artemis na ferramenta externa.',
             'Erro de conexão (vermelho): as credenciais expiraram ou foram revogadas. Selecione "Reconectar" para autorizar novamente.',
           ],
         },
-        { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização e se a chave de API é válida.' },
+        { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
         { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis usa para clonar repositórios, com impressão digital, repositório e último uso. Selecione "Adicionar chave" para registrar uma nova chave pública para um repositório, ou "Revogar" para remover uma chave que não é mais necessária. Remova a chave também do repositório no seu provedor Git.' },
+        { kind: 'note', text: 'Cole apenas a chave pública (o conteúdo do arquivo .pub). O Artemis aceita chaves ed25519, ECDSA e RSA de pelo menos 2048 bits, calcula a impressão digital SHA256 e rejeita chaves privadas e chaves já cadastradas para o mesmo repositório.' },
       ],
     },
     {
@@ -649,7 +651,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Equipe e papéis',
       blocks: [
         { kind: 'p', text: 'A página Equipe lista todos os membros da organização com papel, última atividade e status. Para mudar o papel de um membro, escolha um novo na coluna Papel. O papel de proprietário não pode ser alterado ali; somente o proprietário pode transferir a propriedade.' },
-        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Os convites pendentes aparecem em uma lista própria, onde podem ser reenviados ou revogados.' },
+        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Um endereço que já pertence a um membro ou já tem convite pendente é recusado. Os convites pendentes aparecem em uma lista própria, onde podem ser reenviados ou revogados.' },
         {
           kind: 'table',
           head: ['Papel', 'Indicado para'],
@@ -673,11 +675,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Geral: nome da organização, identificador na URL, idioma padrão e fuso horário. Cada membro ainda pode escolher o próprio idioma na barra superior.',
-            'Autenticação: provedor de identidade OpenID Connect (Authelia), URL do emissor, client ID e tempo limite da sessão. O client secret nunca é exibido. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
+            'Autenticação: provedor de identidade OpenID Connect (Authelia), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
             'Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
-            'Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Revogue tokens que não usa mais.',
+            'Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
             'Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
-            'Zona de perigo: excluir a organização. Para confirmar, digite o nome da organização exatamente.',
+            'Zona de perigo: excluir a organização exige digitar o nome exato dela. A exclusão ainda não está disponível; fale com o suporte se precisar.',
           ],
         },
         { kind: 'p', text: 'Nas abas Geral, Autenticação, Notificações e Retenção de dados, selecione "Salvar alterações" para aplicar. Tokens de API e a zona de perigo têm efeito imediato.' },
