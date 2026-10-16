@@ -1197,7 +1197,7 @@ const dictionary = {
 
 export type TranslationKey = keyof (typeof dictionary)['en-US'];
 
-const STORAGE_KEY = 'artemis.lang';
+const STORAGE_KEY = 'artemisappsec.lang';
 
 @Service()
 export class I18n {

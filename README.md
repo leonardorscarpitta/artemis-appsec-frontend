@@ -20,10 +20,15 @@
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline and reports vulnerabilities scored with CVSS from the NIST National Vulnerability Database. Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend; the API lives in the `artemis` backend repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
+This repository is the frontend; the API lives in the [artemis-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
+
+## Naming
+
+The product is shown to users as **Artemis**. Technical identifiers use **artemisappsec**: package and project names, storage keys, the OIDC client (`artemisappsec-web`), the API audience (`artemisappsec-api`), the CI runner (`artemisappsec scan`) and the local auth host (`auth.artemisappsec.localhost`).
 
 ## Contents
 
+- [Naming](#naming)
 - [Running locally](#running-locally)
 - [Project structure](#project-structure)
 - [Routes](#routes)
@@ -41,7 +46,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemis.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemis.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
+The app is served at http://localhost:4200 with live reload. It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
@@ -116,7 +121,7 @@ Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manu
 
 ## Authentication
 
-Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. The user badge (`shared/user-badge.ts`) links to the account page at Authelia (`<authority>/settings`). Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
+Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemisappsec-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. The user badge (`shared/user-badge.ts`) links to the account page at Authelia (`<authority>/settings`). Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
 
 ## Talking to the API
 

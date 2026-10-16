@@ -12,7 +12,7 @@
   <script>
     // Applied before Angular boots to avoid a flash of the wrong theme.
     try {
-      document.documentElement.dataset.theme = localStorage.getItem('artemis.theme') ||
+      document.documentElement.dataset.theme = localStorage.getItem('artemisappsec.theme') ||
         (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     } catch {}
   </script>
