@@ -1,0 +1,80 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('dash.title') }}</h1>
+    <p>{{ i18n.t('dash.subtitle') }}</p>
+  </div>
+  <a class="btn primary" routerLink="/onboarding">{{ i18n.t('dash.newScan') }}</a>
+</header>
+
+<section class="stats" aria-label="Summary">
+  <div class="card stat">
+    <span class="label">{{ i18n.t('dash.openFindings') }}</span>
+    <span class="value">{{ stats().open }}</span>
+  </div>
+  <div class="card stat critical">
+    <span class="label">{{ i18n.t('dash.critical') }}</span>
+    <span class="value">{{ stats().critical }}</span>
+  </div>
+  <div class="card stat">
+    <span class="label">{{ i18n.t('dash.avgCvss') }}</span>
+    <span class="value">{{ stats().avgCvss }}</span>
+  </div>
+  <div class="card stat">
+    <span class="label">{{ i18n.t('dash.lastScan') }}</span>
+    <span class="value small">2026-10-15 22:10</span>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="dist-title">
+  <h2 id="dist-title">{{ i18n.t('dash.severity') }}</h2>
+  <div class="bar" role="img" [attr.aria-label]="i18n.t('dash.severity')">
+    @for (d of distribution(); track d.severity) {
+      @if (d.count) {
+        <span [style.width.%]="d.percent" [style.background]="'var(--sev-' + d.severity + ')'"></span>
+      }
+    }
+  </div>
+  <ul class="legend">
+    @for (d of distribution(); track d.severity) {
+      <li>
+        <span class="dot" [style.background]="'var(--sev-' + d.severity + ')'"></span>
+        {{ d.label }} <strong>{{ d.count }}</strong>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="card" aria-labelledby="recent-title">
+  <div class="section-head">
+    <h2 id="recent-title">{{ i18n.t('dash.recent') }}</h2>
+    <span class="muted source">{{ i18n.t('dash.source') }}</span>
+  </div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">{{ i18n.t('col.cve') }}</th>
+          <th scope="col">{{ i18n.t('col.package') }}</th>
+          <th scope="col">{{ i18n.t('col.repository') }}</th>
+          <th scope="col">{{ i18n.t('col.cvss') }}</th>
+          <th scope="col">{{ i18n.t('col.status') }}</th>
+          <th scope="col">{{ i18n.t('col.detected') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (f of findings; track f.cve) {
+          <tr>
+            <td>
+              <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + f.cve" target="_blank" rel="noopener">{{ f.cve }}</a>
+            </td>
+            <td class="mono">{{ f.pkg }}</td>
+            <td>{{ f.repository }}</td>
+            <td><app-severity-badge [cvss]="f.cvss" /></td>
+            <td><span [class]="'status ' + f.status">{{ statusLabel(f.status) }}</span></td>
+            <td class="muted">{{ f.detected }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

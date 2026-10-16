@@ -1,0 +1,126 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('ob.title') }}</h1>
+    <p>{{ i18n.t('ob.subtitle') }}</p>
+  </div>
+</header>
+
+<ol class="stepper">
+  @for (s of steps; track s; let i = $index) {
+    <li [class.done]="i < step()" [class.current]="i === step()" [attr.aria-current]="i === step() ? 'step' : null">
+      <span class="index" aria-hidden="true">{{ i < step() ? '✓' : i + 1 }}</span>
+      {{ i18n.t(s) }}
+    </li>
+  }
+</ol>
+
+<section class="card panel">
+  @switch (step()) {
+    @case (0) {
+      <h2>{{ i18n.t('ob.ssh.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.ssh.desc') }}</p>
+      <div class="field">
+        <label for="ssh">{{ i18n.t('ob.ssh.label') }}</label>
+        <textarea id="ssh" class="input" aria-describedby="ssh-hint" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... dev@acme"></textarea>
+        <span id="ssh-hint" class="hint">{{ i18n.t('ob.ssh.hint') }}</span>
+      </div>
+      <button type="button" class="btn">{{ i18n.t('ob.ssh.generate') }}</button>
+    }
+    @case (1) {
+      <h2>{{ i18n.t('ob.repo.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.repo.desc') }}</p>
+      <div class="grid-2">
+        <div class="field">
+          <label for="repo">{{ i18n.t('ob.repo.label') }}</label>
+          <input id="repo" class="input mono" type="text" placeholder="git@github.com:acme/project.git" />
+        </div>
+        <div class="field">
+          <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
+          <input id="branch" class="input mono" type="text" value="main" />
+        </div>
+      </div>
+    }
+    @case (2) {
+      <h2>{{ i18n.t('ob.settings.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.settings.desc') }}</p>
+
+      <div class="field narrow">
+        <label for="interval">{{ i18n.t('ob.settings.interval') }}</label>
+        <select id="interval" class="input">
+          @for (opt of intervals; track opt) {
+            <option [selected]="$index === 2">{{ i18n.t(opt) }}</option>
+          }
+        </select>
+      </div>
+
+      <fieldset>
+        <legend>{{ i18n.t('ob.settings.actions') }}</legend>
+        @for (action of actions; track action) {
+          <label class="check">
+            <input type="checkbox" [checked]="$index < 2" />
+            {{ i18n.t(action) }}
+          </label>
+        }
+      </fieldset>
+
+      <fieldset>
+        <legend>{{ i18n.t('ob.settings.dockerfile') }}</legend>
+        <div class="options">
+          <label class="option" [class.selected]="dockerfile() === 'recommended'">
+            <input type="radio" name="dockerfile" [checked]="dockerfile() === 'recommended'" (change)="dockerfile.set('recommended')" />
+            <strong>{{ i18n.t('ob.settings.dockerfile.recommended') }}</strong>
+            <span class="muted">{{ i18n.t('ob.settings.dockerfile.recommendedDesc') }}</span>
+          </label>
+          <label class="option" [class.selected]="dockerfile() === 'custom'">
+            <input type="radio" name="dockerfile" [checked]="dockerfile() === 'custom'" (change)="dockerfile.set('custom')" />
+            <strong>{{ i18n.t('ob.settings.dockerfile.custom') }}</strong>
+            <span class="muted">{{ i18n.t('ob.settings.dockerfile.customDesc') }}</span>
+          </label>
+        </div>
+        @if (dockerfile() === 'custom') {
+          <div class="field">
+            <label for="dockerfile">Dockerfile</label>
+            <textarea id="dockerfile" class="input" placeholder="FROM node:22-alpine&#10;WORKDIR /app&#10;..."></textarea>
+          </div>
+        }
+      </fieldset>
+
+      <div class="toggle-row">
+        <div>
+          <strong id="ai-label">{{ i18n.t('ob.settings.ai') }}</strong>
+          <p class="muted">{{ i18n.t('ob.settings.aiDesc') }}</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          class="switch"
+          aria-labelledby="ai-label"
+          [attr.aria-checked]="aiEnabled()"
+          (click)="aiEnabled.set(!aiEnabled())"
+        ></button>
+      </div>
+    }
+    @case (3) {
+      <h2>{{ i18n.t('ob.detect.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
+      <h3 class="sub">{{ i18n.t('ob.detect.supported') }}</h3>
+      <ul class="stacks">
+        @for (stack of stacks; track stack) {
+          <li [class.detected]="stack === detected">
+            <strong>{{ stack }}</strong>
+            @if (stack === detected) {
+              <span class="badge">{{ i18n.t('ob.detect.detected') }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <footer class="actions">
+    <button type="button" class="btn ghost" [disabled]="step() === 0" (click)="back()">{{ i18n.t('ob.back') }}</button>
+    <button type="button" class="btn primary" (click)="next()">
+      {{ isLast() ? i18n.t('ob.finish') : i18n.t('ob.next') }}
+    </button>
+  </footer>
+</section>

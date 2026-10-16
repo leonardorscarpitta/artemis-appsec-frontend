@@ -1,0 +1,33 @@
+<a class="skip-link" href="#main">{{ i18n.t('nav.skip') }}</a>
+
+<aside class="sidebar">
+  <app-logo />
+  <nav [attr.aria-label]="i18n.t('nav.main')">
+    <ul>
+      @for (item of nav; track item.path) {
+        <li>
+          <a [routerLink]="item.path" routerLinkActive="active" ariaCurrentWhenActive="page">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path [attr.d]="item.icon" fill="currentColor" />
+            </svg>
+            {{ i18n.t(item.label) }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+</aside>
+
+<div class="content">
+  <header class="topbar">
+    <app-lang-switch />
+    <div class="user">
+      <span class="avatar" aria-hidden="true">U</span>
+      <a class="btn ghost" routerLink="/login">{{ i18n.t('nav.signOut') }}</a>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>
