@@ -57,7 +57,7 @@
         <th scope="col">{{ i18n.t('team.role') }}</th>
         <th scope="col">{{ i18n.t('team.lastActive') }}</th>
         <th scope="col">{{ i18n.t('team.status') }}</th>
-        @if (isOwner()) {
+        @if (canManage()) {
           <th scope="col"><span class="sr-only">{{ i18n.t('team.actions') }}</span></th>
         }
       </tr>
@@ -77,7 +77,7 @@
           <td [attr.data-label]="i18n.t('team.role')">
             @if (member.role === 'owner') {
               <span class="tag owner" [title]="i18n.t('team.ownerHint')">{{ roleLabel('owner') }}</span>
-            } @else if (!canManage() || isSelf(member)) {
+            } @else if (!canEdit(member)) {
               <span class="tag">{{ roleLabel(member.role) }}</span>
             } @else {
               <label class="sr-only" [for]="'role-' + member.id">{{ i18n.t('team.roleOf') }} {{ member.name }}</label>
@@ -94,11 +94,16 @@
               {{ member.active ? i18n.t('team.active') : i18n.t('team.inactive') }}
             </span>
           </td>
-          @if (isOwner()) {
+          @if (canManage()) {
             <td class="row-actions">
-              @if (member.role !== 'owner' && member.active) {
+              @if (isOwner() && member.role !== 'owner' && member.active) {
                 <button type="button" class="btn ghost" (click)="transferOwnership(member)" [attr.aria-label]="i18n.t('team.transfer') + ': ' + member.name">
                   {{ i18n.t('team.transfer') }}
+                </button>
+              }
+              @if (canEdit(member)) {
+                <button type="button" class="btn ghost danger" (click)="remove(member)" [attr.aria-label]="i18n.t('team.remove') + ': ' + member.name">
+                  {{ i18n.t('team.remove') }}
                 </button>
               }
             </td>

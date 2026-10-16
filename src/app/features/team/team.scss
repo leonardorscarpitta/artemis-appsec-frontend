@@ -156,7 +156,12 @@
 }
 
 .row-actions {
+  white-space: nowrap;
   text-align: right;
+
+  .btn.danger {
+    color: var(--sev-critical);
+  }
 }
 
 .matrix-wrap {

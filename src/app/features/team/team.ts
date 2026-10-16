@@ -41,8 +41,12 @@ export class Team {
 
   protected readonly roles = computed(() => this.roleInfo.value().map((r) => r.role));
   // Ownership is transferred, never assigned from the role picker.
+  // Only the owner manages admins, so admins never see the admin role in the pickers.
   protected readonly assignableRoles = computed(() =>
-    this.roleInfo.value().filter((r) => r.assignable).map((r) => r.role),
+    this.roleInfo
+      .value()
+      .filter((r) => r.assignable && (this.isOwner() || r.role !== 'admin'))
+      .map((r) => r.role),
   );
   protected readonly permissions = PERMISSIONS;
 
@@ -86,6 +90,21 @@ export class Team {
       .map((p) => p[0])
       .join('')
       .slice(0, 2);
+  }
+
+  /** Owners manage everyone but themselves; admins manage analysts, developers and viewers. */
+  protected canEdit(member: Member): boolean {
+    if (!this.canManage() || this.isSelf(member) || member.role === 'owner') return false;
+    return this.isOwner() || member.role !== 'admin';
+  }
+
+  protected remove(member: Member): void {
+    if (!confirm(this.i18n.t('team.removeConfirm').replace('{name}', member.name))) return;
+    this.error.set(null);
+    this.api.removeMember(member.id).subscribe({
+      next: () => this.members.update((list) => list.filter((m) => m.id !== member.id)),
+      error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
   }
 
   protected setRole(member: Member, event: Event): void {
