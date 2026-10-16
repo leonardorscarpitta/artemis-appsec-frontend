@@ -34,7 +34,15 @@ export const routes: Routes = [
         loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding),
       },
       comingSoon('vulnerabilities', 'nav.vulnerabilities'),
-      comingSoon('pipelines', 'nav.pipelines'),
+      {
+        path: 'pipelines',
+        loadComponent: () =>
+          import('./features/pipeline-runs/pipeline-runs').then((m) => m.PipelineRuns),
+      },
+      {
+        path: 'pipelines/:id',
+        loadComponent: () => import('./features/pipeline-runs/run-detail').then((m) => m.RunDetail),
+      },
       comingSoon('reports', 'nav.reports'),
       comingSoon('integrations', 'nav.integrations'),
       comingSoon('policies', 'nav.policies'),

@@ -169,7 +169,38 @@ export const HELP: Record<Lang, HelpSection[]> = {
     // (help section for this area goes here)
 
     // --- pipeline runs ---
-    // (help section for this area goes here)
+    {
+      id: 'pipeline-runs',
+      title: 'Pipeline runs',
+      blocks: [
+        { kind: 'p', text: 'Pipeline runs lists every execution of your DevSecOps pipelines, newest first. The summary at the top shows how many runs happened in the last 7 days, the success rate of finished runs, the average duration and how many runs were stopped by a policy.' },
+        { kind: 'p', text: 'Filter the list by repository, status or branch name. Select a run number to open its details.' },
+        {
+          kind: 'table',
+          head: ['Run status', 'Meaning'],
+          rows: [
+            ['Success', 'All stages finished without breaking a policy. Findings below the fail threshold may still be reported.'],
+            ['Failed', 'A stage found issues at or above its fail threshold, or the stage itself could not complete. Later stages are skipped.'],
+            ['Running', 'The pipeline is executing right now.'],
+            ['Queued', 'The run is waiting for a free runner.'],
+            ['Cancelled', 'Someone stopped the run before it finished.'],
+          ],
+        },
+        { kind: 'p', text: 'The run details page shows the repository, branch, commit, what triggered the run (push, schedule, manual or merge request) and who triggered it. Below, stages are grouped by phase, each with its tool, status, duration and number of findings:' },
+        {
+          kind: 'table',
+          head: ['Stage status', 'Meaning'],
+          rows: [
+            ['Passed', 'No findings.'],
+            ['Passed with warnings', 'Findings were reported, but none reached the fail threshold.'],
+            ['Failed', 'Findings reached the fail threshold; the policy that failed it is shown under the stage.'],
+            ['Running / Pending', 'The stage is executing or waiting for earlier stages.'],
+            ['Skipped', 'The stage did not run because an earlier stage failed or the run was cancelled.'],
+          ],
+        },
+        { kind: 'p', text: 'Select "View log" on a stage to read the tool output; logs of failed stages open automatically. Select the number of findings to go to Vulnerabilities. Use "Re-run" to start the pipeline again or "Cancel run" to stop a queued or running pipeline.' },
+      ],
+    },
 
     // --- reports + policies ---
     // (help section for this area goes here)
@@ -355,7 +386,38 @@ export const HELP: Record<Lang, HelpSection[]> = {
     // (help section for this area goes here)
 
     // --- pipeline runs ---
-    // (help section for this area goes here)
+    {
+      id: 'pipeline-runs',
+      title: 'Execuções de pipeline',
+      blocks: [
+        { kind: 'p', text: 'Execuções de pipeline lista todas as execuções dos seus pipelines DevSecOps, das mais recentes para as mais antigas. O resumo no topo mostra quantas execuções ocorreram nos últimos 7 dias, a taxa de sucesso das execuções concluídas, a duração média e quantas execuções foram interrompidas por uma política.' },
+        { kind: 'p', text: 'Filtre a lista por repositório, status ou nome da branch. Selecione o número de uma execução para abrir os detalhes.' },
+        {
+          kind: 'table',
+          head: ['Status da execução', 'Significado'],
+          rows: [
+            ['Sucesso', 'Todas as etapas terminaram sem violar uma política. Achados abaixo do critério de falha ainda podem ser reportados.'],
+            ['Falhou', 'Uma etapa encontrou problemas no critério de falha ou acima dele, ou a própria etapa não pôde ser concluída. As etapas seguintes são ignoradas.'],
+            ['Em execução', 'O pipeline está sendo executado neste momento.'],
+            ['Na fila', 'A execução está aguardando um executor disponível.'],
+            ['Cancelada', 'Alguém interrompeu a execução antes do fim.'],
+          ],
+        },
+        { kind: 'p', text: 'A página de detalhes mostra o repositório, a branch, o commit, o que disparou a execução (push, agendamento, manual ou merge request) e quem a disparou. Abaixo, as etapas são agrupadas por fase, cada uma com ferramenta, status, duração e quantidade de achados:' },
+        {
+          kind: 'table',
+          head: ['Status da etapa', 'Significado'],
+          rows: [
+            ['Aprovada', 'Nenhum achado.'],
+            ['Aprovada com alertas', 'Foram reportados achados, mas nenhum atingiu o critério de falha.'],
+            ['Falhou', 'Achados atingiram o critério de falha; a política que causou a falha aparece abaixo da etapa.'],
+            ['Em execução / Pendente', 'A etapa está em execução ou aguardando as etapas anteriores.'],
+            ['Ignorada', 'A etapa não foi executada porque uma etapa anterior falhou ou a execução foi cancelada.'],
+          ],
+        },
+        { kind: 'p', text: 'Selecione "Ver log" em uma etapa para ler a saída da ferramenta; os logs de etapas com falha abrem automaticamente. Selecione a quantidade de achados para ir até Vulnerabilidades. Use "Executar novamente" para iniciar o pipeline de novo ou "Cancelar execução" para interromper um pipeline na fila ou em execução.' },
+      ],
+    },
 
     // --- reports + policies ---
     // (help section for this area goes here)
