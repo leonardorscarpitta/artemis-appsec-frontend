@@ -39,7 +39,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               rows: [
                 ['Your account: name, username, e-mail address and whether it is verified. It is kept by our identity service (Keycloak, running on Artemis’s own infrastructure); your password is stored there only as a salted one-way hash and Artemis itself never receives it', 'To create your account, sign you in, protect it (password rules, temporary lockout after repeated failed attempts, optional two-factor authentication) and show who you are.'],
                 ['The date you accepted the Terms of Use and this Privacy Policy when registering', 'To record your consent, as the law requires.'],
-                ['E-mail verification and password-reset messages', 'Sent only to your address, to confirm it or help you recover your account. We never send marketing e-mails.'],
+                ['Password-reset messages', 'Sent only to your address, when you ask to recover your account. We never send marketing e-mails.'],
                 ['Memberships: the organizations you belong to, your role in each, your last activity, and invitations (invited e-mail, role, who invited and when it expires)', 'To apply your permissions, keep each organization’s data separate and let you join organizations you are invited to.'],
                 ['Organization settings and who owns each organization', 'To run each organization’s workspace and let its owner control it.'],
                 ['Repository addresses, branches, scanned commit and public SSH deploy keys', 'To read your code and run the security pipeline you configured. We only accept public keys and never ask for private keys or passwords to your repositories.'],
@@ -87,7 +87,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Encrypted connections (HTTPS) between your browser, the app and the sign-in service.',
                 'Secrets such as API tokens are stored only as hashes; identity-provider client secrets are never stored by the app.',
                 'Each organization’s data is isolated: every request is checked against your membership and your role in that organization.',
-                'Password policy, mandatory e-mail verification and protection against repeated sign-in attempts at the identity service.',
+                'Password policy and protection against repeated sign-in attempts at the identity service.',
               ],
             },
           ],
@@ -141,7 +141,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               rows: [
                 ['Sua conta: nome, usuário, e-mail e se ele foi verificado. Ela fica no nosso serviço de identidade (Keycloak, rodando na infraestrutura do próprio Artemis); sua senha é guardada lá apenas como hash irreversível com salt e o Artemis em si nunca a recebe', 'Para criar sua conta, fazer seu login, protegê-la (regras de senha, bloqueio temporário após tentativas erradas repetidas, verificação em duas etapas opcional) e mostrar quem você é.'],
                 ['A data em que você aceitou os Termos de Uso e esta Política de Privacidade no cadastro', 'Para registrar o seu consentimento, como a lei exige.'],
-                ['Mensagens de verificação de e-mail e de redefinição de senha', 'Enviadas apenas ao seu endereço, para confirmá-lo ou ajudar você a recuperar a conta. Nunca enviamos e-mails de marketing.'],
+                ['Mensagens de redefinição de senha', 'Enviadas apenas ao seu endereço, quando você pede para recuperar a conta. Nunca enviamos e-mails de marketing.'],
                 ['Vínculos: as organizações de que você participa, seu papel em cada uma, sua última atividade e convites (e-mail convidado, papel, quem convidou e quando expira)', 'Para aplicar suas permissões, manter os dados de cada organização separados e permitir que você entre nas organizações para as quais foi convidado.'],
                 ['Configurações da organização e quem é o proprietário de cada uma', 'Para manter o espaço de trabalho de cada organização e permitir que o proprietário a controle.'],
                 ['Endereços de repositórios, branches, commit analisado e chaves SSH públicas de deploy', 'Para ler seu código e executar o pipeline de segurança que você configurou. Aceitamos apenas chaves públicas e nunca pedimos chaves privadas ou senhas dos seus repositórios.'],
@@ -189,7 +189,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Conexões criptografadas (HTTPS) entre seu navegador, a aplicação e o serviço de login.',
                 'Segredos como tokens de API são armazenados apenas como hash; segredos de cliente do provedor de identidade nunca são armazenados pela aplicação.',
                 'Os dados de cada organização são isolados: toda requisição é verificada contra o seu vínculo e o seu papel naquela organização.',
-                'Política de senhas, verificação obrigatória de e-mail e proteção contra tentativas repetidas de login no serviço de identidade.',
+                'Política de senhas e proteção contra tentativas repetidas de login no serviço de identidade.',
               ],
             },
           ],
@@ -249,7 +249,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Register with an e-mail address you control and verify it; give accurate information and keep one account per person.',
+                'Register with an e-mail address you control; give accurate information and keep one account per person.',
                 'Keep your password and API tokens confidential. You are responsible for what is done with your account.',
                 'Tell us immediately at the contact below if you suspect unauthorized access.',
               ],
@@ -369,7 +369,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Cadastre-se com um e-mail que você controla e confirme-o; informe dados corretos e mantenha uma conta por pessoa.',
+                'Cadastre-se com um e-mail que você controla; informe dados corretos e mantenha uma conta por pessoa.',
                 'Mantenha sua senha e seus tokens de API em sigilo. Você é responsável pelo que for feito com a sua conta.',
                 'Avise-nos imediatamente pelo contato abaixo se suspeitar de acesso não autorizado.',
               ],

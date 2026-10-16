@@ -76,7 +76,7 @@ export interface OrganizationSummary {
   plan: 'free' | 'pro';
 }
 
-/** An invitation addressed to the signed-in user's verified e-mail. */
+/** An invitation addressed to the signed-in user's e-mail. */
 export interface MyInvitation {
   id: string;
   organization: { slug: string; name: string };

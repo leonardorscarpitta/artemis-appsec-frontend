@@ -83,7 +83,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
-| `/organizations` | Organization picker: the user's organizations, invitations to their verified e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
 | `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs) |
@@ -133,7 +133,7 @@ The catalog comes from the API (`GET /pipeline/stages`, field `available`); `cor
 
 ## Authentication
 
-Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Authorization Code + PKCE, public client `artemisappsec-web`). `Auth.register()` opens Keycloak's sign-up form (`prompt=create`; e-mail verification and Terms acceptance happen there). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. On a 401 the local session is cleared and the user signs in again. The user badge (`shared/user-badge.ts`) links to the Keycloak account console (`<authority>/account`). "Sign out" is RP-initiated logout (`signoutRedirect`, back to `/`), ending the Keycloak session too.
+Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Authorization Code + PKCE, public client `artemisappsec-web`). `Auth.register()` opens Keycloak's sign-up form (`prompt=create`; Terms acceptance happens there; e-mail verification is off). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. On a 401 the local session is cleared and the user signs in again. The user badge (`shared/user-badge.ts`) links to the Keycloak account console (`<authority>/account`). "Sign out" is RP-initiated logout (`signoutRedirect`, back to `/`), ending the Keycloak session too.
 
 ## Organizations and permissions
 
