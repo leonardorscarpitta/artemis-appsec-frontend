@@ -59,6 +59,22 @@ const TONES: Record<RunStatus | StageStatus, Tone> = {
       background: var(--primary-soft);
     }
 
+    :host(.live) .dot {
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0.25;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :host(.live) .dot {
+        animation: none;
+      }
+    }
+
     :host(.idle) {
       color: var(--text-muted);
       background: var(--surface-hover);

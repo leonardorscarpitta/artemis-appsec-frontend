@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   RunStatus,
@@ -47,6 +47,20 @@ export class PipelineRuns {
     url: runsUrl(),
     params: runFilterParams({ repository: this.repository(), status: this.status(), branch: this.branch() }),
   }));
+
+  private readonly live = computed(() => (this.runs.value() ?? []).some((r) => r.status === 'running' || r.status === 'queued'));
+
+  constructor() {
+    // Keeps statuses current while any listed run is still in progress.
+    effect((onCleanup) => {
+      if (!this.live()) return;
+      const timer = setInterval(() => {
+        this.runs.reload();
+        this.summary.reload();
+      }, 4000);
+      onCleanup(() => clearInterval(timer));
+    });
+  }
 
   protected readonly hasFilters = computed(() => !!(this.repository() || this.status() || this.branch()));
 

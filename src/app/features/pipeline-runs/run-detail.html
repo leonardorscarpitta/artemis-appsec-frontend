@@ -66,19 +66,43 @@
 
   <h2 class="section-title">{{ i18n.t('runs.stages') }}</h2>
 
+  @if (live()) {
+    <section class="card live-progress" aria-live="polite" [attr.aria-label]="i18n.t('runs.progress')">
+      <span class="spinner" aria-hidden="true"></span>
+      <div class="live-text">
+        @if (currentStage(); as current) {
+          <strong>
+            {{ i18n.t('runs.step').replace('{n}', '' + progress().step).replace('{total}', '' + progress().total) }}
+            — {{ stageName(current.id) }}
+          </strong>
+          <span class="muted">{{ i18n.t('runs.runningWith').replace('{tool}', current.tool) }}</span>
+        } @else {
+          <strong>{{ i18n.t('runs.waiting') }}</strong>
+          <span class="muted">{{ i18n.t('runs.waitingDesc') }}</span>
+        }
+        <div class="bar" role="progressbar" [attr.aria-valuenow]="progress().done" aria-valuemin="0" [attr.aria-valuemax]="progress().total">
+          <span [style.width.%]="progress().percent"></span>
+        </div>
+      </div>
+    </section>
+  }
+
   <ol class="timeline">
     @for (group of phases(); track group.phase; let i = $index) {
       <li class="phase" [attr.aria-labelledby]="'phase-' + group.phase">
         <h3 [id]="'phase-' + group.phase"><span class="step">{{ i + 1 }}</span>{{ phaseName(group.phase) }}</h3>
         <ul class="stages">
           @for (stage of group.stages; track stage.id) {
-            <li [class]="'stage ' + stage.status">
+            <li [class]="'stage ' + displayStatus(stage.id, stage.status)" [attr.aria-current]="currentStage()?.id === stage.id ? 'step' : null">
               <div class="row">
                 <div class="info">
+                  @if (currentStage()?.id === stage.id) {
+                    <span class="spinner small" aria-hidden="true"></span>
+                  }
                   <strong>{{ stageName(stage.id) }}</strong>
                   <span class="muted tool">{{ stage.tool }}</span>
                 </div>
-                <app-run-status [stage]="stage.status" />
+                <app-run-status [stage]="displayStatus(stage.id, stage.status)" />
                 <span class="mono muted time">{{ duration(stage.durationSeconds) }}</span>
                 <span class="findings">
                   @if (stage.findings) {
