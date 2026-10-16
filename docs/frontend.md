@@ -20,7 +20,8 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 | `/dashboard` | CVE overview with CVSS severities |
 | `/repositories` | Connected repositories |
 | `/repositories/:name` | Repository settings (General / Pipeline tabs) |
-| `/vulnerabilities`, `/pipelines`, `/reports`, `/integrations`, `/policies`, `/team`, `/settings`, `/help` | "Coming soon" placeholder (`shared/coming-soon.ts`, title via route `data`) |
+| `/help` | User guide (Help & documentation) |
+| `/vulnerabilities`, `/pipelines`, `/reports`, `/integrations`, `/policies`, `/team`, `/settings` | "Coming soon" placeholder (`shared/coming-soon.ts`, title via route `data`) |
 | `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
 
 ## Styling
@@ -49,3 +50,9 @@ Stages are grouped in three phases, each with a selectable tool and a fail thres
 | Pre-deploy | Infrastructure as code, DAST |
 
 Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Each stage's description and "why it matters" text lives in `i18n.ts` under `stage.<id>.*`. The generated YAML calls an `artemis` runner CLI that does not exist yet.
+
+## User documentation (Help page)
+
+End-user docs live in-app at `/help`, with content in `src/app/features/help/help-content.ts` (`HELP['en-US']` and `HELP['pt-BR']`). Sections are lists of typed blocks (`p`, `ul`, `ol`, `note`, `table`).
+
+**Every feature must update this content in both languages in the same change.** Placeholder ("Coming soon") sections are not documented until implemented.

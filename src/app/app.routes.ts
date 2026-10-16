@@ -40,7 +40,7 @@ export const routes: Routes = [
       comingSoon('policies', 'nav.policies'),
       comingSoon('team', 'nav.team'),
       comingSoon('settings', 'nav.settings'),
-      comingSoon('help', 'nav.help'),
+      { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
     ],
   },
   { path: '**', redirectTo: '' },
