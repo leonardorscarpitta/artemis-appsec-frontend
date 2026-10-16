@@ -12,7 +12,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Angular-22-0b4f8a" alt="Angular 22">
   <img src="https://img.shields.io/badge/i18n-en--US%20%7C%20pt--BR-0b4f8a" alt="Languages: en-US and pt-BR">
-  <img src="https://img.shields.io/badge/API-artemis--backend-0b4f8a" alt="API: artemis-backend">
+  <a href="https://github.com/Artemis-Core/artemis-appsec-backend"><img src="https://img.shields.io/badge/API-artemis--appsec--backend-0b4f8a" alt="API: artemis-appsec-backend"></a>
   <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-5a6474" alt="License: PolyForm Noncommercial 1.0.0">
 </p>
 
@@ -20,7 +20,7 @@
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline and reports vulnerabilities scored with CVSS from the NIST National Vulnerability Database. Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend; the API lives in the [artemis-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
+This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
 
 ## Naming
 
