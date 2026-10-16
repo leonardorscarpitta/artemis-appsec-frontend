@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/Angular-22-0b4f8a" alt="Angular 22">
   <img src="https://img.shields.io/badge/i18n-en--US%20%7C%20pt--BR-0b4f8a" alt="Languages: en-US and pt-BR">
   <img src="https://img.shields.io/badge/API-artemis--backend-0b4f8a" alt="API: artemis-backend">
+  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-5a6474" alt="License: PolyForm Noncommercial 1.0.0">
 </p>
 
 ---
@@ -134,8 +135,13 @@ End-user docs live in the app at `/help`, with content in `src/app/features/help
 
 ## Contributing
 
+- **How to contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) (contribution terms included).
 - **Branches:** `main` (stable) and `dev` (integration). Create `feat/*` or `bugfix/*` branches from `dev`.
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 - **Every change** must update, in the same commit:
   - the in-app Help content, in both languages, when user-facing behavior changes;
   - this README, when structure, routes or conventions change.
+
+## License
+
+Artemis is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, study, modify and share it for noncommercial purposes; commercial use (selling it, offering it as a paid service, charging for access) is reserved to the copyright holder. Contributions are welcome under the terms in [CONTRIBUTING.md](CONTRIBUTING.md).
