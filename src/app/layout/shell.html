@@ -17,7 +17,7 @@
     </a>
 
     <nav [attr.aria-label]="i18n.t('nav.main')">
-      @for (group of groups; track group.label) {
+      @for (group of groups(); track group.label) {
         <div class="group">
           <h2 class="section">{{ i18n.t(group.label) }}</h2>
           <ul>

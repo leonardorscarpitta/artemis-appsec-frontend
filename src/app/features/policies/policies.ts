@@ -1,26 +1,36 @@
-import { Component, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { problemMessage } from '../../core/api/api';
+import { Policies as PolicyModel, PoliciesApi, RiskAcceptance, policiesUrl, riskAcceptancesUrl } from '../../core/api/policies';
 import { I18n } from '../../core/i18n';
-import { Severity } from '../../core/mock-data';
-import { defaultPolicies } from '../../core/mock-policies';
-import { FAIL_THRESHOLDS, FailThreshold, StageId, defaultPipeline } from '../../core/pipeline';
+import { Severity } from '../../core/domain';
+import { FAIL_THRESHOLDS, FailThreshold, StageId } from '../../core/pipeline';
+import { RequestState } from '../../shared/request-state';
 
 type LicenseList = 'licensesAllowed' | 'licensesDenied';
 
 @Component({
   selector: 'app-policies',
+  imports: [RequestState],
   templateUrl: './policies.html',
   styleUrl: './policies.scss',
 })
 export class Policies {
   protected readonly i18n = inject(I18n);
+  private readonly api = inject(PoliciesApi);
 
-  protected readonly policies = signal(defaultPolicies());
+  protected readonly server = httpResource<PolicyModel>(() => policiesUrl());
+  protected readonly acceptances = httpResource<RiskAcceptance[]>(() => riskAcceptancesUrl());
+
+  /** Local draft; reset whenever the server copy changes. */
+  protected readonly policies = linkedSignal(() => this.server.value());
+  protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+  protected readonly error = signal<string | null>(null);
 
-  protected readonly stages = defaultPipeline().map((s) => s.id);
   protected readonly thresholds = FAIL_THRESHOLDS;
-  protected readonly severities: Severity[] = ['critical', 'high', 'medium', 'low'];
   protected readonly lists: LicenseList[] = ['licensesAllowed', 'licensesDenied'];
+  protected readonly dirty = computed(() => JSON.stringify(this.policies()) !== JSON.stringify(this.server.value()));
 
   protected stageName(id: StageId): string {
     return this.i18n.t(`stage.${id}.name`);
@@ -38,44 +48,66 @@ export class Policies {
     return this.i18n.t(list === 'licensesAllowed' ? 'policies.license.allowed' : 'policies.license.denied');
   }
 
-  protected setFailOn(id: StageId, event: Event): void {
-    const value = (event.target as HTMLSelectElement).value as FailThreshold;
-    this.policies.update((p) => ({ ...p, failOn: { ...p.failOn, [id]: value } }));
+  protected setFailOn(stage: StageId, event: Event): void {
+    const failOn = (event.target as HTMLSelectElement).value as FailThreshold;
+    this.patch((p) => ({ ...p, stages: p.stages.map((g) => (g.stage === stage ? { ...g, failOn } : g)) }));
   }
 
-  protected toggleRequired(id: StageId): void {
-    this.policies.update((p) => ({
-      ...p,
-      required: p.required.includes(id) ? p.required.filter((r) => r !== id) : [...p.required, id],
-    }));
+  protected toggleRequired(stage: StageId): void {
+    this.patch((p) => ({ ...p, stages: p.stages.map((g) => (g.stage === stage ? { ...g, required: !g.required } : g)) }));
   }
 
   protected setSla(severity: Severity, event: Event): void {
-    const days = Math.max(1, Number((event.target as HTMLInputElement).value) || 1);
-    this.policies.update((p) => ({ ...p, slaDays: { ...p.slaDays, [severity]: days } }));
+    const days = Math.min(365, Math.max(1, Math.round(Number((event.target as HTMLInputElement).value)) || 1));
+    (event.target as HTMLInputElement).value = String(days);
+    this.patch((p) => ({ ...p, slaDays: p.slaDays.map((s) => (s.severity === severity ? { ...s, days } : s)) }));
   }
 
   protected addLicense(list: LicenseList, input: HTMLInputElement): void {
     const license = input.value.trim();
     input.value = '';
-    if (!license || this.policies()[list].includes(license)) return;
-    this.policies.update((p) => ({ ...p, [list]: [...p[list], license] }));
+    const current = this.policies();
+    if (!license || !current || current.licensesAllowed.includes(license) || current.licensesDenied.includes(license)) return;
+    this.patch((p) => ({ ...p, [list]: [...p[list], license] }));
   }
 
   protected removeLicense(list: LicenseList, license: string): void {
-    this.policies.update((p) => ({ ...p, [list]: p[list].filter((l) => l !== license) }));
+    this.patch((p) => ({ ...p, [list]: p[list].filter((l) => l !== license) }));
   }
 
-  protected revoke(cve: string): void {
-    this.policies.update((p) => ({ ...p, exceptions: p.exceptions.filter((e) => e.cve !== cve) }));
+  protected revoke(acceptance: RiskAcceptance): void {
+    this.error.set(null);
+    this.api.revokeRiskAcceptance(acceptance.id).subscribe({
+      next: () => this.acceptances.reload(),
+      error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
   }
 
   protected reset(): void {
-    this.policies.set(defaultPolicies());
+    this.error.set(null);
+    this.server.reload();
   }
 
   protected save(): void {
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 3000);
+    const draft = this.policies();
+    if (!draft) return;
+    this.saving.set(true);
+    this.error.set(null);
+    this.api.update(draft).subscribe({
+      next: (updated) => {
+        this.server.set(updated);
+        this.saving.set(false);
+        this.saved.set(true);
+        setTimeout(() => this.saved.set(false), 3000);
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
+
+  private patch(change: (p: PolicyModel) => PolicyModel): void {
+    this.policies.update((p) => (p ? change(p) : p));
   }
 }

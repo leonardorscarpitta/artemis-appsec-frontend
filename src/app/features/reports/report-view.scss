@@ -124,24 +124,6 @@
   }
 }
 
-.ai {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin: 1rem 0 0;
-
-  dt {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-
-  dd {
-    margin: 0.2rem 0 0;
-    font-size: 1.35rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-}
 
 .recs {
   margin: 0;
@@ -223,10 +205,6 @@
     }
   }
 
-  .ai {
-    grid-template-columns: 1fr;
-  }
-
   .owasp {
     td {
       width: auto;
@@ -265,4 +243,18 @@
     color: inherit;
     text-decoration: none;
   }
+}
+
+.locked {
+  margin-top: 0.75rem;
+}
+
+.locked .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.generating {
+  color: var(--text-muted);
 }

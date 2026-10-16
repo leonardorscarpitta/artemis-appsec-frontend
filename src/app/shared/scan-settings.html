@@ -1,18 +1,22 @@
 <div class="field narrow">
   <label for="interval">{{ i18n.t('ob.settings.interval') }}</label>
-  <select id="interval" class="input">
-    @for (opt of intervals; track opt) {
-      <option [selected]="$index === 2">{{ i18n.t(opt) }}</option>
+  <select id="interval" class="input" (change)="setSchedule($event)">
+    @for (opt of schedules; track opt.value) {
+      <option [value]="opt.value" [selected]="opt.value === settings().schedule">{{ i18n.t(opt.label) }}</option>
     }
   </select>
 </div>
 
 <fieldset>
   <legend>{{ i18n.t('ob.settings.actions') }}</legend>
-  @for (action of actions; track action) {
+  @for (action of actions; track action.value) {
     <label class="check">
-      <input type="checkbox" [checked]="$index < 2" />
-      {{ i18n.t(action) }}
+      <input
+        type="checkbox"
+        [checked]="settings().automaticActions.includes(action.value)"
+        (change)="toggleAction(action.value, $any($event.target).checked)"
+      />
+      {{ i18n.t(action.label) }}
     </label>
   }
 </fieldset>
@@ -20,36 +24,52 @@
 <fieldset>
   <legend>{{ i18n.t('ob.settings.dockerfile') }}</legend>
   <div class="options">
-    <label class="option" [class.selected]="dockerfile() === 'recommended'">
-      <input type="radio" name="dockerfile" [checked]="dockerfile() === 'recommended'" (change)="dockerfile.set('recommended')" />
+    <label class="option" [class.selected]="settings().dockerfileMode === 'recommended'">
+      <input type="radio" name="dockerfile" [checked]="settings().dockerfileMode === 'recommended'" (change)="setDockerfileMode('recommended')" />
       <strong>{{ i18n.t('ob.settings.dockerfile.recommended') }}</strong>
       <span class="muted">{{ i18n.t('ob.settings.dockerfile.recommendedDesc') }}</span>
     </label>
-    <label class="option" [class.selected]="dockerfile() === 'custom'">
-      <input type="radio" name="dockerfile" [checked]="dockerfile() === 'custom'" (change)="dockerfile.set('custom')" />
+    <label class="option" [class.selected]="settings().dockerfileMode === 'custom'">
+      <input type="radio" name="dockerfile" [checked]="settings().dockerfileMode === 'custom'" (change)="setDockerfileMode('custom')" />
       <strong>{{ i18n.t('ob.settings.dockerfile.custom') }}</strong>
       <span class="muted">{{ i18n.t('ob.settings.dockerfile.customDesc') }}</span>
     </label>
   </div>
-  @if (dockerfile() === 'custom') {
+  @if (settings().dockerfileMode === 'custom') {
     <div class="field">
       <label for="dockerfile">Dockerfile</label>
-      <textarea id="dockerfile" class="input" placeholder="FROM node:22-alpine&#10;WORKDIR /app&#10;..."></textarea>
+      <textarea
+        id="dockerfile"
+        class="input"
+        required
+        placeholder="FROM node:22-alpine&#10;WORKDIR /app&#10;..."
+        [value]="settings().customDockerfile ?? ''"
+        (input)="setCustomDockerfile($event)"
+      ></textarea>
     </div>
   }
 </fieldset>
 
-<div class="toggle-row">
+<div class="toggle-row locked">
   <div>
     <strong id="ai-label">{{ i18n.t('ob.settings.ai') }}</strong>
-    <p class="muted">{{ i18n.t('ob.settings.aiDesc') }}</p>
+    <p class="muted" id="ai-desc">{{ i18n.t('ob.settings.aiDesc') }}</p>
   </div>
-  <button
-    type="button"
-    role="switch"
-    class="switch"
-    aria-labelledby="ai-label"
-    [attr.aria-checked]="aiEnabled()"
-    (click)="aiEnabled.set(!aiEnabled())"
-  ></button>
+  <div class="lock">
+    <span class="tag">
+      <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
+      </svg>
+      {{ i18n.t('ob.settings.aiLocked') }}
+    </span>
+    <button
+      type="button"
+      role="switch"
+      class="switch"
+      aria-labelledby="ai-label"
+      aria-describedby="ai-desc"
+      aria-checked="false"
+      disabled
+    ></button>
+  </div>
 </div>

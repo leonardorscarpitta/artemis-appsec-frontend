@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { I18n } from '../../core/i18n';
-import { RunStatus, StageStatus } from '../../core/mock-runs';
+import { RunStatus, StageStatus } from '../../core/api/pipeline-runs';
 
 type Tone = 'ok' | 'bad' | 'warn' | 'live' | 'idle';
 

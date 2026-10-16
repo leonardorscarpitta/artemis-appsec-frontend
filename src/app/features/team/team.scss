@@ -212,3 +212,11 @@
     }
   }
 }
+
+.error-text {
+  color: var(--sev-critical);
+}
+
+p.card.error-text {
+  margin: 0 0 1rem;
+}

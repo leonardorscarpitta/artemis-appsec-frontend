@@ -82,3 +82,8 @@ a.title {
     flex: 1;
   }
 }
+
+.error {
+  color: var(--sev-critical);
+  font-size: 0.875rem;
+}

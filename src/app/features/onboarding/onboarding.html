@@ -32,11 +32,24 @@
       <div class="grid-2">
         <div class="field">
           <label for="repo">{{ i18n.t('ob.repo.label') }}</label>
-          <input id="repo" class="input mono" type="text" placeholder="git@github.com:acme/project.git" />
+          <input
+            id="repo"
+            class="input mono"
+            type="text"
+            placeholder="git@github.com:acme/project.git"
+            required
+            [value]="url()"
+            (input)="url.set(input($event.target))"
+            [attr.aria-invalid]="showErrors() && !urlValid()"
+            aria-describedby="repo-error"
+          />
+          @if (showErrors() && !urlValid()) {
+            <span id="repo-error" class="error-text">{{ i18n.t('ob.repo.invalid') }}</span>
+          }
         </div>
         <div class="field">
           <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
-          <input id="branch" class="input mono" type="text" value="main" />
+          <input id="branch" class="input mono" type="text" required [value]="branch()" (input)="branch.set(input($event.target))" />
         </div>
       </div>
     }
@@ -44,7 +57,7 @@
       <h2>{{ i18n.t('ob.settings.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.settings.desc') }}</p>
 
-      <app-scan-settings />
+      <app-scan-settings [(settings)]="settings" />
     }
     @case (3) {
       <h2>{{ i18n.t('ob.pipeline.title') }}</h2>
@@ -54,23 +67,29 @@
     @case (4) {
       <h2>{{ i18n.t('ob.detect.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
-      <h3 class="sub">{{ i18n.t('ob.detect.supported') }}</h3>
-      <ul class="stacks">
-        @for (stack of stacks; track stack) {
-          <li [class.detected]="stack === detected">
-            <strong>{{ stack }}</strong>
-            @if (stack === detected) {
-              <span class="tag">{{ i18n.t('ob.detect.detected') }}</span>
-            }
-          </li>
+      <fieldset>
+        <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
+        <div class="stacks">
+          @for (s of stacks; track s) {
+            <label class="stack-option" [class.detected]="s === stack()">
+              <input type="radio" name="stack" [checked]="s === stack()" (change)="stack.set(s)" />
+              <strong>{{ s }}</strong>
+            </label>
+          }
+        </div>
+        @if (showErrors() && !stack()) {
+          <span class="error-text" role="alert">{{ i18n.t('ob.detect.required') }}</span>
         }
-      </ul>
+      </fieldset>
+      @if (submitError(); as error) {
+        <p class="error-text" role="alert">{{ error }}</p>
+      }
     }
   }
 
   <footer class="actions">
     <button type="button" class="btn ghost" [disabled]="step() === 0" (click)="back()">{{ i18n.t('ob.back') }}</button>
-    <button type="button" class="btn primary" (click)="next()">
+    <button type="button" class="btn primary" [disabled]="submitting()" (click)="next()">
       {{ isLast() ? i18n.t('ob.finish') : i18n.t('ob.next') }}
     </button>
   </footer>

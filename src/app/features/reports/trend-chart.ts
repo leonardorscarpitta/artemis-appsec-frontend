@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { I18n } from '../../core/i18n';
-import { TrendPoint } from '../../core/mock-reports';
+import { TrendPoint } from '../../core/api/reports';
 
 const W = 640;
 const H = 240;

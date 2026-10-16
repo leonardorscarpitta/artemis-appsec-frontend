@@ -1,11 +1,21 @@
+import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { I18n } from '../../core/i18n';
-import { REPOSITORIES } from '../../core/mock-data';
+import { ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
+import { I18n, TranslationKey } from '../../core/i18n';
+import { RequestState } from '../../shared/request-state';
+
+const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
+  push: 'ob.settings.interval.push',
+  '6h': 'ob.settings.interval.6h',
+  '24h': 'ob.settings.interval.24h',
+  '7d': 'ob.settings.interval.7d',
+};
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe, RequestState],
   template: `
     <header class="page-header">
       <div>
@@ -17,6 +27,8 @@ import { REPOSITORIES } from '../../core/mock-data';
       </div>
     </header>
 
+    <app-request-state [resource]="repositories" />
+    @if (repositories.hasValue()) {
     <div class="card table-card">
       <table class="table stack">
         <thead>
@@ -30,16 +42,16 @@ import { REPOSITORIES } from '../../core/mock-data';
           </tr>
         </thead>
         <tbody>
-          @for (repo of repositories; track repo.url) {
+          @for (repo of repositories.value(); track repo.id) {
             <tr>
               <td class="primary-cell">
                 <strong>{{ repo.name }}</strong>
                 <div class="mono muted url">{{ repo.url }}</div>
               </td>
               <td [attr.data-label]="i18n.t('col.stack')"><span class="tag">{{ repo.stack }}</span></td>
-              <td [attr.data-label]="i18n.t('col.schedule')">{{ repo.schedule }}</td>
-              <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.findings }}</td>
-              <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ repo.lastScan }}</td>
+              <td [attr.data-label]="i18n.t('col.schedule')">{{ i18n.t(scheduleLabels[repo.schedule]) }}</td>
+              <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
+              <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
               <td class="num actions" data-label="">
                 <a class="btn" [routerLink]="['/repositories', repo.name]" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
@@ -50,6 +62,7 @@ import { REPOSITORIES } from '../../core/mock-data';
         </tbody>
       </table>
     </div>
+    }
   `,
   styles: `
     .url {
@@ -75,5 +88,6 @@ import { REPOSITORIES } from '../../core/mock-data';
 })
 export class Repositories {
   protected readonly i18n = inject(I18n);
-  protected readonly repositories = REPOSITORIES;
+  protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
+  protected readonly scheduleLabels = SCHEDULE_LABELS;
 }

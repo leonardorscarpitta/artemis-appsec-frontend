@@ -5,29 +5,33 @@
   </div>
 </header>
 
+@if (summary.value(); as summary) {
 <section class="stats" [attr.aria-label]="i18n.t('runs.summary')">
   <div class="card stat">
     <span class="label">{{ i18n.t('runs.last7') }}</span>
-    <span class="value">{{ summary().total }}</span>
+    <span class="value">{{ summary.runs }}</span>
   </div>
   <div class="card stat">
     <span class="label">{{ i18n.t('runs.successRate') }}</span>
-    <span class="value">{{ summary().successRate }}%</span>
+    <span class="value">{{ summary.successRate }}%</span>
   </div>
   <div class="card stat">
     <span class="label">{{ i18n.t('runs.avgDuration') }}</span>
-    <span class="value">{{ summary().avgDuration }}</span>
+    <span class="value">{{ duration(summary.averageDurationSeconds) }}</span>
   </div>
   <div class="card stat failed">
     <span class="label">{{ i18n.t('runs.failedByPolicy') }}</span>
-    <span class="value">{{ summary().failedByPolicy }}</span>
+    <span class="value">{{ summary.failedByPolicy }}</span>
   </div>
 </section>
+}
 
 <section class="card table-card" aria-labelledby="runs-title">
   <div class="card-header">
     <h2 id="runs-title">{{ i18n.t('runs.title') }}</h2>
-    <span class="muted count">{{ runs().length }} / {{ summary().total }}</span>
+    @if (runs.hasValue()) {
+      <span class="muted count" aria-live="polite">{{ runs.value().length }}</span>
+    }
   </div>
 
   <div class="filters" role="search" [attr.aria-label]="i18n.t('runs.filters')">
@@ -35,7 +39,7 @@
       <label for="f-repo">{{ i18n.t('col.repository') }}</label>
       <select id="f-repo" class="input" [value]="repository()" (change)="repository.set(value($event))">
         <option value="">{{ i18n.t('runs.filter.all') }}</option>
-        @for (name of repositories; track name) {
+        @for (name of repositories(); track name) {
           <option [value]="name">{{ name }}</option>
         }
       </select>
@@ -65,7 +69,9 @@
     }
   </div>
 
-  @if (runs().length) {
+  @if (runs.error()) {
+    <app-request-state [resource]="runs" />
+  } @else if (runs.value()?.length) {
     <table class="table stack">
       <thead>
         <tr>
@@ -79,10 +85,10 @@
         </tr>
       </thead>
       <tbody>
-        @for (run of runs(); track run.id) {
+        @for (run of runs.value(); track run.number) {
           <tr>
             <td class="primary-cell">
-              <a class="run-link" [routerLink]="['/pipelines', run.id]" [attr.aria-label]="i18n.t('runs.open') + ' #' + run.id">#{{ run.id }}</a>
+              <a class="run-link" [routerLink]="['/pipelines', run.number]" [attr.aria-label]="i18n.t('runs.open') + ' #' + run.number">#{{ run.number }}</a>
               <div class="repo">{{ run.repository }}</div>
             </td>
             <td [attr.data-label]="i18n.t('col.status')"><app-run-status [status]="run.status" /></td>
@@ -98,8 +104,8 @@
                 <div class="muted small">{{ i18n.t('runs.by') }} {{ run.actor }}</div>
               </div>
             </td>
-            <td class="mono muted" [attr.data-label]="i18n.t('runs.col.started')">{{ run.started }}</td>
-            <td class="num mono" [attr.data-label]="i18n.t('runs.col.duration')">{{ duration(run.seconds) }}</td>
+            <td class="mono muted" [attr.data-label]="i18n.t('runs.col.started')">{{ run.startedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+            <td class="num mono" [attr.data-label]="i18n.t('runs.col.duration')">{{ duration(run.durationSeconds) }}</td>
             <td class="num" [attr.data-label]="i18n.t('runs.col.findings')">
               <div>
                 @if (run.newFindings) {
@@ -112,6 +118,8 @@
         }
       </tbody>
     </table>
+  } @else if (runs.isLoading()) {
+    <app-request-state [resource]="runs" />
   } @else {
     <p class="empty muted">{{ i18n.t('runs.empty') }}</p>
   }

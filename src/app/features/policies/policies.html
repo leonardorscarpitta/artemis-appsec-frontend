@@ -5,6 +5,8 @@
   </div>
 </header>
 
+<app-request-state [resource]="server" />
+@if (policies(); as p) {
 <div class="sections">
   <section class="card table-card" aria-labelledby="gates-title">
     <div class="card-header">
@@ -22,12 +24,12 @@
         </tr>
       </thead>
       <tbody>
-        @for (id of stages; track id) {
+        @for (gate of p.stages; track gate.stage) {
           <tr>
-            <td class="primary-cell"><strong [id]="'gate-' + id">{{ stageName(id) }}</strong></td>
+            <td class="primary-cell"><strong [id]="'gate-' + gate.stage">{{ stageName(gate.stage) }}</strong></td>
             <td [attr.data-label]="i18n.t('pipe.failOn')">
-              @if (policies().failOn[id]; as failOn) {
-                <select class="input" [attr.aria-labelledby]="'gate-' + id" (change)="setFailOn(id, $event)">
+              @if (gate.failOn; as failOn) {
+                <select class="input" [attr.aria-labelledby]="'gate-' + gate.stage" (change)="setFailOn(gate.stage, $event)">
                   @for (t of thresholds; track t) {
                     <option [value]="t" [selected]="t === failOn">{{ failLabel(t) }}</option>
                   }
@@ -38,8 +40,8 @@
             </td>
             <td [attr.data-label]="i18n.t('policies.required')">
               <label class="check">
-                <input type="checkbox" [checked]="policies().required.includes(id)" (change)="toggleRequired(id)" />
-                <span class="sr-only">{{ i18n.t('policies.required') }}: {{ stageName(id) }}</span>
+                <input type="checkbox" [checked]="gate.required" (change)="toggleRequired(gate.stage)" />
+                <span class="sr-only">{{ i18n.t('policies.required') }}: {{ stageName(gate.stage) }}</span>
               </label>
             </td>
           </tr>
@@ -56,13 +58,13 @@
       </div>
     </div>
     <div class="sla">
-      @for (s of severities; track s) {
+      @for (sla of p.slaDays; track sla.severity) {
         <div class="field">
-          <label [for]="'sla-' + s">
-            <span class="tag" [style.color]="'var(--sev-' + s + ')'" [style.background]="'var(--sev-' + s + '-bg)'">{{ severityLabel(s) }}</span>
+          <label [for]="'sla-' + sla.severity">
+            <span class="tag" [style.color]="'var(--sev-' + sla.severity + ')'" [style.background]="'var(--sev-' + sla.severity + '-bg)'">{{ severityLabel(sla.severity) }}</span>
           </label>
           <div class="days">
-            <input class="input" type="number" min="1" [id]="'sla-' + s" [value]="policies().slaDays[s]" (change)="setSla(s, $event)" />
+            <input class="input" type="number" min="1" max="365" [id]="'sla-' + sla.severity" [value]="sla.days" (change)="setSla(sla.severity, $event)" />
             <span class="muted">{{ i18n.t('policies.days') }}</span>
           </div>
         </div>
@@ -82,7 +84,7 @@
         <div class="license-list" [class.denied]="list === 'licensesDenied'">
           <h3 [id]="list + '-title'">{{ listLabel(list) }}</h3>
           <ul class="chips" [attr.aria-labelledby]="list + '-title'">
-            @for (license of policies()[list]; track license) {
+            @for (license of p[list]; track license) {
               <li class="chip">
                 <span class="mono">{{ license }}</span>
                 <button
@@ -99,7 +101,7 @@
           </ul>
           <form class="add" (submit)="$event.preventDefault(); addLicense(list, field)">
             <label class="sr-only" [for]="list + '-input'">{{ listLabel(list) }}</label>
-            <input #field class="input mono" type="text" [id]="list + '-input'" [placeholder]="i18n.t('policies.license.placeholder')" />
+            <input #field class="input mono" type="text" maxlength="64" pattern="[A-Za-z0-9][A-Za-z0-9.+\-]*" [id]="list + '-input'" [placeholder]="i18n.t('policies.license.placeholder')" />
             <button type="submit" class="btn">{{ i18n.t('policies.license.add') }}</button>
           </form>
         </div>
@@ -114,7 +116,7 @@
         <p class="muted desc">{{ i18n.t('policies.exceptions.desc') }}</p>
       </div>
     </div>
-    @if (policies().exceptions.length) {
+    @if (acceptances.value()?.length) {
       <table class="table stack exceptions">
         <thead>
           <tr>
@@ -127,7 +129,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (e of policies().exceptions; track e.cve) {
+          @for (e of acceptances.value(); track e.id) {
             <tr>
               <td class="primary-cell">
                 <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + e.cve" target="_blank" rel="noopener">{{ e.cve }}</a>
@@ -135,9 +137,9 @@
               <td [attr.data-label]="i18n.t('col.repository')">{{ e.repository }}</td>
               <td class="justification" [attr.data-label]="i18n.t('policies.exceptions.justification')">{{ e.justification }}</td>
               <td [attr.data-label]="i18n.t('policies.exceptions.approvedBy')">{{ e.approvedBy }}</td>
-              <td class="mono" [attr.data-label]="i18n.t('policies.exceptions.expires')">{{ e.expires }}</td>
+              <td class="mono" [attr.data-label]="i18n.t('policies.exceptions.expires')">{{ e.expiresAt }}</td>
               <td class="num" data-label="">
-                <button type="button" class="btn revoke" [attr.aria-label]="i18n.t('policies.exceptions.revoke') + ' ' + e.cve" (click)="revoke(e.cve)">
+                <button type="button" class="btn revoke" [attr.aria-label]="i18n.t('policies.exceptions.revoke') + ' ' + e.cve" (click)="revoke(e)">
                   {{ i18n.t('policies.exceptions.revoke') }}
                 </button>
               </td>
@@ -153,14 +155,17 @@
 
 <footer class="save-bar">
   <span class="muted hint" aria-live="polite">
-    @if (saved()) {
+    @if (error(); as message) {
+      <span class="error" role="alert">{{ message }}</span>
+    } @else if (saved()) {
       <span class="ok">{{ i18n.t('rs.saved') }}</span>
     } @else {
       {{ i18n.t('policies.saveHint') }}
     }
   </span>
   <div class="buttons">
-    <button type="button" class="btn" (click)="reset()">{{ i18n.t('rs.cancel') }}</button>
-    <button type="button" class="btn primary" (click)="save()">{{ i18n.t('rs.save') }}</button>
+    <button type="button" class="btn" [disabled]="!dirty()" (click)="reset()">{{ i18n.t('rs.cancel') }}</button>
+    <button type="button" class="btn primary" [disabled]="saving() || !dirty()" (click)="save()">{{ i18n.t('rs.save') }}</button>
   </div>
 </footer>
+}

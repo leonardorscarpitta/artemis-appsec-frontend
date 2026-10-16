@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { I18n } from '../../core/i18n';
-import { FindingStatus, STATUS_KEYS } from '../../core/mock-data';
+import { FindingStatus, STATUS_KEYS } from '../../core/domain';
 
 @Component({
   selector: 'app-status-label',
