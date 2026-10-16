@@ -20,14 +20,15 @@
           @for (t of types; track t) {
             <option [value]="t" [selected]="t === type()">{{ typeLabel(t) }}</option>
           }
+          <option disabled>{{ i18n.t('reports.type.aiTriage') }} ({{ i18n.t('ob.settings.aiLocked') }})</option>
         </select>
       </div>
       <div class="field">
         <label for="report-scope">{{ i18n.t('reports.form.scope') }}</label>
         <select id="report-scope" class="input" (change)="scope.set(value($event))">
           <option value="" [selected]="!scope()">{{ i18n.t('reports.scope.org') }}</option>
-          @for (repo of repositories; track repo) {
-            <option [value]="repo" [selected]="repo === scope()">{{ repo }}</option>
+          @for (repo of repositories.value() ?? []; track repo.id) {
+            <option [value]="repo.name" [selected]="repo.name === scope()">{{ repo.name }}</option>
           }
         </select>
       </div>
@@ -40,9 +41,12 @@
         </select>
       </div>
     </div>
+    @if (submitError(); as error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
     <div class="form-actions">
       <button type="button" class="btn" (click)="toggleForm()">{{ i18n.t('reports.form.cancel') }}</button>
-      <button type="submit" class="btn primary">{{ i18n.t('reports.form.submit') }}</button>
+      <button type="submit" class="btn primary" [disabled]="submitting()">{{ i18n.t('reports.form.submit') }}</button>
     </div>
   </form>
 }
@@ -53,6 +57,8 @@
   }
 </p>
 
+<app-request-state [resource]="reports" />
+@if (reports.hasValue()) {
 <div class="card table-card">
   <table class="table stack">
     <thead>
@@ -67,7 +73,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (report of reports(); track report.id) {
+      @for (report of reports.value(); track report.id) {
         <tr>
           <td class="primary-cell">
             @if (report.status === 'ready') {
@@ -79,16 +85,9 @@
           <td [attr.data-label]="i18n.t('reports.col.type')"><span class="tag">{{ typeLabel(report.type) }}</span></td>
           <td [attr.data-label]="i18n.t('reports.col.scope')">{{ report.scope ?? i18n.t('reports.scope.org') }}</td>
           <td class="muted period" [attr.data-label]="i18n.t('reports.col.period')">
-            <span>
-              @for (part of report.period.split(' – '); track $index) {
-                @if (!$first) {
-                  –
-                }
-                <span class="date">{{ part }}</span>
-              }
-            </span>
+            <span><span class="date">{{ report.periodStart }}</span> – <span class="date">{{ report.periodEnd }}</span></span>
           </td>
-          <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt }}</td>
+          <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
           <td [attr.data-label]="i18n.t('reports.col.generatedBy')">{{ authorLabel(report.generatedBy) }}</td>
           <td [attr.data-label]="i18n.t('reports.col.status')">
             <span [class]="'status ' + report.status">{{ statusLabel(report.status) }}</span>
@@ -98,3 +97,4 @@
     </tbody>
   </table>
 </div>
+}

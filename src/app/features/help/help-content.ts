@@ -236,17 +236,16 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'reports',
       title: 'Reports',
       blocks: [
-        { kind: 'p', text: 'The Reports page lists every report generated for your organization or for a single repository. There are three types:' },
+        { kind: 'p', text: 'The Reports page lists every report generated for your organization or for a single repository. There are two types:' },
         {
           kind: 'table',
           head: ['Type', 'Contents'],
           rows: [
             ['Security summary', 'Weekly or monthly overview of new, fixed and open findings. Generated automatically by schedule.'],
-            ['AI triage', 'Findings reviewed by AI triage, including the ones dismissed as false positives and the confidence of each decision.'],
             ['Compliance', 'Findings mapped to the OWASP Top 10 categories, useful for audits.'],
           ],
         },
-        { kind: 'p', text: 'To create a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period, then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready".' },
+        { kind: 'p', text: 'To request a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period (the last complete week, month or quarter), then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready". AI triage reports are not available yet.' },
         { kind: 'p', text: 'A report contains:' },
         {
           kind: 'ul',
@@ -254,10 +253,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Executive summary: a short, non-technical overview for managers.',
             'Key indicators: new, fixed and still open findings, mean time to remediate and the percentage of findings fixed within the SLA.',
             'Findings trend: new and fixed findings per week. Hover over (or focus and use the arrow keys on) the chart to see each week; "Show data table" lists the same values.',
-            'Open findings by severity, top risks, AI triage results, OWASP Top 10 mapping and recommendations.',
+            'Open findings by severity, top risks, OWASP Top 10 mapping and recommendations. The AI triage section is shown locked until AI triage becomes available.',
           ],
         },
-        { kind: 'p', text: 'Select "Export PDF" to print or save the report as PDF, or "Copy link" to share it with someone who has access to Artemis.' },
+        { kind: 'p', text: 'Report texts follow the language selected in the top bar. Select "Export PDF" to print or save the report as PDF, or "Copy link" to share it with someone who has access to Artemis.' },
       ],
     },
 
@@ -270,12 +269,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Pipeline gates: the default fail threshold of each pipeline stage. Mark a stage as "Required" to prevent repositories from disabling it.',
-            'Remediation SLA: the maximum number of days to fix a finding of each severity. Reports measure SLA compliance against these values.',
-            'License policy: licenses that are allowed or denied. Type a license identifier (for example MPL-2.0) and select "Add"; use the X on a license to remove it. Licenses not listed are reported for review.',
-            'Risk acceptances: findings accepted as known risks, with a justification and an expiry date. They do not fail pipelines until they expire. Select "Revoke" to remove one.',
+            'Remediation SLA: the maximum number of days (1 to 365) to fix a finding of each severity. Reports measure SLA compliance against these values.',
+            'License policy: licenses that are allowed or denied. Type an SPDX license identifier (for example MPL-2.0) and select "Add"; use the X on a license to remove it. A license cannot be both allowed and denied. Licenses not listed are reported for review.',
+            'Risk acceptances: findings accepted as known risks, with a justification and an expiry date. They do not fail pipelines until they expire (at most one year). Select "Revoke" to remove one immediately.',
           ],
         },
-        { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" restores the saved policies.' },
+        { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards your edits and reloads the saved policies.' },
       ],
     },
 
@@ -583,17 +582,16 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'reports',
       title: 'Relatórios',
       blocks: [
-        { kind: 'p', text: 'A página Relatórios lista todos os relatórios gerados para a organização ou para um único repositório. Há três tipos:' },
+        { kind: 'p', text: 'A página Relatórios lista todos os relatórios gerados para a organização ou para um único repositório. Há dois tipos:' },
         {
           kind: 'table',
           head: ['Tipo', 'Conteúdo'],
           rows: [
             ['Resumo de segurança', 'Visão semanal ou mensal dos achados novos, corrigidos e abertos. Gerado automaticamente por agendamento.'],
-            ['Triagem com IA', 'Achados revisados pela triagem com IA, incluindo os descartados como falsos positivos e a confiança de cada decisão.'],
             ['Conformidade', 'Achados mapeados para as categorias do OWASP Top 10, útil para auditorias.'],
           ],
         },
-        { kind: 'p', text: 'Para criar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período, e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto".' },
+        { kind: 'p', text: 'Para solicitar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período (a última semana, mês ou trimestre completo), e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto". Relatórios de triagem com IA ainda não estão disponíveis.' },
         { kind: 'p', text: 'Um relatório contém:' },
         {
           kind: 'ul',
@@ -601,10 +599,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Resumo executivo: uma visão curta e não técnica para gestores.',
             'Indicadores: achados novos, corrigidos e ainda abertos, tempo médio de correção e o percentual de achados corrigidos dentro do SLA.',
             'Tendência de achados: achados novos e corrigidos por semana. Passe o mouse sobre o gráfico (ou foque nele e use as setas) para ver cada semana; "Mostrar tabela de dados" lista os mesmos valores.',
-            'Achados abertos por severidade, principais riscos, resultados da triagem com IA, mapeamento OWASP Top 10 e recomendações.',
+            'Achados abertos por severidade, principais riscos, mapeamento OWASP Top 10 e recomendações. A seção de triagem com IA aparece bloqueada até que a triagem com IA esteja disponível.',
           ],
         },
-        { kind: 'p', text: 'Selecione "Exportar PDF" para imprimir ou salvar o relatório em PDF, ou "Copiar link" para compartilhá-lo com alguém que tenha acesso ao Artemis.' },
+        { kind: 'p', text: 'Os textos do relatório seguem o idioma selecionado na barra superior. Selecione "Exportar PDF" para imprimir ou salvar o relatório em PDF, ou "Copiar link" para compartilhá-lo com alguém que tenha acesso ao Artemis.' },
       ],
     },
 
@@ -617,12 +615,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Critérios do pipeline: o critério de falha padrão de cada etapa. Marque uma etapa como "Obrigatória" para impedir que os repositórios a desativem.',
-            'SLA de correção: o número máximo de dias para corrigir um achado de cada severidade. Os relatórios medem o cumprimento do SLA com base nesses valores.',
-            'Política de licenças: licenças permitidas ou proibidas. Digite o identificador da licença (por exemplo MPL-2.0) e selecione "Adicionar"; use o X de uma licença para removê-la. Licenças não listadas são reportadas para revisão.',
-            'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa e data de expiração. Eles não falham pipelines até expirarem. Selecione "Revogar" para remover uma aceitação.',
+            'SLA de correção: o número máximo de dias (de 1 a 365) para corrigir um achado de cada severidade. Os relatórios medem o cumprimento do SLA com base nesses valores.',
+            'Política de licenças: licenças permitidas ou proibidas. Digite o identificador SPDX da licença (por exemplo MPL-2.0) e selecione "Adicionar"; use o X de uma licença para removê-la. Uma licença não pode ser permitida e proibida ao mesmo tempo. Licenças não listadas são reportadas para revisão.',
+            'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa e data de expiração. Eles não falham pipelines até expirarem (no máximo um ano). Selecione "Revogar" para remover uma aceitação imediatamente.',
           ],
         },
-        { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" restaura as políticas salvas.' },
+        { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" descarta suas edições e recarrega as políticas salvas.' },
       ],
     },
 
