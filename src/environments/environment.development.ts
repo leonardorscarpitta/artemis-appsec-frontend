@@ -4,5 +4,7 @@ export const environment = {
     authority: 'https://auth.artemis.localhost:9443',
     clientId: 'artemis-web',
     scope: 'openid profile email groups',
+    // Local Authelia uses a self-signed certificate the browser must accept once.
+    localCertificate: true,
   },
 };

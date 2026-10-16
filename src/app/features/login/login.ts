@@ -1,5 +1,6 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { Auth } from '../../core/auth/auth';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { LangSwitch } from '../../shared/lang-switch';
@@ -26,6 +27,8 @@ export class Login {
   readonly returnUrl = input<string>();
   protected readonly redirecting = signal(false);
   protected readonly failed = signal(false);
+  protected readonly authority = environment.auth.authority;
+  protected readonly localCertificate = environment.auth.localCertificate;
 
   protected async signIn(): Promise<void> {
     this.redirecting.set(true);
