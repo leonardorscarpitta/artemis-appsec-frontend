@@ -34,7 +34,19 @@ export class Login {
     this.redirecting.set(true);
     this.failed.set(false);
     try {
-      await this.auth.login(this.returnUrl() ?? '/dashboard');
+      await this.auth.login(this.returnUrl() ?? null);
+    } catch (error) {
+      console.error('Could not reach the identity provider', error);
+      this.redirecting.set(false);
+      this.failed.set(true);
+    }
+  }
+
+  protected async register(): Promise<void> {
+    this.redirecting.set(true);
+    this.failed.set(false);
+    try {
+      await this.auth.register(this.returnUrl() ?? null);
     } catch (error) {
       console.error('Could not reach the identity provider', error);
       this.redirecting.set(false);

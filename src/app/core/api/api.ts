@@ -18,6 +18,12 @@ export interface ProblemDetail {
   detail?: string;
   status?: number;
   errors?: Record<string, string>;
+  code?: string;
+  permission?: string;
+}
+
+export function problemCode(error: unknown): string | null {
+  return (error as { error?: ProblemDetail } | null)?.error?.code ?? null;
 }
 
 export function problemMessage(error: unknown): string | null {

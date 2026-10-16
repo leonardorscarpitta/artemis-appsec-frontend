@@ -147,6 +147,16 @@
 
 .empty {
   padding: 1.25rem;
+
+  &.hint {
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+}
+
+.row-actions {
+  text-align: right;
 }
 
 .matrix-wrap {

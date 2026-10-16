@@ -1,0 +1,139 @@
+<header class="bar">
+  <a routerLink="/" class="home-link"><app-logo /></a>
+  <span class="spacer"></span>
+  <app-lang-switch />
+  <app-theme-toggle />
+  <app-user-badge />
+  <button type="button" class="btn ghost" (click)="signOut()">{{ i18n.t('nav.signOut') }}</button>
+</header>
+
+<main class="page">
+  <header class="page-header">
+    <div>
+      <h1>{{ i18n.t('orgs.title') }}</h1>
+      <p class="muted">{{ i18n.t('orgs.subtitle') }}</p>
+    </div>
+  </header>
+
+  <section class="card table-card" aria-labelledby="orgs-mine">
+    <div class="card-header">
+      <h2 id="orgs-mine">{{ i18n.t('orgs.mine') }}</h2>
+    </div>
+    @if (org.organizations(); as orgs) {
+      @if (orgs.length) {
+        <ul class="list">
+          @for (o of orgs; track o.slug) {
+            <li>
+              <a class="row" [routerLink]="['/', o.slug, 'dashboard']">
+                <span class="org-avatar" aria-hidden="true">{{ o.name.slice(0, 2).toUpperCase() }}</span>
+                <span class="org-text">
+                  <strong>{{ o.name }}</strong>
+                  <span class="mono muted">/{{ o.slug }}</span>
+                </span>
+                <span class="tag">{{ roleLabel(o.role) }}</span>
+                <span class="tag plan">{{ planLabel(o.plan) }}</span>
+                <span class="open">{{ i18n.t('orgs.open') }} →</span>
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty">
+          <strong>{{ i18n.t('orgs.emptyTitle') }}</strong>
+          <p class="muted">{{ i18n.t('orgs.emptyDesc') }}</p>
+        </div>
+      }
+    } @else if (loadFailed()) {
+      <div class="empty" role="alert">
+        <p>{{ i18n.t('api.errorDesc') }}</p>
+        <button type="button" class="btn" (click)="reload()">{{ i18n.t('api.retry') }}</button>
+      </div>
+    } @else {
+      <p class="empty muted" role="status">{{ i18n.t('api.loading') }}</p>
+    }
+  </section>
+
+  <section class="card table-card" aria-labelledby="orgs-invites">
+    <div class="card-header">
+      <h2 id="orgs-invites">{{ i18n.t('orgs.invitations') }}</h2>
+    </div>
+    @if (invitationError(); as message) {
+      <p class="error pad" role="alert">{{ message }}</p>
+    }
+    @if (invitations.value().length) {
+      <ul class="list">
+        @for (inv of invitations.value(); track inv.id) {
+          <li class="row invite">
+            <span class="org-avatar" aria-hidden="true">{{ inv.organization.name.slice(0, 2).toUpperCase() }}</span>
+            <span class="org-text">
+              <strong>{{ inv.organization.name }}</strong>
+              <span class="muted">
+                {{ i18n.t('orgs.invitedAs') }} {{ roleLabel(inv.role) }}
+                @if (inv.invitedBy) {
+                  · {{ i18n.t('orgs.invitedBy') }} {{ inv.invitedBy }}
+                }
+                · {{ i18n.t('orgs.expires') }} <span class="mono">{{ inv.expiresAt | date: 'yyyy-MM-dd' }}</span>
+              </span>
+            </span>
+            <span class="actions">
+              <button type="button" class="btn ghost" [disabled]="busyInvitation() === inv.id" (click)="decline(inv)">
+                {{ i18n.t('orgs.decline') }}
+              </button>
+              <button type="button" class="btn primary" [disabled]="busyInvitation() === inv.id" (click)="accept(inv)">
+                {{ i18n.t('orgs.accept') }}
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty muted">{{ i18n.t('orgs.noInvitations') }}</p>
+    }
+    <p class="hint">{{ i18n.t('orgs.invitationsHint') }}</p>
+  </section>
+
+  <section class="card form-card" aria-labelledby="orgs-create">
+    <h2 id="orgs-create">{{ i18n.t('orgs.create') }}</h2>
+    <p class="muted">{{ i18n.t('orgs.createDesc') }}</p>
+    <form (submit)="create($event)" novalidate>
+      <div class="field">
+        <label for="org-name">{{ i18n.t('orgs.name') }}</label>
+        <input
+          id="org-name"
+          class="input"
+          required
+          minlength="2"
+          maxlength="120"
+          autocomplete="organization"
+          [value]="name()"
+          (input)="setName($any($event.target).value)"
+        />
+      </div>
+      <div class="field">
+        <label for="org-slug">{{ i18n.t('orgs.slug') }}</label>
+        <div class="slug">
+          <span class="mono muted" aria-hidden="true">artemisappsec.com/</span>
+          <input
+            id="org-slug"
+            class="input mono"
+            required
+            minlength="3"
+            maxlength="40"
+            pattern="[a-z0-9](?:[a-z0-9\-]{1,38}[a-z0-9])"
+            aria-describedby="org-slug-hint"
+            [value]="slug()"
+            (input)="setSlug($any($event.target).value)"
+          />
+        </div>
+        <small id="org-slug-hint" class="muted">{{ i18n.t('orgs.slugHint') }}</small>
+      </div>
+      @if (createError(); as message) {
+        <p class="error" role="alert">{{ message }}</p>
+      }
+      <p class="hint">{{ i18n.t('orgs.ownerHint') }}</p>
+      <div>
+        <button type="submit" class="btn primary" [disabled]="creating()">{{ i18n.t('orgs.createButton') }}</button>
+      </div>
+    </form>
+  </section>
+</main>

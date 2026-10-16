@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
+import { OrgContext, landingUrl } from '../../core/org/org-context';
 
 @Component({
   selector: 'app-auth-callback',
@@ -44,12 +45,14 @@ export class AuthCallback implements OnInit {
   protected readonly i18n = inject(I18n);
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly org = inject(OrgContext);
   protected readonly failed = signal(false);
 
   async ngOnInit(): Promise<void> {
     try {
       const returnUrl = await this.auth.completeLogin();
-      await this.router.navigateByUrl(returnUrl, { replaceUrl: true });
+      const orgs = await this.org.load(true).catch(() => []);
+      await this.router.navigateByUrl(landingUrl(orgs, returnUrl), { replaceUrl: true });
     } catch (error) {
       console.error('Sign-in callback failed', error);
       this.failed.set(true);

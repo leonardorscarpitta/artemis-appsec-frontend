@@ -16,6 +16,7 @@ import {
 } from '../../core/api/organization';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { RoleNotice } from '../../shared/role-notice';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
 
@@ -26,15 +27,20 @@ const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'p
 
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState],
+  imports: [DatePipe, RequestState, RoleNotice],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
 export class Settings {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(OrganizationApi);
-  private readonly org = inject(OrgContext);
+  protected readonly org = inject(OrgContext);
   private readonly router = inject(Router);
+  protected readonly canEdit = computed(() => this.org.can('team'));
+  protected readonly canManageTokens = computed(() => this.org.can('integrations'));
+  protected readonly isOwner = computed(() => this.org.current()?.role === 'owner');
+  protected readonly leaving = signal(false);
+  protected readonly leaveError = signal<string | null>(null);
 
   protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
   protected readonly form = linkedSignal(() => this.remote.value());
@@ -42,7 +48,7 @@ export class Settings {
   protected readonly tabs: Tab[] = ['general', 'auth', 'notifications', 'tokens', 'retention', 'danger'];
   protected readonly tab = signal<Tab>('general');
   // Tokens and deletion act immediately, so they have no save bar.
-  protected readonly hasSaveBar = computed(() => !['tokens', 'danger'].includes(this.tab()));
+  protected readonly hasSaveBar = computed(() => this.canEdit() && !['tokens', 'danger'].includes(this.tab()));
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
@@ -134,8 +140,8 @@ export class Settings {
       next: (updated) => {
         const previousSlug = this.org.slug();
         this.remote.set(updated);
+        this.org.rename(updated.general.slug, updated.general.name);
         if (updated.general.slug !== previousSlug) {
-          this.org.slug.set(updated.general.slug);
           void this.router.navigateByUrl(this.org.url('/settings'), { replaceUrl: true });
         }
         this.saving.set(false);
@@ -201,8 +207,30 @@ export class Settings {
   }
 
   protected deleteOrganization(): void {
+    const slug = this.org.slug();
     this.api.deleteOrganization().subscribe({
-      error: (err) => this.deleteMessage.set(problemMessage(err) ?? this.i18n.t('settings.danger.requested')),
+      next: () => {
+        if (slug) this.org.remove(slug);
+        void this.router.navigateByUrl('/organizations');
+      },
+      error: (err) => this.deleteMessage.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
+  }
+
+  protected leave(): void {
+    const current = this.org.current();
+    if (!current || !confirm(this.i18n.t('settings.leave.confirm').replace('{name}', current.name))) return;
+    this.leaving.set(true);
+    this.leaveError.set(null);
+    this.api.leaveOrganization(current.slug).subscribe({
+      next: () => {
+        this.org.remove(current.slug);
+        void this.router.navigateByUrl('/organizations');
+      },
+      error: (err) => {
+        this.leaving.set(false);
+        this.leaveError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
     });
   }
 }

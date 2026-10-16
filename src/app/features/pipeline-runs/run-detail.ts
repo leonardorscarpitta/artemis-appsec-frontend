@@ -22,7 +22,7 @@ export class RunDetail {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(PipelineRunsApi);
   private readonly router = inject(Router);
-  private readonly org = inject(OrgContext);
+  protected readonly org = inject(OrgContext);
 
   readonly id = input.required<string>();
 

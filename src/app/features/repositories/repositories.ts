@@ -7,6 +7,7 @@ import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
+import { OrgContext } from '../../core/org/org-context';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   push: 'ob.settings.interval.push',
@@ -25,7 +26,11 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
         <p>{{ i18n.t('repo.subtitle') }}</p>
       </div>
       <div class="page-actions">
-        <a class="btn primary" [routerLink]="'/onboarding' | orgLink">{{ i18n.t('repo.add') }}</a>
+        @if (org.can('pipelines')) {
+          <a class="btn primary" [routerLink]="'/onboarding' | orgLink">{{ i18n.t('repo.add') }}</a>
+        } @else {
+          <button type="button" class="btn primary" disabled [title]="org.reason('pipelines')">{{ i18n.t('repo.add') }}</button>
+        }
       </div>
     </header>
 
@@ -104,6 +109,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 })
 export class Repositories {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
   protected readonly scheduleLabels = SCHEDULE_LABELS;
 }
