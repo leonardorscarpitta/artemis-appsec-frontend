@@ -10,6 +10,7 @@ import { DashboardSummary, dashboardUrl } from '../core/api/findings';
 import { LangSwitch } from '../shared/lang-switch';
 import { Logo } from '../shared/logo';
 import { ThemeToggle } from '../shared/theme-toggle';
+import { OrgLink } from '../shared/org-link';
 
 interface NavItem {
   path: string;
@@ -38,7 +39,7 @@ const ICONS = {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch, ThemeToggle],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch, ThemeToggle, OrgLink],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   host: { '(document:keydown.escape)': 'closeMenu()' },

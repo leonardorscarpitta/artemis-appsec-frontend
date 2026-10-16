@@ -9,10 +9,12 @@ import { Severity } from '../../core/domain';
 import { PHASES, Phase, StageId } from '../../core/pipeline';
 import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';
+import { OrgLink } from '../../shared/org-link';
+import { OrgContext } from '../../core/org/org-context';
 
 @Component({
   selector: 'app-run-detail',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink],
   templateUrl: './run-detail.html',
   styleUrl: './run-detail.scss',
 })
@@ -20,6 +22,7 @@ export class RunDetail {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(PipelineRunsApi);
   private readonly router = inject(Router);
+  private readonly org = inject(OrgContext);
 
   readonly id = input.required<string>();
 
@@ -46,7 +49,7 @@ export class RunDetail {
       this.api.rerun(number).subscribe({
         next: (created) => {
           this.busy.set(false);
-          this.router.navigate(['/pipelines', created.run.number]);
+          this.router.navigate([this.org.url('/pipelines'), created.run.number]);
         },
         error: (err) => this.fail(err),
       }),

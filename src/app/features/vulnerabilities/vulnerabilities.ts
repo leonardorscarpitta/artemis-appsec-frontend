@@ -9,6 +9,7 @@ import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';
+import { OrgLink } from '../../shared/org-link';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
 
@@ -21,7 +22,7 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })

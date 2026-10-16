@@ -16,6 +16,8 @@ import {
 } from '../../core/api/organization';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { Router } from '@angular/router';
+import { OrgContext } from '../../core/org/org-context';
 
 type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'danger';
 type RetentionField = keyof OrganizationSettings['retention'];
@@ -31,6 +33,8 @@ const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'p
 export class Settings {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(OrganizationApi);
+  private readonly org = inject(OrgContext);
+  private readonly router = inject(Router);
 
   protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
   protected readonly form = linkedSignal(() => this.remote.value());
@@ -128,7 +132,12 @@ export class Settings {
     this.saveError.set(null);
     this.api.updateSettings(form).subscribe({
       next: (updated) => {
+        const previousSlug = this.org.slug();
         this.remote.set(updated);
+        if (updated.general.slug !== previousSlug) {
+          this.org.slug.set(updated.general.slug);
+          void this.router.navigateByUrl(this.org.url('/settings'), { replaceUrl: true });
+        }
         this.saving.set(false);
         this.saved.set(true);
         setTimeout(() => this.saved.set(false), 3000);

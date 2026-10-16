@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
+import { legacyPageGuard, legacyPageMatcher, orgGuard } from './core/org/org-guard';
 import { Shell } from './layout/shell';
 
 export const routes: Routes = [
@@ -13,11 +14,13 @@ export const routes: Routes = [
     path: 'auth/callback',
     loadComponent: () => import('./features/auth-callback/auth-callback').then((m) => m.AuthCallback),
   },
+  { matcher: legacyPageMatcher, canActivate: [authGuard, legacyPageGuard], children: [] },
   {
-    path: '',
+    path: ':org',
     component: Shell,
-    canActivate: [authGuard],
+    canActivate: [authGuard, orgGuard],
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
@@ -72,6 +75,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
       },
       { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
+      { path: '**', redirectTo: 'dashboard' },
     ],
   },
   { path: '**', redirectTo: '' },

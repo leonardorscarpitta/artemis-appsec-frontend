@@ -77,7 +77,7 @@
         <tr>
           <td class="primary-cell">
             @if (report.status === 'ready') {
-              <a class="title" [routerLink]="['/reports', report.id]">{{ report.title }}</a>
+              <a class="title" [routerLink]="['/reports', report.id] | orgLink">{{ report.title }}</a>
             } @else {
               <span class="title">{{ report.title }}</span>
             }

@@ -11,7 +11,7 @@
   </div>
 
   <div class="scroll">
-    <a class="new-project" routerLink="/onboarding" routerLinkActive="active" [title]="i18n.t('nav.onboarding')">
+    <a class="new-project" [routerLink]="'/onboarding' | orgLink" routerLinkActive="active" [title]="i18n.t('nav.onboarding')">
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" /></svg>
       <span class="text">{{ i18n.t('nav.onboarding') }}</span>
     </a>
@@ -23,7 +23,7 @@
           <ul>
             @for (item of group.items; track item.path) {
               <li>
-                <a [routerLink]="item.path" routerLinkActive="active" ariaCurrentWhenActive="page" [title]="i18n.t(item.label)">
+                <a [routerLink]="item.path | orgLink" routerLinkActive="active" ariaCurrentWhenActive="page" [title]="i18n.t(item.label)">
                   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                     <path [attr.d]="item.icon" fill="currentColor" fill-rule="evenodd" />
                   </svg>
@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <a class="help" routerLink="/help" routerLinkActive="active" [title]="i18n.t('nav.help')">
+    <a class="help" [routerLink]="'/help' | orgLink" routerLinkActive="active" [title]="i18n.t('nav.help')">
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="currentColor" fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m1 17h-2v-2h2zm2.1-7.8-.9.9c-.7.7-1.2 1.3-1.2 2.9h-2v-.5c0-1.1.4-2.1 1.2-2.8l1.2-1.3A2 2 0 0 0 12 8a2 2 0 0 0-2 2H8a4 4 0 0 1 8 0c0 .9-.4 1.7-.9 2.2" />
       </svg>

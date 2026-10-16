@@ -1,4 +1,4 @@
-<a class="back" routerLink="/repositories">
+<a class="back" [routerLink]="'/repositories' | orgLink">
   <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" /></svg>
   {{ i18n.t('rs.back') }}
 </a>
@@ -44,7 +44,7 @@
       }
     </span>
     <div class="buttons">
-      <a class="btn" routerLink="/repositories">{{ i18n.t('rs.cancel') }}</a>
+      <a class="btn" [routerLink]="'/repositories' | orgLink">{{ i18n.t('rs.cancel') }}</a>
       <button type="button" class="btn primary" [disabled]="saving()" (click)="save()">{{ i18n.t('rs.save') }}</button>
     </div>
   </footer>

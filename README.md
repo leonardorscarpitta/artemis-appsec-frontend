@@ -56,6 +56,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/theme.ts` | Light/dark theme: sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference (an inline script in `index.html` applies it before boot) |
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
 | `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
+| `src/app/core/org/` | `OrgContext` (current organization slug), `orgGuard` and legacy URL redirects; `shared/org-link.ts` is the `orgLink` pipe |
 | `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
@@ -64,6 +65,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/features/` | One folder per page: `home`, `login`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
 
 ## Routes
+
+In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). The slug comes from `GET /organization/settings` (`OrgContext`); `orgGuard` rewrites a wrong slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page under the slug. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login` and `/auth/callback` are public and unprefixed.
 
 | Path | Page |
 | --- | --- |
