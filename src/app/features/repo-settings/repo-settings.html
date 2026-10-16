@@ -8,13 +8,24 @@
 } @else if (repo(); as repo) {
   <header class="page-header">
     <div>
-      <h1>{{ repo.name }} <span class="tag">{{ repo.stack }}</span></h1>
+      <h1>
+        {{ repo.name }}
+        @if (repo.folders.length) {
+          <span class="tag">{{ i18n.t('mono.tag') }}</span>
+        } @else {
+          <span class="tag">{{ repo.stack }}</span>
+        }
+      </h1>
       <p class="mono">
         {{ repo.url }}
-        @if (repo.directory) {
-          <span class="tag" [title]="i18n.t('rs.directory')">/{{ repo.directory }}</span>
-        }
       </p>
+      @if (repo.folders.length) {
+        <p class="folder-tags" [attr.aria-label]="i18n.t('mono.folders')">
+          @for (f of repo.folders; track f.path) {
+            <span class="tag"><span class="mono">{{ f.path }}</span> · {{ f.stack }}</span>
+          }
+        </p>
+      }
     </div>
     <div class="page-actions">
       <app-run-scan-button [repository]="repo.name" [primary]="true" />
@@ -36,6 +47,8 @@
     <fieldset class="contents" [disabled]="!canEdit()">
     @switch (tab()) {
       @case ('general') {
+        <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
+        <hr />
         <app-scan-settings [(settings)]="settings" />
       }
       @case ('pipeline') {

@@ -58,24 +58,7 @@
           <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
           <input id="branch" class="input mono" type="text" required [value]="branch()" (input)="branch.set(input($event.target))" />
         </div>
-        <div class="field">
-          <label for="directory">{{ i18n.t('ob.repo.directory') }}</label>
-          <input
-            id="directory"
-            class="input mono"
-            type="text"
-            placeholder="frontend"
-            [value]="directory()"
-            (input)="directory.set(input($event.target))"
-            [attr.aria-invalid]="showErrors() && !directoryValid()"
-            aria-describedby="directory-hint"
-          />
-          @if (showErrors() && !directoryValid()) {
-            <span id="directory-hint" class="error-text">{{ i18n.t('ob.repo.directoryInvalid') }}</span>
-          } @else {
-            <span id="directory-hint" class="hint">{{ i18n.t('ob.repo.directoryHint') }}</span>
-          }
-        </div>
+        <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
       </div>
     }
     @case (2) {
@@ -92,20 +75,29 @@
     @case (4) {
       <h2>{{ i18n.t('ob.detect.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
-      <fieldset>
-        <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
-        <div class="stacks">
-          @for (s of stacks; track s) {
-            <label class="stack-option" [class.detected]="s === stack()">
-              <input type="radio" name="stack" [checked]="s === stack()" (change)="stack.set(s)" />
-              <strong>{{ s }}</strong>
-            </label>
+      @if (monorepo()) {
+        <p>{{ i18n.t('ob.detect.monorepo') }}</p>
+        <ul class="folder-list">
+          @for (f of settings().folders; track f.path) {
+            <li><span class="mono">{{ f.path }}</span> <span class="tag">{{ f.stack }}</span></li>
           }
-        </div>
-        @if (showErrors() && !stack()) {
-          <span class="error-text" role="alert">{{ i18n.t('ob.detect.required') }}</span>
-        }
-      </fieldset>
+        </ul>
+      } @else {
+        <fieldset>
+          <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
+          <div class="stacks">
+            @for (s of stacks; track s) {
+              <label class="stack-option" [class.detected]="s === stack()">
+                <input type="radio" name="stack" [checked]="s === stack()" (change)="stack.set(s)" />
+                <strong>{{ s }}</strong>
+              </label>
+            }
+          </div>
+          @if (showErrors() && !stack()) {
+            <span class="error-text" role="alert">{{ i18n.t('ob.detect.required') }}</span>
+          }
+        </fieldset>
+      }
       @if (submitError(); as error) {
         <p class="error-text" role="alert">{{ error }}</p>
       }

@@ -86,7 +86,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
-| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs; optional monorepo folder shown in the header; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
+| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
 | `/pipelines`, `/pipelines/:id` | Pipeline runs and run detail (stages, logs) |
 | `/reports`, `/reports/:id` | Reports list and printable report view |
 | `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
