@@ -4,6 +4,7 @@ import { httpResource } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { Auth } from '../core/auth/auth';
 import { I18n, TranslationKey } from '../core/i18n';
 import { DashboardSummary, dashboardUrl } from '../core/api/findings';
 import { LangSwitch } from '../shared/lang-switch';
@@ -44,6 +45,8 @@ const ICONS = {
 })
 export class Shell {
   protected readonly i18n = inject(I18n);
+  protected readonly auth = inject(Auth);
+  private readonly router = inject(Router);
 
   // Only relevant below the tablet breakpoint, where the sidebar becomes a drawer.
   protected readonly menuOpen = signal(false);
@@ -55,8 +58,7 @@ export class Shell {
     // Keeps anchor targets (e.g. Help sections) clear of the sticky top bar.
     inject(ViewportScroller).setOffset([0, 72]);
 
-    inject(Router)
-      .events.pipe(
+    this.router.events.pipe(
         filter((e) => e instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
@@ -71,6 +73,11 @@ export class Shell {
       else if (this.wasOpen) this.menuButton().nativeElement.focus();
       this.wasOpen = open;
     });
+  }
+
+  protected async signOut(): Promise<void> {
+    await this.auth.logout();
+    await this.router.navigateByUrl('/');
   }
 
   protected closeMenu(): void {

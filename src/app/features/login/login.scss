@@ -250,3 +250,8 @@ h1 {
   text-decoration: none;
   align-self: flex-start;
 }
+
+.error {
+  color: var(--sev-critical);
+  font-size: 0.85rem;
+}

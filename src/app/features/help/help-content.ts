@@ -20,7 +20,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'Artemis is an application security testing platform. It connects to your Git repositories, runs a configurable DevSecOps pipeline on them and reports vulnerabilities scored with CVSS, using the NIST National Vulnerability Database as the source.' },
         { kind: 'p', text: 'The home page presents the product, how it works and answers to common questions. Select "Sign in" or "Get started" to open the sign-in screen.' },
-        { kind: 'p', text: 'To sign in, choose "Sign in with SSO" and authenticate with your organization account. Authentication is handled by your identity provider through OpenID Connect; Artemis never stores your password.' },
+        { kind: 'p', text: 'To sign in, choose "Sign in with SSO". You are taken to your organization\'s sign-in page (Authelia), and after entering your username and password you return to the page you were trying to open. Authentication uses OpenID Connect; Artemis never sees or stores your password.' },
+        { kind: 'p', text: 'Your name appears in the top bar while you are signed in. The session lasts for the current browser tab; if it expires you are asked to sign in again. "Sign out" ends your Artemis session — the sign-in page may still remember you, so you can return without typing your password again.' },
         { kind: 'p', text: 'The interface is organized as follows:' },
         {
           kind: 'ul',
@@ -368,7 +369,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações. Ele se conecta aos seus repositórios Git, executa neles um pipeline DevSecOps configurável e reporta vulnerabilidades pontuadas com CVSS, usando a National Vulnerability Database do NIST como fonte.' },
         { kind: 'p', text: 'A página inicial apresenta o produto, como ele funciona e respostas a dúvidas comuns. Selecione "Entrar" ou "Começar" para abrir a tela de login.' },
-        { kind: 'p', text: 'Para entrar, escolha "Entrar com SSO" e autentique-se com a conta da sua organização. A autenticação é feita pelo seu provedor de identidade via OpenID Connect; o Artemis nunca armazena sua senha.' },
+        { kind: 'p', text: 'Para entrar, escolha "Entrar com SSO". Você será levado à página de login da sua organização (Authelia) e, depois de informar usuário e senha, voltará para a página que tentava abrir. A autenticação usa OpenID Connect; o Artemis nunca vê nem armazena sua senha.' },
+        { kind: 'p', text: 'Seu nome aparece na barra superior enquanto você estiver conectado. A sessão vale para a aba atual do navegador; se expirar, será pedido um novo login. "Sair" encerra sua sessão no Artemis — a página de login pode continuar lembrando de você, permitindo voltar sem digitar a senha novamente.' },
         { kind: 'p', text: 'A interface está organizada assim:' },
         {
           kind: 'ul',
