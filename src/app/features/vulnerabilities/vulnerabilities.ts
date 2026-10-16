@@ -1,15 +1,27 @@
-import { Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Component, WritableSignal, computed, effect, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FindingSummary, findingParams, findingsUrl, packageLabel } from '../../core/api/findings';
+import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
-import { FINDINGS, FindingStatus, REPOSITORIES, STATUS_KEYS, Severity, severityOf } from '../../core/mock-data';
+import { FindingStatus, STATUS_KEYS, Severity } from '../../core/mock-data';
+import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
 
+const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc' }> = {
+  cvssDesc: { sort: 'cvss', dir: 'desc' },
+  cvssAsc: { sort: 'cvss', dir: 'asc' },
+  dateDesc: { sort: 'detected', dir: 'desc' },
+  dateAsc: { sort: 'detected', dir: 'asc' },
+};
+
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, SeverityBadge, StatusLabel],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })
@@ -18,8 +30,8 @@ export class Vulnerabilities {
 
   protected readonly severities: Severity[] = ['critical', 'high', 'medium', 'low'];
   protected readonly statuses = Object.keys(STATUS_KEYS) as FindingStatus[];
-  protected readonly repositories = REPOSITORIES.map((r) => r.name);
   protected readonly sorts: Sort[] = ['cvssDesc', 'cvssAsc', 'dateDesc', 'dateAsc'];
+  protected readonly packageLabel = packageLabel;
 
   protected readonly query = signal('');
   protected readonly severity = signal<Severity | ''>('');
@@ -27,27 +39,40 @@ export class Vulnerabilities {
   protected readonly repository = signal('');
   protected readonly sort = signal<Sort>('cvssDesc');
 
-  protected readonly filtered = computed(() => {
-    const q = this.query().trim().toLowerCase();
-    const results = FINDINGS.filter(
-      (f) =>
-        (!q || [f.cve, f.pkg, f.title].some((v) => v.toLowerCase().includes(q))) &&
-        (!this.severity() || severityOf(f.cvss) === this.severity()) &&
-        (!this.status() || f.status === this.status()) &&
-        (!this.repository() || f.repository === this.repository()),
-    );
-    const compare: Record<Sort, (a: (typeof results)[0], b: (typeof results)[0]) => number> = {
-      cvssDesc: (a, b) => b.cvss - a.cvss,
-      cvssAsc: (a, b) => a.cvss - b.cvss,
-      dateDesc: (a, b) => b.detected.localeCompare(a.detected),
-      dateAsc: (a, b) => a.detected.localeCompare(b.detected),
-    };
-    return results.sort(compare[this.sort()]);
+  // Only sent to the API once typing pauses.
+  private readonly searchTerm = signal('');
+
+  private readonly repositoryList = httpResource<ProjectSummary[]>(() => repositoriesUrl());
+  protected readonly repositories = computed(() => (this.repositoryList.value() ?? []).map((r) => r.name));
+
+  protected readonly results = httpResource<FindingSummary[]>(() => ({
+    url: findingsUrl(),
+    params: findingParams({
+      q: this.searchTerm(),
+      severity: this.severity(),
+      status: this.status(),
+      repository: this.repository(),
+      ...SORT_PARAMS[this.sort()],
+    }),
+  }));
+
+  // Keeps the previous rows on screen while a new filter combination loads.
+  protected readonly rows = linkedSignal<FindingSummary[] | undefined, FindingSummary[]>({
+    source: this.results.value,
+    computation: (value, previous) => value ?? previous?.value ?? [],
   });
 
   protected readonly hasFilters = computed(
     () => !!(this.query() || this.severity() || this.status() || this.repository()),
   );
+
+  constructor() {
+    effect((onCleanup) => {
+      const term = this.query();
+      const timer = setTimeout(() => this.searchTerm.set(term.trim()), 300);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
 
   protected severityLabel(severity: Severity): string {
     return this.i18n.t(`sev.${severity}`);
@@ -67,6 +92,7 @@ export class Vulnerabilities {
 
   protected clear(): void {
     this.query.set('');
+    this.searchTerm.set('');
     this.severity.set('');
     this.status.set('');
     this.repository.set('');

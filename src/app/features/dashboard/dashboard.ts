@@ -1,45 +1,32 @@
+import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DashboardSummary, dashboardUrl, packageLabel } from '../../core/api/findings';
 import { I18n } from '../../core/i18n';
-import { FINDINGS, Severity, severityOf } from '../../core/mock-data';
+import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from '../vulnerabilities/status-label';
 
-const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low'];
-
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, SeverityBadge, StatusLabel],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
   protected readonly i18n = inject(I18n);
-  protected readonly findings = FINDINGS;
-  protected readonly recent = [...FINDINGS].sort((a, b) => b.detected.localeCompare(a.detected)).slice(0, 8);
-
-  private readonly open = computed(() => this.findings.filter((f) => f.status === 'open' || f.status === 'triaged'));
-
-  protected readonly stats = computed(() => {
-    const open = this.open();
-    const avg = open.reduce((sum, f) => sum + f.cvss, 0) / (open.length || 1);
-    return {
-      open: open.length,
-      critical: open.filter((f) => severityOf(f.cvss) === 'critical').length,
-      avgCvss: avg.toFixed(1),
-    };
-  });
+  protected readonly summary = httpResource<DashboardSummary>(() => dashboardUrl());
+  protected readonly packageLabel = packageLabel;
 
   protected readonly distribution = computed(() => {
-    const open = this.open();
-    return SEVERITIES.map((severity) => {
-      const count = open.filter((f) => severityOf(f.cvss) === severity).length;
-      return {
-        severity,
-        count,
-        percent: open.length ? (count / open.length) * 100 : 0,
-        label: this.i18n.t(`sev.${severity}`),
-      };
-    });
+    const summary = this.summary.value();
+    if (!summary) return [];
+    return summary.bySeverity.map(({ severity, count }) => ({
+      severity,
+      count,
+      percent: summary.openFindings ? (count / summary.openFindings) * 100 : 0,
+      label: this.i18n.t(`sev.${severity}`),
+    }));
   });
 }

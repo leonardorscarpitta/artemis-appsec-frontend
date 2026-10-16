@@ -1,10 +1,11 @@
-import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, afterRenderEffect, computed, inject, signal, viewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
+import { httpResource } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { I18n, TranslationKey } from '../core/i18n';
-import { FINDINGS, REPOSITORIES } from '../core/mock-data';
+import { DashboardSummary, dashboardUrl } from '../core/api/findings';
 import { LangSwitch } from '../shared/lang-switch';
 import { Logo } from '../shared/logo';
 import { ThemeToggle } from '../shared/theme-toggle';
@@ -59,7 +60,10 @@ export class Shell {
         filter((e) => e instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe(() => this.menuOpen.set(false));
+      .subscribe(() => {
+        this.menuOpen.set(false);
+        this.counts.reload();
+      });
 
     afterRenderEffect(() => {
       const open = this.menuOpen();
@@ -75,7 +79,10 @@ export class Shell {
 
   protected readonly usage = { used: 142, limit: 500 };
 
-  protected readonly groups: NavGroup[] = [
+  // Badge counts; refreshed on every navigation so status changes are reflected.
+  private readonly counts = httpResource<DashboardSummary>(() => dashboardUrl());
+
+  protected readonly groups = computed<NavGroup[]>(() => [
     {
       label: 'nav.overview',
       items: [{ path: '/dashboard', label: 'nav.dashboard', icon: ICONS.dashboard }],
@@ -87,10 +94,10 @@ export class Shell {
           path: '/vulnerabilities',
           label: 'nav.vulnerabilities',
           icon: ICONS.bug,
-          count: FINDINGS.filter((f) => f.status === 'open').length,
+          count: this.counts.value()?.openFindings,
           alert: true,
         },
-        { path: '/repositories', label: 'nav.repositories', icon: ICONS.folder, count: REPOSITORIES.length },
+        { path: '/repositories', label: 'nav.repositories', icon: ICONS.folder, count: this.counts.value()?.repositories },
         { path: '/pipelines', label: 'nav.pipelines', icon: ICONS.pipeline },
         { path: '/reports', label: 'nav.reports', icon: ICONS.report },
       ],
@@ -104,5 +111,5 @@ export class Shell {
         { path: '/settings', label: 'nav.settings', icon: ICONS.gear },
       ],
     },
-  ];
+  ]);
 }
