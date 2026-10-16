@@ -115,8 +115,8 @@ export class ProjectsApi {
   }
 
   /** Queues a scan of the repository's default branch; 409 when the monthly scan limit is reached. */
-  runScan(name: string): Observable<RunDetails> {
-    return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, null);
+  runScan(name: string, folders?: string[]): Observable<RunDetails> {
+    return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, folders ? { folders } : null);
   }
 
   rotateKey(name: string): Observable<RepositoryAccess> {

@@ -36,6 +36,12 @@
         <dt>{{ i18n.t('runs.filter.branch') }}</dt>
         <dd class="mono">{{ run.branch }}</dd>
       </div>
+      @if (run.folders.length) {
+        <div>
+          <dt>{{ i18n.t('runs.folders') }}</dt>
+          <dd class="mono">{{ run.folders.join(', ') }}</dd>
+        </div>
+      }
       <div class="wide">
         <dt>{{ i18n.t('runs.col.commit') }}</dt>
         <dd><span class="mono sha">{{ run.commit }}</span><span class="muted">{{ run.message }}</span></dd>

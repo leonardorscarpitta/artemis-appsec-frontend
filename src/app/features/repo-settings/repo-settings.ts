@@ -44,6 +44,7 @@ export class RepoSettings {
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
   protected readonly showErrors = signal(false);
+  protected readonly folderPaths = computed(() => (this.repo()?.folders ?? []).map((f) => f.path));
   protected readonly confirmName = signal('');
   protected readonly removing = signal(false);
   protected readonly removeError = signal<string | null>(null);
