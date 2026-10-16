@@ -64,7 +64,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
 | `src/app/core/org/` | `OrgContext` (current organization slug), `orgGuard` and legacy URL redirects; `shared/org-link.ts` is the `orgLink` pipe |
 | `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, account URL, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
-| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
+| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`, `billing.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
@@ -91,6 +91,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
 | `/team` | Members, invitations, roles and permissions |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone) |
+| `/billing` | Plans (Free, PRO R$ 24,99/month with AI) and the current subscription; read-only while billing is disabled on the API |
 | `/help` | In-app user guide |
 
 ## Styling

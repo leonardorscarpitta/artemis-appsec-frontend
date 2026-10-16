@@ -84,6 +84,7 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
       },
+      { path: 'billing', loadComponent: () => import('./features/billing/billing').then((m) => m.Billing) },
       { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
       { path: '**', redirectTo: 'dashboard' },
     ],
