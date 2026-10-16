@@ -3,12 +3,14 @@
   {{ i18n.t('reports.back') }}
 </a>
 
-@if (report(); as report) {
+@if (notFound()) {
+  <p class="card">{{ i18n.t('reports.notFound') }}</p>
+} @else if (report(); as report) {
   <header class="page-header">
     <div>
       <p class="eyebrow">{{ typeLabel(report.type) }} · {{ report.scope ?? i18n.t('reports.scope.org') }}</p>
       <h1>{{ report.title }}</h1>
-      <p>{{ report.period }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt }}</p>
+      <p>{{ report.periodStart }} – {{ report.periodEnd }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</p>
     </div>
     <div class="page-actions">
       <button type="button" class="btn" (click)="share()">
@@ -18,10 +20,11 @@
     </div>
   </header>
 
+  @if (content(); as detail) {
   <div class="report">
     <section class="card summary" aria-labelledby="summary-title">
       <h2 id="summary-title">{{ i18n.t('reports.summary.title') }}</h2>
-      <p>{{ i18n.t('reports.summary.text') }}</p>
+      <p>{{ detail.summary }}</p>
     </section>
 
     <dl class="kpis">
@@ -106,20 +109,14 @@
           <h2 id="ai-title">{{ i18n.t('reports.ai.title') }}</h2>
         </div>
         <p class="muted">{{ i18n.t('reports.ai.desc') }}</p>
-        <dl class="ai">
-          <div>
-            <dt>{{ i18n.t('reports.ai.reviewed') }}</dt>
-            <dd>{{ detail.aiTriage.reviewed }}</dd>
-          </div>
-          <div>
-            <dt>{{ i18n.t('reports.ai.dismissed') }}</dt>
-            <dd>{{ detail.aiTriage.dismissed }}</dd>
-          </div>
-          <div>
-            <dt>{{ i18n.t('reports.ai.confidence') }}</dt>
-            <dd>{{ detail.aiTriage.confidence }}%</dd>
-          </div>
-        </dl>
+        <p class="locked">
+          <span class="tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
+            </svg>
+            {{ i18n.t('ob.settings.aiLocked') }}
+          </span>
+        </p>
       </section>
 
       <section class="card" aria-labelledby="recs-title">
@@ -127,8 +124,8 @@
           <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
         </div>
         <ol class="recs">
-          @for (rec of recommendations; track rec) {
-            <li>{{ i18n.t(rec) }}</li>
+          @for (rec of detail.recommendations; track $index) {
+            <li>{{ rec }}</li>
           }
         </ol>
       </section>
@@ -150,7 +147,7 @@
             <tr [class.zero]="!o.findings">
               <th scope="row"><span class="mono code">{{ o.id }}</span> {{ o.name }}</th>
               <td class="num">
-                <span class="bar" aria-hidden="true"><span [style.width.%]="(o.findings / owaspMax) * 100"></span></span>
+                <span class="bar" aria-hidden="true"><span [style.width.%]="(o.findings / owaspMax()) * 100"></span></span>
                 {{ o.findings }}
               </td>
             </tr>
@@ -159,6 +156,9 @@
       </table>
     </section>
   </div>
+  } @else {
+    <p class="card generating" role="status">{{ i18n.t('reports.generatingNote') }}</p>
+  }
 } @else {
-  <p class="card">{{ i18n.t('reports.notFound') }}</p>
+  <app-request-state [resource]="details" />
 }

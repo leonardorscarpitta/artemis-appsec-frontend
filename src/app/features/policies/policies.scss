@@ -146,6 +146,11 @@
     font-size: 0.85rem;
   }
 
+  .error {
+    color: var(--sev-critical);
+    font-weight: 500;
+  }
+
   .ok {
     color: var(--sev-low);
     font-weight: 500;
