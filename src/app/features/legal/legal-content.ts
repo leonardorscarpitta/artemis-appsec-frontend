@@ -10,7 +10,7 @@ export interface LegalText {
   sections: HelpSection[];
 }
 
-const CONTACT = 'privacy@artemisappsec.com';
+const CONTACT = 'privacy@artemisappsec.papopromines.com.br';
 const UPDATED = '2026-10-16';
 
 export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
