@@ -9,6 +9,16 @@ export const routes: Routes = [
     path: 'docs',
     loadComponent: () => import('./features/public-docs/public-docs').then((m) => m.PublicDocs),
   },
+  {
+    path: 'privacy',
+    data: { doc: 'privacy' },
+    loadComponent: () => import('./features/public-docs/public-docs').then((m) => m.PublicDocs),
+  },
+  {
+    path: 'terms',
+    data: { doc: 'terms' },
+    loadComponent: () => import('./features/public-docs/public-docs').then((m) => m.PublicDocs),
+  },
   { path: 'login', loadComponent: () => import('./features/login/login').then((m) => m.Login) },
   {
     path: 'auth/callback',

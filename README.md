@@ -78,6 +78,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | --- | --- |
 | `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): organization, role, members and project shortcuts from the API |
 | `/docs` | Public user guide (same content as `/help`) for visitors who are not signed in |
+| `/privacy`, `/terms` | Privacy Policy and Terms of Use (text in `features/legal/legal-content.ts`, en-US + pt-BR) |
 | `/login` | SSO sign-in (redirects to Authelia) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in and returns to the requested page |
 | `/dashboard` | Security overview with CVSS severities |

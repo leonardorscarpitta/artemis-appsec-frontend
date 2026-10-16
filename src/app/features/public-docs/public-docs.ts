@@ -1,5 +1,5 @@
 import { ViewportScroller } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
@@ -7,8 +7,9 @@ import { LangSwitch } from '../../shared/lang-switch';
 import { Logo } from '../../shared/logo';
 import { ThemeToggle } from '../../shared/theme-toggle';
 import { Help } from '../help/help';
+import { LEGAL, LegalDocument } from '../legal/legal-content';
 
-/** The user guide for visitors who are not signed in. */
+/** Public document pages (user guide, privacy policy, terms of use) for visitors who are not signed in. */
 @Component({
   selector: 'app-public-docs',
   imports: [RouterLink, Logo, LangSwitch, ThemeToggle, Help],
@@ -26,8 +27,20 @@ import { Help } from '../help/help';
       }
     </header>
     <main id="main" tabindex="-1">
-      <app-help />
+      @if (legal(); as text) {
+        <app-help [content]="text.sections" [heading]="text.title" [subheading]="text.summary" [meta]="text.updated" />
+      } @else {
+        <app-help />
+      }
     </main>
+    <footer class="foot muted">
+      <span>© 2026 Artemis</span>
+      <nav [attr.aria-label]="i18n.t('legal.nav')">
+        <a routerLink="/docs">{{ i18n.t('nav.help') }}</a>
+        <a routerLink="/privacy">{{ i18n.t('legal.privacy') }}</a>
+        <a routerLink="/terms">{{ i18n.t('legal.terms') }}</a>
+      </nav>
+    </footer>
   `,
   styles: `
     :host {
@@ -75,6 +88,28 @@ import { Help } from '../help/help';
       flex: 1;
     }
 
+    .foot {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+      max-width: 1280px;
+      margin-inline: auto;
+      padding: 1.25rem 1.75rem 2rem;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+      }
+
+      a {
+        color: inherit;
+      }
+    }
+
     main {
       max-width: 1280px;
       margin-inline: auto;
@@ -104,6 +139,13 @@ import { Help } from '../help/help';
 export class PublicDocs {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(Auth);
+
+  /** Set through the route's `data`; absent for the user guide. */
+  readonly doc = input<LegalDocument>();
+  protected readonly legal = computed(() => {
+    const doc = this.doc();
+    return doc ? LEGAL[doc][this.i18n.lang()] : null;
+  });
 
   constructor() {
     inject(ViewportScroller).setOffset([0, 72]);

@@ -1,7 +1,10 @@
 <header class="page-header">
   <div>
-    <h1>{{ i18n.t('nav.help') }}</h1>
-    <p>{{ i18n.t('help.subtitle') }}</p>
+    <h1>{{ title() }}</h1>
+    <p>{{ subtitle() }}</p>
+    @if (meta(); as meta) {
+      <p class="meta">{{ meta }}</p>
+    }
   </div>
 </header>
 

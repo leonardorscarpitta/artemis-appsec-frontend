@@ -126,3 +126,11 @@ article {
     padding: 1.1rem 1rem;
   }
 }
+
+.meta {
+  font-size: 0.85rem;
+}
+
+.page-header p:not(.meta) {
+  max-width: 62rem;
+}
