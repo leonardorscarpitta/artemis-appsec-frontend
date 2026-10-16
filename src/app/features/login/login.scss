@@ -266,3 +266,9 @@ h1 {
 .foot a {
   color: inherit;
 }
+
+.foot .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
