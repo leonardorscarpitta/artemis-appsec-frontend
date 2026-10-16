@@ -23,8 +23,13 @@
 
 <app-request-state [resource]="remote" />
 
+@if (tab() !== 'danger') {
+  <app-role-notice [permission]="tab() === 'tokens' ? 'integrations' : 'team'" />
+}
+
 @if (form(); as f) {
 <section class="card panel" id="settings-panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()" [class.danger-zone]="tab() === 'danger'">
+  <fieldset class="contents" [disabled]="tab() === 'danger' ? false : tab() === 'tokens' ? !canManageTokens() : !canEdit()">
   @switch (tab()) {
     @case ('general') {
       <div class="grid-2">
@@ -163,7 +168,7 @@
     @case ('tokens') {
       <div class="section-head">
         <p class="muted">{{ i18n.t('settings.tokens.desc') }}</p>
-        @if (!creatingToken() && !newToken()) {
+        @if (!creatingToken() && !newToken() && canManageTokens()) {
           <button type="button" class="btn primary" (click)="creatingToken.set(true)">{{ i18n.t('settings.tokens.create') }}</button>
         }
       </div>
@@ -255,6 +260,7 @@
                     {{ t.lastUsedAt ? (t.lastUsedAt | date: 'yyyy-MM-dd') : i18n.t('settings.tokens.never') }}
                   </td>
                   <td class="num" data-label="">
+                    @if (canManageTokens()) {
                     <button
                       type="button"
                       class="btn danger-text"
@@ -263,6 +269,7 @@
                     >
                       {{ i18n.t('settings.tokens.revoke') }}
                     </button>
+                    }
                   </td>
                 </tr>
               }
@@ -292,31 +299,48 @@
 
     @case ('danger') {
       <p class="muted">{{ i18n.t('settings.danger.desc') }}</p>
+      @if (!isOwner()) {
+        <div class="danger-box">
+          <div>
+            <h2>{{ i18n.t('settings.leave.title') }}</h2>
+            <p class="muted">{{ i18n.t('settings.leave.desc') }}</p>
+          </div>
+          <button type="button" class="btn danger" [disabled]="leaving()" (click)="leave()">{{ i18n.t('settings.leave.button') }}</button>
+          @if (leaveError(); as message) {
+            <p class="error" role="alert">{{ message }}</p>
+          }
+        </div>
+      }
       <div class="danger-box">
         <div>
           <h2>{{ i18n.t('settings.danger.delete') }}</h2>
           <p class="muted">{{ i18n.t('settings.danger.deleteDesc') }}</p>
         </div>
-        <div class="field">
-          <label for="confirm-name">{{ i18n.t('settings.danger.confirm') }}: <strong>{{ remote.value()?.general?.name }}</strong></label>
-          <input id="confirm-name" class="input" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
-        </div>
-        <button
-          type="button"
-          class="btn danger"
-          [disabled]="confirmName() !== remote.value()?.general?.name"
-          (click)="deleteOrganization()"
-        >
-          {{ i18n.t('settings.danger.button') }}
-        </button>
-        <p class="muted notice" aria-live="polite">
-          @if (deleteMessage(); as message) {
-            {{ message }}
-          }
-        </p>
+        @if (org.can('billing')) {
+          <div class="field">
+            <label for="confirm-name">{{ i18n.t('settings.danger.confirm') }}: <strong>{{ remote.value()?.general?.name }}</strong></label>
+            <input id="confirm-name" class="input" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
+          </div>
+          <button
+            type="button"
+            class="btn danger"
+            [disabled]="confirmName() !== remote.value()?.general?.name"
+            (click)="deleteOrganization()"
+          >
+            {{ i18n.t('settings.danger.button') }}
+          </button>
+          <p class="muted notice" aria-live="polite">
+            @if (deleteMessage(); as message) {
+              {{ message }}
+            }
+          </p>
+        } @else {
+          <app-role-notice permission="billing" />
+        }
       </div>
     }
   }
+  </fieldset>
 </section>
 
 @if (hasSaveBar()) {

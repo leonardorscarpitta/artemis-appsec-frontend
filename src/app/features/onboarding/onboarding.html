@@ -5,6 +5,9 @@
   </div>
 </header>
 
+<app-role-notice permission="pipelines" />
+
+@if (org.can('pipelines')) {
 <ol class="stepper">
   @for (s of steps; track s; let i = $index) {
     <li [class.done]="i < step()" [class.current]="i === step()" [attr.aria-current]="i === step() ? 'step' : null">
@@ -98,3 +101,4 @@
     </button>
   </footer>
 </section>
+}

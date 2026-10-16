@@ -5,23 +5,27 @@ import { concatMap } from 'rxjs';
 import { problemMessage } from '../../core/api/api';
 import { DEFAULT_SETTINGS, ProjectDetails, ProjectsApi, repositoryUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
+import { OrgContext } from '../../core/org/org-context';
 import { PipelineEditor } from '../../shared/pipeline-editor';
 import { RequestState } from '../../shared/request-state';
 import { ScanSettings } from '../../shared/scan-settings';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
+import { RoleNotice } from '../../shared/role-notice';
 
 type Tab = 'general' | 'pipeline';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })
 export class RepoSettings {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(ProjectsApi);
+  private readonly org = inject(OrgContext);
+  protected readonly canEdit = computed(() => this.org.can('pipelines'));
 
   readonly name = input.required<string>();
 

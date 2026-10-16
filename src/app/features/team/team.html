@@ -3,12 +3,14 @@
     <h1>{{ i18n.t('team.title') }}</h1>
     <p>{{ i18n.t('team.subtitle') }}</p>
   </div>
-  @if (!inviting()) {
+  @if (!inviting() && canManage()) {
     <div class="page-actions">
       <button type="button" class="btn primary" (click)="inviting.set(true)">{{ i18n.t('team.invite') }}</button>
     </div>
   }
 </header>
+
+<app-role-notice permission="team" />
 
 @if (inviting()) {
   <section class="card invite" aria-labelledby="invite-title">
@@ -55,6 +57,9 @@
         <th scope="col">{{ i18n.t('team.role') }}</th>
         <th scope="col">{{ i18n.t('team.lastActive') }}</th>
         <th scope="col">{{ i18n.t('team.status') }}</th>
+        @if (isOwner()) {
+          <th scope="col"><span class="sr-only">{{ i18n.t('team.actions') }}</span></th>
+        }
       </tr>
     </thead>
     <tbody>
@@ -72,6 +77,8 @@
           <td [attr.data-label]="i18n.t('team.role')">
             @if (member.role === 'owner') {
               <span class="tag owner" [title]="i18n.t('team.ownerHint')">{{ roleLabel('owner') }}</span>
+            } @else if (!canManage() || isSelf(member)) {
+              <span class="tag">{{ roleLabel(member.role) }}</span>
             } @else {
               <label class="sr-only" [for]="'role-' + member.id">{{ i18n.t('team.roleOf') }} {{ member.name }}</label>
               <select class="input role" [id]="'role-' + member.id" (change)="setRole(member, $event)">
@@ -87,6 +94,15 @@
               {{ member.active ? i18n.t('team.active') : i18n.t('team.inactive') }}
             </span>
           </td>
+          @if (isOwner()) {
+            <td class="row-actions">
+              @if (member.role !== 'owner' && member.active) {
+                <button type="button" class="btn ghost" (click)="transferOwnership(member)" [attr.aria-label]="i18n.t('team.transfer') + ': ' + member.name">
+                  {{ i18n.t('team.transfer') }}
+                </button>
+              }
+            </td>
+          }
         </tr>
       }
     </tbody>
@@ -104,8 +120,14 @@
         <li>
           <div class="who">
             <strong>{{ inv.email }}</strong>
-            <span class="muted">{{ roleLabel(inv.role) }} · {{ i18n.t('team.sent') }} {{ inv.sentAt | date: 'yyyy-MM-dd' }}</span>
+            <span class="muted">
+              {{ roleLabel(inv.role) }} · {{ i18n.t('team.sent') }} {{ inv.sentAt | date: 'yyyy-MM-dd' }}
+              @if (inv.expiresAt) {
+                · {{ i18n.t('orgs.expires') }} {{ inv.expiresAt | date: 'yyyy-MM-dd' }}
+              }
+            </span>
           </div>
+          @if (canManage()) {
           <div class="inv-actions">
             <button type="button" class="btn" (click)="resend(inv)" [attr.aria-label]="i18n.t('team.resend') + ': ' + inv.email">
               {{ resent() === inv.id ? i18n.t('team.resent') : i18n.t('team.resend') }}
@@ -114,12 +136,14 @@
               {{ i18n.t('team.revoke') }}
             </button>
           </div>
+          }
         </li>
       }
     </ul>
   } @else {
     <p class="muted empty">{{ i18n.t('team.noPending') }}</p>
   }
+  <p class="muted empty hint">{{ i18n.t('team.inviteHint') }}</p>
 </section>
 
 <section class="card table-card" aria-labelledby="roles-title">

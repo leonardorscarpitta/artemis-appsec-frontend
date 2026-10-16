@@ -5,7 +5,9 @@
   </div>
 </header>
 
+<app-role-notice permission="integrations" />
 <app-request-state [resource]="integrations" />
+<fieldset class="contents" [disabled]="!canManage()">
 @if (error(); as message) {
   <p class="card alert" role="alert">{{ message }}</p>
 }
@@ -177,3 +179,4 @@
     <p class="muted empty">{{ i18n.t('int.keys.empty') }}</p>
   }
 </section>
+</fieldset>

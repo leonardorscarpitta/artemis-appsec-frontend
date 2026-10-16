@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { PLAN_FEATURES, Plan, PlanId, formatPrice, plansUrl } from '../../core/api/billing';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
+import { OrgContext, landingUrl } from '../../core/org/org-context';
 import { LangSwitch } from '../../shared/lang-switch';
 import { Logo } from '../../shared/logo';
 import { SeverityBadge } from '../../shared/severity-badge';
@@ -28,9 +29,18 @@ export class Home {
   protected readonly planFeatures = PLAN_FEATURES;
 
   protected readonly preview = HOME_PREVIEW;
+  private readonly org = inject(OrgContext);
+  protected readonly appLink = computed(() => {
+    const orgs = this.org.organizations();
+    return orgs ? landingUrl(orgs, null) : '/organizations';
+  });
 
   constructor() {
     inject(ViewportScroller).setOffset([0, 80]);
+  }
+
+  protected register(): void {
+    this.auth.register().catch((error) => console.error('Could not reach the identity provider', error));
   }
 
   protected planName(id: PlanId): string {

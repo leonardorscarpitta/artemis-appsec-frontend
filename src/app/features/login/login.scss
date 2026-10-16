@@ -148,6 +148,14 @@ h1 {
   }
 }
 
+.register {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
 .provider {
   margin-top: 0.75rem;
   padding-top: 0.75rem;

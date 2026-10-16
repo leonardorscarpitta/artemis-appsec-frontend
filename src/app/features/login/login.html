@@ -62,6 +62,10 @@
           }
         </div>
       }
+      <div class="register">
+        <span class="muted">{{ i18n.t('login.newHere') }}</span>
+        <button type="button" class="btn" [disabled]="redirecting()" (click)="register()">{{ i18n.t('login.register') }}</button>
+      </div>
       <p class="provider">{{ i18n.t('login.provider') }}</p>
     </div>
     <p class="help muted">{{ i18n.t('login.help') }}</p>

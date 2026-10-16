@@ -14,19 +14,23 @@ import {
   integrationsUrl,
 } from '../../core/api/organization';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
+import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { RoleNotice } from '../../shared/role-notice';
 
 const CATEGORIES: IntegrationCategory[] = ['scm', 'ci', 'notifications', 'issues', 'vulnData'];
 
 @Component({
   selector: 'app-integrations',
-  imports: [DatePipe, RequestState],
+  imports: [DatePipe, RequestState, RoleNotice],
   templateUrl: './integrations.html',
   styleUrl: './integrations.scss',
 })
 export class Integrations {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
+  protected readonly canManage = computed(() => this.org.can('integrations'));
   private readonly api = inject(OrganizationApi);
 
   protected readonly integrations = httpResource<Integration[]>(() => integrationsUrl(), { defaultValue: [] });
