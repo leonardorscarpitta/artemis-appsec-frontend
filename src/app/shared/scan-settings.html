@@ -1,0 +1,55 @@
+<div class="field narrow">
+  <label for="interval">{{ i18n.t('ob.settings.interval') }}</label>
+  <select id="interval" class="input">
+    @for (opt of intervals; track opt) {
+      <option [selected]="$index === 2">{{ i18n.t(opt) }}</option>
+    }
+  </select>
+</div>
+
+<fieldset>
+  <legend>{{ i18n.t('ob.settings.actions') }}</legend>
+  @for (action of actions; track action) {
+    <label class="check">
+      <input type="checkbox" [checked]="$index < 2" />
+      {{ i18n.t(action) }}
+    </label>
+  }
+</fieldset>
+
+<fieldset>
+  <legend>{{ i18n.t('ob.settings.dockerfile') }}</legend>
+  <div class="options">
+    <label class="option" [class.selected]="dockerfile() === 'recommended'">
+      <input type="radio" name="dockerfile" [checked]="dockerfile() === 'recommended'" (change)="dockerfile.set('recommended')" />
+      <strong>{{ i18n.t('ob.settings.dockerfile.recommended') }}</strong>
+      <span class="muted">{{ i18n.t('ob.settings.dockerfile.recommendedDesc') }}</span>
+    </label>
+    <label class="option" [class.selected]="dockerfile() === 'custom'">
+      <input type="radio" name="dockerfile" [checked]="dockerfile() === 'custom'" (change)="dockerfile.set('custom')" />
+      <strong>{{ i18n.t('ob.settings.dockerfile.custom') }}</strong>
+      <span class="muted">{{ i18n.t('ob.settings.dockerfile.customDesc') }}</span>
+    </label>
+  </div>
+  @if (dockerfile() === 'custom') {
+    <div class="field">
+      <label for="dockerfile">Dockerfile</label>
+      <textarea id="dockerfile" class="input" placeholder="FROM node:22-alpine&#10;WORKDIR /app&#10;..."></textarea>
+    </div>
+  }
+</fieldset>
+
+<div class="toggle-row">
+  <div>
+    <strong id="ai-label">{{ i18n.t('ob.settings.ai') }}</strong>
+    <p class="muted">{{ i18n.t('ob.settings.aiDesc') }}</p>
+  </div>
+  <button
+    type="button"
+    role="switch"
+    class="switch"
+    aria-labelledby="ai-label"
+    [attr.aria-checked]="aiEnabled()"
+    (click)="aiEnabled.set(!aiEnabled())"
+  ></button>
+</div>

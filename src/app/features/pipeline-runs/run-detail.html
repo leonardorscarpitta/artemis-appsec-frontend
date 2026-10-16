@@ -1,0 +1,109 @@
+<a class="back" routerLink="/pipelines">
+  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" /></svg>
+  {{ i18n.t('runs.back') }}
+</a>
+
+@if (run(); as run) {
+  <header class="page-header">
+    <div class="title">
+      <h1>{{ i18n.t('runs.run') }} #{{ run.id }}</h1>
+      <app-run-status [status]="status()" />
+    </div>
+    <div class="page-actions">
+      <a class="btn" [routerLink]="['/repositories', run.repository]">{{ i18n.t('runs.repoSettings') }}</a>
+      @if (status() === 'running' || status() === 'queued') {
+        <button type="button" class="btn" (click)="cancel()">{{ i18n.t('runs.cancel') }}</button>
+      } @else {
+        <button type="button" class="btn primary" (click)="rerun()">{{ i18n.t('runs.rerun') }}</button>
+      }
+    </div>
+  </header>
+
+  <p class="notice" aria-live="polite">{{ message() }}</p>
+
+  <section class="card" [attr.aria-label]="i18n.t('runs.details')">
+    <dl class="meta">
+      <div>
+        <dt>{{ i18n.t('col.repository') }}</dt>
+        <dd>{{ run.repository }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('runs.filter.branch') }}</dt>
+        <dd class="mono">{{ run.branch }}</dd>
+      </div>
+      <div class="wide">
+        <dt>{{ i18n.t('runs.col.commit') }}</dt>
+        <dd><span class="mono sha">{{ run.commit }}</span><span class="muted">{{ run.message }}</span></dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('runs.col.trigger') }}</dt>
+        <dd>{{ triggerLabel(run.trigger) }} <span class="muted">{{ i18n.t('runs.by') }} {{ run.actor }}</span></dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('runs.col.started') }}</dt>
+        <dd class="mono">{{ run.started }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('runs.col.duration') }}</dt>
+        <dd class="mono">{{ duration(run.seconds) }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('runs.col.findings') }}</dt>
+        <dd>
+          {{ run.totalFindings }}
+          @if (run.newFindings) {
+            <span class="new">(+{{ run.newFindings }} {{ i18n.t('runs.new') }})</span>
+          }
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <h2 class="section-title">{{ i18n.t('runs.stages') }}</h2>
+
+  <ol class="timeline">
+    @for (group of phases(); track group.phase; let i = $index) {
+      <li class="phase" [attr.aria-labelledby]="'phase-' + group.phase">
+        <h3 [id]="'phase-' + group.phase"><span class="step">{{ i + 1 }}</span>{{ phaseName(group.phase) }}</h3>
+        <ul class="stages">
+          @for (stage of group.stages; track stage.id) {
+            <li [class]="'stage ' + stage.status">
+              <div class="row">
+                <div class="info">
+                  <strong>{{ stageName(stage.id) }}</strong>
+                  <span class="muted tool">{{ stage.tool }}</span>
+                </div>
+                <app-run-status [stage]="stage.status" />
+                <span class="mono muted time">{{ duration(stage.seconds) }}</span>
+                <span class="findings">
+                  @if (stage.findings) {
+                    <a routerLink="/vulnerabilities">
+                      {{ stage.findings }} {{ i18n.t(stage.findings === 1 ? 'runs.finding' : 'runs.findings') }}
+                    </a>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </span>
+              </div>
+
+              @if (stage.failedBy) {
+                <p class="failed-by">
+                  <strong>{{ i18n.t('runs.failedBy') }}</strong> {{ failLabel(stage.failedBy) }}
+                </p>
+              }
+
+              @if (stage.log.length) {
+                <details class="log" [open]="stage.status === 'failed'">
+                  <summary>{{ i18n.t('runs.viewLog') }}</summary>
+                  <pre><code>{{ stage.log.join('\n') }}</code></pre>
+                </details>
+              }
+            </li>
+          }
+        </ul>
+      </li>
+    }
+  </ol>
+} @else {
+  <p class="card">{{ i18n.t('runs.notFound') }}</p>
+}

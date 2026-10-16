@@ -1,0 +1,183 @@
+<header class="site-header">
+  <div class="container bar">
+    <a routerLink="/" class="brand"><app-logo /></a>
+    <nav class="sections" [attr.aria-label]="c().nav.menu">
+      <a routerLink="/" fragment="product">{{ c().nav.product }}</a>
+      <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
+      <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
+      <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
+    </nav>
+    <div class="actions">
+      <app-lang-switch />
+      <app-theme-toggle />
+      <a class="btn ghost sign-in" routerLink="/login">{{ c().nav.signIn }}</a>
+      <a class="btn primary" routerLink="/login">{{ c().nav.cta }}</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{{ c().hero.eyebrow }}</p>
+        <h1>{{ c().hero.title }}</h1>
+        <p class="lead">{{ c().hero.lead }}</p>
+        <div class="hero-cta">
+          <a class="btn primary large" routerLink="/login">{{ c().hero.primary }}</a>
+          <a class="btn large" routerLink="/" fragment="how">{{ c().hero.secondary }}</a>
+        </div>
+      </div>
+
+      <figure class="preview" role="img" [attr.aria-label]="c().hero.previewLabel">
+        <div class="preview-rail" aria-hidden="true">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <span [class.on]="i === 1"></span>
+          }
+        </div>
+        <div class="preview-body" aria-hidden="true">
+          <div class="kpis">
+            <div><span>{{ c().preview.open }}</span><strong>{{ preview.open }}</strong></div>
+            <div class="crit"><span>{{ c().preview.critical }}</span><strong>{{ preview.critical }}</strong></div>
+            <div><span>{{ c().preview.avg }}</span><strong>{{ preview.avg }}</strong></div>
+            <div><span>{{ c().preview.repos }}</span><strong>{{ preview.repos }}</strong></div>
+          </div>
+          <div class="sev-bar">
+            @for (s of preview.severities; track s.severity) {
+              <span [style.flex]="s.count" [style.background]="'var(--sev-' + s.severity + ')'"></span>
+            }
+          </div>
+          <div class="rows">
+            <p>{{ c().preview.recent }}</p>
+            @for (f of preview.rows; track f.id) {
+              <div class="row">
+                <span class="mono">{{ f.cve }}</span>
+                <span class="mono pkg">{{ f.pkg }}</span>
+                <app-severity-badge [cvss]="f.cvss" />
+              </div>
+            }
+          </div>
+        </div>
+      </figure>
+    </div>
+
+    <div class="container">
+      <dl class="facts">
+        @for (fact of c().facts; track fact.label) {
+          <div>
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.value }}</dd>
+          </div>
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section id="how" class="section" aria-labelledby="how-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 id="how-title">{{ c().how.title }}</h2>
+        <p>{{ c().how.lead }}</p>
+      </header>
+      <ol class="steps">
+        @for (step of c().how.steps; track step.title; let i = $index) {
+          <li>
+            <span class="num" aria-hidden="true">{{ i + 1 }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.text }}</p>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section id="product" class="section alt" aria-labelledby="product-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 id="product-title">{{ c().features.title }}</h2>
+        <p>{{ c().features.lead }}</p>
+      </header>
+      <ul class="features">
+        @for (f of c().features.items; track f.title) {
+          <li>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.text }}</p>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="pipeline" class="section" aria-labelledby="pipeline-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 id="pipeline-title">{{ c().pipeline.title }}</h2>
+        <p>{{ c().pipeline.lead }}</p>
+      </header>
+      <ol class="phases">
+        @for (phase of c().pipeline.phases; track phase.name; let i = $index) {
+          <li>
+            <h3><span class="num" aria-hidden="true">{{ i + 1 }}</span>{{ phase.name }}</h3>
+            <ul>
+              @for (stage of phase.stages; track stage) {
+                <li>{{ stage }}</li>
+              }
+            </ul>
+          </li>
+        }
+      </ol>
+      <p class="note">{{ c().pipeline.note }}</p>
+    </div>
+  </section>
+
+  <section id="faq" class="section alt" aria-labelledby="faq-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 id="faq-title">{{ c().faq.title }}</h2>
+      </header>
+      <div class="faq">
+        @for (item of c().faq.items; track item.q) {
+          <details>
+            <summary>{{ item.q }}</summary>
+            <p>{{ item.a }}</p>
+          </details>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="container cta-inner">
+      <div>
+        <h2 id="cta-title">{{ c().cta.title }}</h2>
+        <p>{{ c().cta.lead }}</p>
+      </div>
+      <a class="btn large light" routerLink="/login">{{ c().cta.button }}</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <app-logo />
+      <p>{{ c().footer.tagline }}</p>
+    </div>
+    <nav [attr.aria-label]="c().footer.product">
+      <h2>{{ c().footer.product }}</h2>
+      <a routerLink="/" fragment="product">{{ c().nav.product }}</a>
+      <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
+      <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
+    </nav>
+    <nav [attr.aria-label]="c().footer.resources">
+      <h2>{{ c().footer.resources }}</h2>
+      <a routerLink="/help">{{ c().footer.docs }}</a>
+      <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
+      <a routerLink="/login">{{ c().footer.signIn }}</a>
+    </nav>
+  </div>
+  <div class="container legal">
+    <span>© 2026 Artemis. {{ c().footer.rights }}</span>
+    <span>artemisappsec.com</span>
+  </div>
+</footer>
