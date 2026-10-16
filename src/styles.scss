@@ -512,3 +512,20 @@ svg {
     }
   }
 }
+
+@media print {
+  :root,
+  :root[data-theme='dark'] {
+    --bg: #fff;
+    --surface: #fff;
+    --surface-alt: #fff;
+    --text: #000;
+    --text-muted: #333;
+    --border: #bbb;
+    color-scheme: light;
+  }
+
+  .btn {
+    display: none !important;
+  }
+}
