@@ -32,6 +32,10 @@
   --font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, monospace;
 
+  --scrollbar-thumb: #b9c1cc;
+  --scrollbar-thumb-hover: #8f9aa9;
+  --scrollbar-track: transparent;
+
   color-scheme: light;
 }
 
@@ -62,6 +66,9 @@
   --sev-low: #5fcf93;
   --sev-low-bg: #14301f;
 
+  --scrollbar-thumb: #34414f;
+  --scrollbar-thumb-hover: #4a5a6c;
+
   color-scheme: dark;
 }
 
@@ -80,6 +87,39 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
+  }
+}
+
+// Scrollbars: slim, rounded and themed. Standard properties first (Firefox, Chromium 121+),
+// with a WebKit fallback for browsers that do not support them yet.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: var(--scrollbar-thumb-hover);
+    }
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

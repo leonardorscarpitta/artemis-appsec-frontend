@@ -102,6 +102,7 @@ Enterprise-style light and dark themes. Design tokens are CSS variables in `src/
 - **Sidebar:** `--nav-bg`, `--nav-text`, `--nav-hover`
 - **Severity:** `--sev-{critical,high,medium,low}` (text) and `--sev-*-bg` (tag background)
 - **Fonts:** IBM Plex Sans / IBM Plex Mono
+- **Scrollbars:** `--scrollbar-thumb`, `--scrollbar-thumb-hover`, `--scrollbar-track` (thin, rounded; standard `scrollbar-color` with a WebKit fallback; the sidebar overrides them for its dark background)
 
 Global primitives: `.card` (`.card-header`, `.table-card`), `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.tag`, `.segmented`, `.switch`, `.table` (`.num`, and `.stack` with `data-label` for stacked rows on phones).
 

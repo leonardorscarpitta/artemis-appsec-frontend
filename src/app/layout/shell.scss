@@ -118,6 +118,10 @@
 }
 
 .scroll {
+  // The sidebar stays dark in both themes, so its scrollbar is tuned to it.
+  --scrollbar-thumb: rgb(255 255 255 / 16%);
+  --scrollbar-thumb-hover: rgb(255 255 255 / 28%);
+
   flex: 1;
   overflow-y: auto;
   padding: 1rem 0.75rem;
