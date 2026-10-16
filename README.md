@@ -46,7 +46,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
+The app is served at http://localhost:4200 with live reload. The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
