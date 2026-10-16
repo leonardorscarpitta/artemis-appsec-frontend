@@ -47,7 +47,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Last scan: when the most recent pipeline finished.',
           ],
         },
-        { kind: 'p', text: '"Findings by severity" breaks the open findings down by severity. "Recent vulnerabilities" lists the latest findings; select a CVE identifier to open its record on the NIST website.' },
+        { kind: 'p', text: '"Findings by severity" breaks the open findings down by severity. "Recent vulnerabilities" lists the latest findings; select a CVE identifier to open its details, or "View all" to open the Vulnerabilities page.' },
         { kind: 'p', text: 'Severity is derived from the CVSS v3 base score:' },
         {
           kind: 'table',
@@ -67,6 +67,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Open', 'New finding that has not been reviewed yet.'],
             ['Triaged', 'Confirmed and waiting for a fix.'],
             ['False positive', 'Reviewed (manually or by AI triage) and dismissed.'],
+            ['Risk accepted', 'Confirmed, but the team decided not to fix it for now.'],
             ['Fixed', 'No longer detected in the latest scan.'],
           ],
         },
@@ -165,7 +166,35 @@ export const HELP: Record<Lang, HelpSection[]> = {
       ],
     },
     // --- vulnerabilities ---
-    // (help section for this area goes here)
+    {
+      id: 'vulnerabilities',
+      title: 'Vulnerabilities',
+      blocks: [
+        { kind: 'p', text: 'The Vulnerabilities page lists every finding detected across your repositories, including fixed and dismissed ones.' },
+        {
+          kind: 'ul',
+          items: [
+            'Search by CVE identifier, package name or title.',
+            'Filter by severity, status and repository, and sort by CVSS score or detection date. "Clear filters" resets the list.',
+            'Select a CVE identifier to open its details.',
+          ],
+        },
+        { kind: 'p', text: 'The details page shows:' },
+        {
+          kind: 'ul',
+          items: [
+            'Description from the NIST NVD and the weakness type (CWE).',
+            'CVSS v3.1 vector and a readable breakdown of each metric. Metrics highlighted in red make the vulnerability easier to exploit or more damaging.',
+            'Remediation: the installed version, the first fixed version and a suggested upgrade command you can copy. When no fix exists, consider replacing or isolating the package.',
+            'Affected repositories, with the pipeline stage and tool that detected the issue in each one.',
+            'AI triage verdict (likely true or false positive), its confidence and the reasoning, when AI triage is enabled.',
+            'References (NVD, package registry, CWE) and a timeline of what happened to the finding.',
+          ],
+        },
+        { kind: 'p', text: 'Use "Change status" to mark the finding as triaged, as a false positive, to accept the risk or to reopen it. The change applies to every affected repository. "Fixed" is set automatically when a scan no longer detects the issue.' },
+        { kind: 'note', text: 'Accept a risk only when the vulnerable code is not reachable or a compensating control is in place, and record the reason with your team.' },
+      ],
+    },
 
     // --- pipeline runs ---
     // (help section for this area goes here)
@@ -232,7 +261,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Última análise: quando o pipeline mais recente terminou.',
           ],
         },
-        { kind: 'p', text: '"Achados por severidade" divide os achados abertos por severidade. "Vulnerabilidades recentes" lista os achados mais novos; selecione o identificador de uma CVE para abrir o registro no site do NIST.' },
+        { kind: 'p', text: '"Achados por severidade" divide os achados abertos por severidade. "Vulnerabilidades recentes" lista os achados mais novos; selecione o identificador de uma CVE para abrir seus detalhes, ou "Ver todas" para abrir a página Vulnerabilidades.' },
         { kind: 'p', text: 'A severidade é derivada da pontuação base do CVSS v3:' },
         {
           kind: 'table',
@@ -252,6 +281,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Aberto', 'Achado novo que ainda não foi revisado.'],
             ['Triado', 'Confirmado e aguardando correção.'],
             ['Falso positivo', 'Revisado (manualmente ou pela triagem com IA) e descartado.'],
+            ['Risco aceito', 'Confirmado, mas a equipe decidiu não corrigir por enquanto.'],
             ['Corrigido', 'Não foi mais detectado na última análise.'],
           ],
         },
@@ -350,7 +380,35 @@ export const HELP: Record<Lang, HelpSection[]> = {
       ],
     },
     // --- vulnerabilities ---
-    // (help section for this area goes here)
+    {
+      id: 'vulnerabilities',
+      title: 'Vulnerabilidades',
+      blocks: [
+        { kind: 'p', text: 'A página Vulnerabilidades lista todos os achados detectados nos seus repositórios, incluindo os corrigidos e descartados.' },
+        {
+          kind: 'ul',
+          items: [
+            'Busque pelo identificador da CVE, nome do pacote ou título.',
+            'Filtre por severidade, status e repositório, e ordene pela pontuação CVSS ou pela data de detecção. "Limpar filtros" restaura a lista.',
+            'Selecione o identificador de uma CVE para abrir seus detalhes.',
+          ],
+        },
+        { kind: 'p', text: 'A página de detalhes mostra:' },
+        {
+          kind: 'ul',
+          items: [
+            'Descrição do NIST NVD e o tipo de fraqueza (CWE).',
+            'Vetor CVSS v3.1 e uma explicação de cada métrica. Métricas destacadas em vermelho tornam a vulnerabilidade mais fácil de explorar ou mais danosa.',
+            'Correção: a versão instalada, a primeira versão corrigida e um comando de atualização sugerido que pode ser copiado. Quando não há correção, considere substituir ou isolar o pacote.',
+            'Repositórios afetados, com a etapa do pipeline e a ferramenta que detectou o problema em cada um.',
+            'Veredito da triagem com IA (provável verdadeiro ou falso positivo), sua confiança e a justificativa, quando a triagem com IA está ativada.',
+            'Referências (NVD, registro do pacote, CWE) e uma linha do tempo do que aconteceu com o achado.',
+          ],
+        },
+        { kind: 'p', text: 'Use "Alterar status" para marcar o achado como triado, como falso positivo, aceitar o risco ou reabri-lo. A alteração vale para todos os repositórios afetados. "Corrigido" é definido automaticamente quando uma análise não detecta mais o problema.' },
+        { kind: 'note', text: 'Aceite um risco apenas quando o código vulnerável não for alcançável ou houver um controle compensatório, e registre o motivo com a sua equipe.' },
+      ],
+    },
 
     // --- pipeline runs ---
     // (help section for this area goes here)

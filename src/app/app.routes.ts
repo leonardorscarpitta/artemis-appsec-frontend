@@ -33,7 +33,16 @@ export const routes: Routes = [
         path: 'onboarding',
         loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding),
       },
-      comingSoon('vulnerabilities', 'nav.vulnerabilities'),
+      {
+        path: 'vulnerabilities',
+        loadComponent: () =>
+          import('./features/vulnerabilities/vulnerabilities').then((m) => m.Vulnerabilities),
+      },
+      {
+        path: 'vulnerabilities/:cve',
+        loadComponent: () =>
+          import('./features/vulnerabilities/vulnerability-detail').then((m) => m.VulnerabilityDetail),
+      },
       comingSoon('pipelines', 'nav.pipelines'),
       comingSoon('reports', 'nav.reports'),
       comingSoon('integrations', 'nav.integrations'),

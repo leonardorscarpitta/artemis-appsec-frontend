@@ -96,37 +96,12 @@
   font-size: 0.8rem;
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+.head-links {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
   font-size: 0.85rem;
-
-  &::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  &.open {
-    color: var(--sev-high);
-  }
-
-  &.triaged {
-    color: var(--primary);
-  }
-
-  &.falsePositive {
-    color: var(--text-muted);
-  }
-
-  &.fixed {
-    color: var(--sev-low);
-  }
 }
-
 
 .card-header {
   flex-wrap: wrap;
