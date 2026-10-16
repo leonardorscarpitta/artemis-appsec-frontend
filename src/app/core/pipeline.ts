@@ -56,7 +56,7 @@ const slug = (tool: string) => tool.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 function command(stage: PipelineStage): string {
   const fail = stage.failOn ? ` --fail-on ${stage.failOn}` : '';
-  return `artemis scan ${stage.id} --tool ${slug(stage.tool)}${fail}`;
+  return `artemisappsec scan ${stage.id} --tool ${slug(stage.tool)}${fail}`;
 }
 
 export function toYaml(stages: PipelineStage[], provider: CiProvider): string {
@@ -78,5 +78,5 @@ export function toYaml(stages: PipelineStage[], provider: CiProvider): string {
       `    steps:\n      - uses: actions/checkout@v4\n      - run: ${command(s)}`
     );
   });
-  return `name: artemis-devsecops\non: [push, pull_request]\n\njobs:\n${jobs.join('\n\n')}\n`;
+  return `name: artemisappsec-devsecops\non: [push, pull_request]\n\njobs:\n${jobs.join('\n\n')}\n`;
 }

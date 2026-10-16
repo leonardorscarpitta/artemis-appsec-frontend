@@ -2,7 +2,7 @@ import { Service, effect, signal } from '@angular/core';
 
 export type Theme = 'light' | 'dark';
 
-const STORAGE_KEY = 'artemis.theme';
+const STORAGE_KEY = 'artemisappsec.theme';
 
 @Service()
 export class ThemeService {
