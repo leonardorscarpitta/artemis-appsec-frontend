@@ -210,8 +210,7 @@ export class Settings {
     const slug = this.org.slug();
     this.api.deleteOrganization().subscribe({
       next: () => {
-        if (slug) this.org.remove(slug);
-        void this.router.navigateByUrl('/organizations');
+        void this.router.navigateByUrl('/organizations').then(() => slug && this.org.remove(slug));
       },
       error: (err) => this.deleteMessage.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
     });
@@ -224,8 +223,7 @@ export class Settings {
     this.leaveError.set(null);
     this.api.leaveOrganization(current.slug).subscribe({
       next: () => {
-        this.org.remove(current.slug);
-        void this.router.navigateByUrl('/organizations');
+        void this.router.navigateByUrl('/organizations').then(() => this.org.remove(current.slug));
       },
       error: (err) => {
         this.leaving.set(false);
