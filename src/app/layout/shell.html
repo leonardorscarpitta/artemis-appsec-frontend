@@ -107,13 +107,7 @@
     <app-lang-switch />
     <app-theme-toggle />
     <div class="user">
-      @if (auth.profile(); as profile) {
-        <span class="avatar" aria-hidden="true">{{ profile.initials }}</span>
-        <span class="user-name">
-          <strong>{{ profile.name }}</strong>
-          <span>{{ profile.email ?? profile.username }}</span>
-        </span>
-      }
+      <app-user-badge />
       <button type="button" class="btn ghost sign-out" [title]="i18n.t('nav.signOut')" (click)="signOut()">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <path fill="currentColor" d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5v-2H5V5h5zm6.6 4.6L15.2 9l2 2H9v2h8.2l-2 2 1.4 1.4L21 12z" />

@@ -305,30 +305,7 @@
   border-left: 1px solid var(--border);
 }
 
-.user-name {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  font-size: 0.8rem;
-  color: var(--text-muted);
 
-  strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-}
-
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
 
 main {
   padding: 1.75rem;
@@ -527,13 +504,7 @@ main {
     padding-left: 0.5rem;
   }
 
-  .avatar {
-    display: none;
-  }
 
-  .user-name {
-    display: none;
-  }
 
   .sign-out {
     padding: 0.5rem;

@@ -57,7 +57,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
 | `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
 | `src/app/core/org/` | `OrgContext` (current organization slug), `orgGuard` and legacy URL redirects; `shared/org-link.ts` is the `orgLink` pipe |
-| `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
+| `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, account URL, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
@@ -115,7 +115,7 @@ Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manu
 
 ## Authentication
 
-Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `sessionStorage` and sent as a Bearer token to the API only. Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
+Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. The user badge (`shared/user-badge.ts`) links to the account page at Authelia (`<authority>/settings`). Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
 
 ## Talking to the API
 
