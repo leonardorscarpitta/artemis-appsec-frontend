@@ -91,7 +91,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
 | `/team` | Members, invitations, roles and permissions |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone) |
-| `/billing` | Plans (Free, PRO R$ 24,99/month with AI) and the current subscription; read-only while billing is disabled on the API |
+| `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
 | `/help` | In-app user guide |
 
 ## Styling

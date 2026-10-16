@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { TranslationKey } from '../i18n';
 import { apiUrl } from './api';
 
 export type PlanId = 'free' | 'pro';
@@ -10,7 +11,14 @@ export interface Plan {
   id: PlanId;
   monthlyPriceCents: number;
   currency: string;
+  monthlyScanLimit: number;
   features: Feature[];
+}
+
+export interface Usage {
+  scansThisMonth: number;
+  scanLimit: number;
+  periodStart: string;
 }
 
 export interface BillingOverview {
@@ -19,9 +27,22 @@ export interface BillingOverview {
   since: string;
   plans: Plan[];
   entitlements: Feature[];
+  usage: Usage;
 }
 
 export const billingUrl = () => apiUrl('/billing');
+/** Public endpoint (no sign-in required). */
+export const plansUrl = () => apiUrl('/billing/plans');
+
+/** What each plan includes, besides its scan limit; AI triage is the PRO differentiator. */
+export const PLAN_FEATURES: Record<PlanId, TranslationKey[]> = {
+  free: ['billing.f.scanning', 'billing.f.pipeline', 'billing.f.dashboard', 'billing.f.reports', 'billing.f.team'],
+  pro: ['billing.f.everythingFree', 'billing.f.aiTriage', 'billing.f.aiReports'],
+};
+
+export function formatPrice(plan: Plan, lang: string): string {
+  return new Intl.NumberFormat(lang, { style: 'currency', currency: plan.currency }).format(plan.monthlyPriceCents / 100);
+}
 
 @Service()
 export class BillingApi {

@@ -281,7 +281,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'payments',
           title: 'Plans and payments',
           blocks: [
-            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0) and PRO (R$ 24,99 per month, in Brazilian reais), which adds AI-assisted triage. Billing is not enabled yet, so every organization currently uses the Free plan.' },
+            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0, up to 90 scans per month) and PRO (R$ 24,99 per month, in Brazilian reais, up to 300 scans per month), which adds AI-assisted triage. Each pipeline run counts as one scan; once the monthly limit is reached, new runs are refused until the next calendar month. Billing is not enabled yet, so every organization currently uses the Free plan.' },
             { kind: 'p', text: 'When payments become available, prices and conditions will always be shown before any charge, nothing will be charged without your explicit agreement, and you will be able to cancel or switch back to Free at any time.' },
           ],
         },
@@ -385,7 +385,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'payments',
           title: 'Planos e pagamentos',
           blocks: [
-            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0) e PRO (R$ 24,99 por mês), que adiciona triagem com IA. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
+            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0, até 90 análises por mês) e PRO (R$ 24,99 por mês, até 300 análises por mês), que adiciona triagem com IA. Cada execução de pipeline conta como uma análise; ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
             { kind: 'p', text: 'Quando os pagamentos estiverem disponíveis, preços e condições serão sempre exibidos antes de qualquer cobrança, nada será cobrado sem a sua concordância expressa e você poderá cancelar ou voltar ao Free a qualquer momento.' },
           ],
         },

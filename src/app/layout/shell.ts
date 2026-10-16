@@ -88,11 +88,14 @@ export class Shell {
     this.menuOpen.set(false);
   }
 
-  protected readonly usage = { used: 142, limit: 500 };
 
   // Badge counts; refreshed on every navigation so status changes are reflected.
   private readonly counts = httpResource<DashboardSummary>(() => dashboardUrl());
   private readonly billing = httpResource<BillingOverview>(() => billingUrl());
+  protected readonly usage = computed(() => {
+    const usage = this.billing.value()?.usage;
+    return usage ? { used: usage.scansThisMonth, limit: usage.scanLimit } : null;
+  });
   protected readonly planLabel = computed(() => {
     const plan = this.billing.value()?.currentPlan;
     return plan ? this.i18n.t(`nav.plan.${plan}`) : '';
