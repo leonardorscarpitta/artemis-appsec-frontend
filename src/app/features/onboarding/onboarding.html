@@ -9,7 +9,7 @@
   @for (s of steps; track s; let i = $index) {
     <li [class.done]="i < step()" [class.current]="i === step()" [attr.aria-current]="i === step() ? 'step' : null">
       <span class="index" aria-hidden="true">{{ i < step() ? '✓' : i + 1 }}</span>
-      {{ i18n.t(s) }}
+      <span class="step-label">{{ i18n.t(s) }}</span>
     </li>
   }
 </ol>

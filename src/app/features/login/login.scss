@@ -109,8 +109,14 @@ h1 {
 .bar {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 0.5rem;
   padding: 1rem 1.75rem;
+}
+
+.bar-logo {
+  display: none;
+  margin-right: auto;
 }
 
 .center {
@@ -163,18 +169,78 @@ h1 {
   font-size: 0.8rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1199px) {
+  :host {
+    grid-template-columns: minmax(360px, 1fr) 1fr;
+  }
+
+  .info {
+    padding: 2rem;
+  }
+
+  .facts {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+  }
+}
+
+@media (max-width: 899px) {
   :host {
     grid-template-columns: 1fr;
   }
 
   .info {
     order: 2;
-    padding: 2rem 1rem;
+    padding: 2rem 1.5rem;
+    border-right: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .pitch {
+    max-width: none;
+  }
+
+  .bar {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .bar-logo {
+    display: inline-flex;
+  }
+
+  .info app-logo {
+    display: none;
+  }
+
+  .center {
+    padding: 3rem 1rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .bar,
+  .foot {
+    padding-inline: 1rem;
+  }
+
+  .center {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .info {
+    padding: 1.75rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.45rem;
   }
 
   .facts {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 }
