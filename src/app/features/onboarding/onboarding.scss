@@ -66,17 +66,15 @@
 }
 
 .stacks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 
-  li {
+  .stack-option {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
     gap: 0.5rem;
     padding: 1.25rem;
     border: 1px solid var(--border);
@@ -85,8 +83,8 @@
 
     &.detected {
       color: var(--text);
-      border-color: var(--sev-low);
-      background: var(--sev-low-bg);
+      border-color: var(--primary);
+      background: var(--primary-soft);
 
       .tag {
         color: var(--sev-low);
@@ -139,7 +137,7 @@
     }
   }
 
-  .stacks li {
+  .stacks .stack-option {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -154,4 +152,18 @@
       width: 100%;
     }
   }
+}
+
+.error-text {
+  color: var(--sev-critical);
+  font-size: 0.85rem;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }

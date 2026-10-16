@@ -3,7 +3,9 @@
   {{ i18n.t('rs.back') }}
 </a>
 
-@if (repo(); as repo) {
+@if (notFound()) {
+  <p class="card">{{ i18n.t('rs.notFound') }}</p>
+} @else if (repo(); as repo) {
   <header class="page-header">
     <div>
       <h1>{{ repo.name }} <span class="tag">{{ repo.stack }}</span></h1>
@@ -23,7 +25,7 @@
   <section class="card" id="panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()">
     @switch (tab()) {
       @case ('general') {
-        <app-scan-settings />
+        <app-scan-settings [(settings)]="settings" />
       }
       @case ('pipeline') {
         <app-pipeline-editor [(stages)]="pipeline" />
@@ -33,7 +35,9 @@
 
   <footer class="save-bar">
     <span class="muted hint" aria-live="polite">
-      @if (saved()) {
+      @if (saveError(); as error) {
+        <span class="error" role="alert">{{ error }}</span>
+      } @else if (saved()) {
         <span class="ok">{{ i18n.t('rs.saved') }}</span>
       } @else {
         {{ i18n.t('rs.subtitle') }}
@@ -41,9 +45,9 @@
     </span>
     <div class="buttons">
       <a class="btn" routerLink="/repositories">{{ i18n.t('rs.cancel') }}</a>
-      <button type="button" class="btn primary" (click)="save()">{{ i18n.t('rs.save') }}</button>
+      <button type="button" class="btn primary" [disabled]="saving()" (click)="save()">{{ i18n.t('rs.save') }}</button>
     </div>
   </footer>
 } @else {
-  <p class="card">{{ i18n.t('rs.notFound') }}</p>
+  <app-request-state [resource]="details" />
 }

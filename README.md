@@ -19,7 +19,7 @@
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline and reports vulnerabilities scored with CVSS from the NIST National Vulnerability Database. Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend. All data is mocked until the API is available.
+This repository is the frontend; the API lives in the `artemis` backend repository. Screens are being moved from mock data to the API one area at a time.
 
 ## Contents
 
@@ -40,7 +40,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. A development build check:
+The app is served at http://localhost:4200 with live reload. It expects the backend API at http://localhost:8080 (start the backend's own `docker compose up -d`). A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
@@ -55,6 +55,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/i18n.ts` | Translations (`en-US`, `pt-BR`), grouped by `// --- area ---` comments; use `i18n.t('key')` in templates |
 | `src/app/core/theme.ts` | Light/dark theme: sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference (an inline script in `index.html` applies it before boot) |
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
+| `src/environments/` | `apiUrl` per build: `http://localhost:8080/api/v1` in development, `/api/v1` in production |
+| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, ...) |
 | `src/app/core/mock-*.ts` | Mock data: `mock-data.ts` (findings, repositories), `mock-runs.ts`, `mock-reports.ts`, `mock-policies.ts`, `mock-org.ts` (integrations, team, settings) |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
@@ -104,6 +106,13 @@ Stages are grouped in three phases, each with a selectable tool and a fail thres
 | Pre-deploy | Infrastructure as code, DAST |
 
 Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The generated YAML (GitHub Actions / GitLab CI) calls an `artemis` runner CLI that does not exist yet.
+
+## Talking to the API
+
+- **Reads** use `httpResource()` in the component; show its state with `<app-request-state [resource]="...">` (loading, error with retry).
+- **Writes** go through the module's client service (e.g. `ProjectsApi`) with `HttpClient`; show `problemMessage(err)` on failure.
+- Types in `core/api/*.ts` mirror the backend JSON exactly (same enum strings).
+- AI triage is not part of the API yet; its controls are shown locked.
 
 ## Internationalization
 
