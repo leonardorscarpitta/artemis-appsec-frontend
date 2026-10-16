@@ -532,6 +532,11 @@ h3 {
 }
 
 @media (max-width: 599px) {
+  // The workspace section has its own full-width button on phones.
+  .open-app {
+    display: none;
+  }
+
   .container {
     padding-inline: 1rem;
   }

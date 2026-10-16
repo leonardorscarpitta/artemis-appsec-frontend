@@ -1,0 +1,182 @@
+.workspace {
+  padding: 2.5rem 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.ws-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  // The header already offers "Go to dashboard" on larger screens.
+  .btn {
+    display: none;
+  }
+}
+
+.eyebrow {
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+.org {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  h3 a {
+    color: var(--text);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+}
+
+.org-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+
+  .mono {
+    font-size: 0.85rem;
+  }
+}
+
+.org-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--nav-bg);
+  color: #fff;
+  font-weight: 600;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+
+  dt {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    font-weight: 600;
+  }
+}
+
+.text-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.projects-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.projects ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.project {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.8rem;
+  }
+
+  .alert {
+    color: var(--sev-high);
+    font-weight: 600;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+@media (max-width: 899px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .container {
+    padding-inline: 1rem;
+  }
+
+  .ws-head .btn {
+    display: inline-flex;
+    width: 100%;
+  }
+}

@@ -1,0 +1,82 @@
+<section class="workspace" aria-labelledby="ws-title">
+  <div class="container">
+    <header class="ws-head">
+      <div>
+        <p class="eyebrow">{{ i18n.t('home.ws.eyebrow') }}</p>
+        <h2 id="ws-title">{{ i18n.t('home.ws.welcome') }}, {{ firstName() }}</h2>
+      </div>
+      @if (slug(); as slug) {
+        <a class="btn primary" [routerLink]="['/', slug, 'dashboard']">{{ i18n.t('nav.openApp') }}</a>
+      }
+    </header>
+
+    @if (org.value(); as settings) {
+      <div class="grid">
+        <article class="card org">
+          <div class="org-head">
+            <span class="org-avatar" aria-hidden="true">{{ settings.general.name.slice(0, 2).toUpperCase() }}</span>
+            <div>
+              <h3>
+                <a [routerLink]="['/', settings.general.slug, 'dashboard']">{{ settings.general.name }}</a>
+              </h3>
+              <p class="mono muted">/{{ settings.general.slug }}</p>
+            </div>
+          </div>
+          <dl class="facts">
+            <div>
+              <dt>{{ i18n.t('home.ws.role') }}</dt>
+              <dd>{{ myRole() ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ i18n.t('home.ws.members') }}</dt>
+              <dd>{{ activeMembers() }}</dd>
+            </div>
+            <div>
+              <dt>{{ i18n.t('home.ws.openFindings') }}</dt>
+              <dd>{{ totalOpen() }}</dd>
+            </div>
+          </dl>
+          <a class="text-link" [routerLink]="['/', settings.general.slug, 'team']">{{ i18n.t('home.ws.viewTeam') }} →</a>
+        </article>
+
+        <div class="projects">
+          <div class="projects-head">
+            <h3>{{ i18n.t('home.ws.projects') }}</h3>
+            <a class="text-link" [routerLink]="['/', settings.general.slug, 'repositories']">{{ i18n.t('home.ws.viewAll') }} →</a>
+          </div>
+          @if (projects.value(); as list) {
+            @if (list.length) {
+              <ul>
+                @for (p of list; track p.id) {
+                  <li>
+                    <a class="card project" [routerLink]="['/', settings.general.slug, 'repositories', p.name]">
+                      <strong>{{ p.name }}</strong>
+                      <span class="tag">{{ p.stack }}</span>
+                      <span class="meta">
+                        <span [class.alert]="(p.openFindings ?? 0) > 0">
+                          {{ p.openFindings ?? 0 }} {{ i18n.t('home.ws.open') }}
+                        </span>
+                        <span class="muted">
+                          {{ i18n.t('dash.lastScan') }}: {{ (p.lastScanAt | date: 'yyyy-MM-dd') ?? '—' }}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="card empty">
+                <p class="muted">{{ i18n.t('home.ws.noProjects') }}</p>
+                <a class="btn" [routerLink]="['/', settings.general.slug, 'onboarding']">{{ i18n.t('repo.add') }}</a>
+              </div>
+            }
+          } @else {
+            <app-request-state [resource]="projects" />
+          }
+        </div>
+      </div>
+    } @else {
+      <app-request-state [resource]="org" />
+    }
+  </div>
+</section>

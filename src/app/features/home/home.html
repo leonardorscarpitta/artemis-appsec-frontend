@@ -13,7 +13,7 @@
       <app-theme-toggle />
       @if (auth.isAuthenticated()) {
         <app-user-badge [showName]="false" />
-        <a class="btn primary" routerLink="/dashboard">{{ i18n.t('nav.openApp') }}</a>
+        <a class="btn primary open-app" routerLink="/dashboard">{{ i18n.t('nav.openApp') }}</a>
       } @else {
         <a class="btn ghost sign-in" routerLink="/login">{{ c().nav.signIn }}</a>
         <a class="btn primary" routerLink="/login">{{ c().nav.cta }}</a>
@@ -23,6 +23,9 @@
 </header>
 
 <main>
+  @if (auth.isAuthenticated()) {
+    <app-home-workspace />
+  }
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
