@@ -299,6 +299,33 @@
 
     @case ('danger') {
       <p class="muted">{{ i18n.t('settings.danger.desc') }}</p>
+      @if (isOwner()) {
+        <div class="danger-box">
+          <div>
+            <h2>{{ i18n.t('settings.transfer.title') }}</h2>
+            <p class="muted">{{ i18n.t('settings.transfer.desc') }}</p>
+          </div>
+          @if (candidates().length) {
+            <div class="field">
+              <label for="new-owner">{{ i18n.t('settings.transfer.label') }}</label>
+              <select id="new-owner" class="input" [value]="newOwner()" (change)="newOwner.set($any($event.target).value)">
+                <option value="">{{ i18n.t('settings.transfer.pick') }}</option>
+                @for (m of candidates(); track m.id) {
+                  <option [value]="m.id">{{ m.name }} · {{ m.email }}</option>
+                }
+              </select>
+            </div>
+            <button type="button" class="btn danger" [disabled]="!newOwner() || transferring()" (click)="transferOwnership()">
+              {{ i18n.t('settings.transfer.button') }}
+            </button>
+          } @else {
+            <p class="muted">{{ i18n.t('settings.transfer.none') }}</p>
+          }
+          @if (transferError(); as message) {
+            <p class="error" role="alert">{{ message }}</p>
+          }
+        </div>
+      }
       @if (!isOwner()) {
         <div class="danger-box">
           <div>
