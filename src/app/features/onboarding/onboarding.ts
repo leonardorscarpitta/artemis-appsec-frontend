@@ -10,7 +10,8 @@ import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';
 import { OrgContext } from '../../core/org/org-context';
 
-const SSH_URL = /^(git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
+// Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
+const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({
   selector: 'app-onboarding',
@@ -36,7 +37,8 @@ export class Onboarding {
   protected readonly stacks: Stack[] = ['React', 'Angular', 'Java + Spring'];
   protected readonly stack = signal<Stack | null>(null);
 
-  protected readonly urlValid = computed(() => SSH_URL.test(this.url().trim()));
+  protected readonly isSsh = computed(() => /^(git@|ssh:\/\/)/.test(this.url().trim()));
+  protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
   protected readonly showErrors = signal(false);
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);

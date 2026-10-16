@@ -13,8 +13,10 @@ export interface PipelineStage {
   tool: string;
   enabled: boolean;
   // Absent for stages that only produce artifacts and never fail the build.
-  failOn?: FailThreshold;
+  failOn?: FailThreshold | null;
   minutes: number;
+  /** False for stages the scanner runner cannot execute yet; they stay disabled. */
+  available: boolean;
 }
 
 export const PHASES: Phase[] = ['source', 'build', 'deploy'];
@@ -22,26 +24,26 @@ export const FAIL_THRESHOLDS: FailThreshold[] = ['never', 'critical', 'high', 'm
 
 const PRESETS: Record<Preset, StageId[]> = {
   minimal: ['secrets', 'sast', 'sca'],
-  recommended: ['secrets', 'sast', 'sca', 'dockerfile', 'image', 'sbom'],
-  full: ['secrets', 'sast', 'sca', 'license', 'dockerfile', 'image', 'sbom', 'iac', 'dast'],
+  recommended: ['secrets', 'sast', 'sca', 'dockerfile', 'sbom'],
+  full: ['secrets', 'sast', 'sca', 'license', 'dockerfile', 'sbom', 'iac'],
 };
 
 export function defaultPipeline(): PipelineStage[] {
   return [
-    { id: 'secrets', phase: 'source', tools: ['Gitleaks', 'TruffleHog'], tool: 'Gitleaks', enabled: true, failOn: 'low', minutes: 1 },
-    { id: 'sast', phase: 'source', tools: ['Semgrep', 'SonarQube', 'CodeQL'], tool: 'Semgrep', enabled: true, failOn: 'high', minutes: 4 },
-    { id: 'sca', phase: 'source', tools: ['Trivy', 'OWASP Dependency-Check', 'Grype'], tool: 'Trivy', enabled: true, failOn: 'critical', minutes: 2 },
-    { id: 'license', phase: 'source', tools: ['Trivy', 'ScanCode'], tool: 'Trivy', enabled: false, failOn: 'never', minutes: 1 },
-    { id: 'dockerfile', phase: 'build', tools: ['Hadolint', 'Checkov'], tool: 'Hadolint', enabled: true, failOn: 'high', minutes: 1 },
-    { id: 'image', phase: 'build', tools: ['Trivy', 'Grype'], tool: 'Trivy', enabled: true, failOn: 'critical', minutes: 3 },
-    { id: 'sbom', phase: 'build', tools: ['Syft', 'CycloneDX'], tool: 'Syft', enabled: true, minutes: 1 },
-    { id: 'iac', phase: 'deploy', tools: ['Checkov', 'KICS', 'Trivy'], tool: 'Checkov', enabled: false, failOn: 'high', minutes: 2 },
-    { id: 'dast', phase: 'deploy', tools: ['OWASP ZAP', 'Nuclei'], tool: 'OWASP ZAP', enabled: false, failOn: 'high', minutes: 12 },
+    { id: 'secrets', phase: 'source', tools: ['Gitleaks'], tool: 'Gitleaks', enabled: true, failOn: 'low', minutes: 1, available: true },
+    { id: 'sast', phase: 'source', tools: ['Semgrep'], tool: 'Semgrep', enabled: true, failOn: 'high', minutes: 4, available: true },
+    { id: 'sca', phase: 'source', tools: ['Trivy', 'Grype'], tool: 'Trivy', enabled: true, failOn: 'critical', minutes: 2, available: true },
+    { id: 'license', phase: 'source', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'never', minutes: 1, available: true },
+    { id: 'dockerfile', phase: 'build', tools: ['Hadolint', 'Trivy'], tool: 'Hadolint', enabled: true, failOn: 'high', minutes: 1, available: true },
+    { id: 'image', phase: 'build', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'critical', minutes: 3, available: false },
+    { id: 'sbom', phase: 'build', tools: ['Syft'], tool: 'Syft', enabled: true, minutes: 1, available: true },
+    { id: 'iac', phase: 'deploy', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'high', minutes: 2, available: true },
+    { id: 'dast', phase: 'deploy', tools: ['OWASP ZAP'], tool: 'OWASP ZAP', enabled: false, failOn: 'high', minutes: 12, available: false },
   ];
 }
 
 export function applyPreset(stages: PipelineStage[], preset: Preset): PipelineStage[] {
-  return stages.map((s) => ({ ...s, enabled: PRESETS[preset].includes(s.id) }));
+  return stages.map((s) => ({ ...s, enabled: s.available && PRESETS[preset].includes(s.id) }));
 }
 
 export function matchingPreset(stages: PipelineStage[]): Preset | null {

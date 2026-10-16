@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { PipelineStage } from '../pipeline';
 import { Stack } from '../domain';
 import { apiUrl } from './api';
+import { RunDetails } from './pipeline-runs';
 
 export type ScanSchedule = 'push' | '6h' | '24h' | '7d';
 export type AutomaticAction = 'issue' | 'email' | 'block';
@@ -64,6 +65,11 @@ export class ProjectsApi {
 
   updateSettings(name: string, settings: ProjectSettings): Observable<ProjectDetails> {
     return this.http.put<ProjectDetails>(`${repositoryUrl(name)}/settings`, settings);
+  }
+
+  /** Queues a scan of the repository's default branch; 409 when the monthly scan limit is reached. */
+  runScan(name: string): Observable<RunDetails> {
+    return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, null);
   }
 
   updatePipeline(name: string, stages: PipelineStage[]): Observable<ProjectDetails> {

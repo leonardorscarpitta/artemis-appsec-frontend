@@ -39,7 +39,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               rows: [
                 ['Name, username, e-mail and groups provided by your sign-in provider', 'To sign you in, show who you are and apply your role in the organization.'],
                 ['Organization settings, team members and invitations', 'To run your organization’s workspace and control who can access it.'],
-                ['Repository addresses, branches and public SSH deploy keys', 'To read your code and run the security pipeline you configured. We only accept public keys and never ask for private keys or passwords to your repositories.'],
+                ['Repository addresses, branches, scanned commit and public SSH deploy keys', 'To read your code and run the security pipeline you configured. We only accept public keys and never ask for private keys or passwords to your repositories.'],
                 ['Findings, pipeline runs, logs, reports, policies and risk acceptances', 'To show the security posture of your projects and their history.'],
                 ['API tokens', 'Stored only as a one-way hash plus the last four characters, so nobody — including us — can read them back.'],
                 ['Your organization’s plan (Free or PRO) and since when', 'To provide the features included in your plan.'],
@@ -53,14 +53,17 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'source-code',
           title: 'Your source code',
           blocks: [
-            { kind: 'p', text: 'Artemis accesses your repositories with read-only deploy keys, only to run the scans you enabled. Source code is processed for those scans and is not used for any other purpose, sold or shared. Results (findings, logs and reports) belong to your organization.' },
+            { kind: 'p', text: 'Scans run on Artemis’s own infrastructure — we do not send your code to any third-party scanning service. For each scan, the repository is cloned (read-only, latest commit of the chosen branch) into an isolated scanner that has no access to our database, and the open-source tools listed on the Third-party notices page analyze it there.' },
+            { kind: 'p', text: 'The copy of your code exists only while the scan runs and is deleted as soon as it finishes. We keep only the results: findings, short tool logs and reports. Source code is not used for any other purpose, sold or shared, and results belong to your organization.' },
+            { kind: 'p', text: 'Secrets found in your code are redacted by the scanner before anything is stored: Artemis records the rule, file and line, never the secret itself. Logs are limited in size and secret-looking values are masked.' },
+            { kind: 'p', text: 'Today only public repositories over HTTPS are scanned; private repositories through read-only deploy keys will come later.' },
           ],
         },
         {
           id: 'external-services',
           title: 'Public vulnerability data',
           blocks: [
-            { kind: 'p', text: 'To enrich findings we look up public vulnerability records (CVE and CVSS data) from sources such as the NIST National Vulnerability Database. These lookups contain vulnerability identifiers only — never your code, your users or your organization’s information.' },
+            { kind: 'p', text: 'To match dependencies against known vulnerabilities, the scanner downloads public vulnerability databases (published by the Trivy and Grype projects from sources such as the NIST National Vulnerability Database and the GitHub Advisory Database) and checks your dependencies locally. These downloads are the same for everyone and send no information about you, your organization or your code. Scanner telemetry and update checks are turned off.' },
           ],
         },
         {
@@ -133,7 +136,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               rows: [
                 ['Nome, usuário, e-mail e grupos fornecidos pelo seu provedor de login', 'Para fazer seu login, mostrar quem você é e aplicar seu papel na organização.'],
                 ['Configurações da organização, membros da equipe e convites', 'Para manter o espaço de trabalho da sua organização e controlar quem tem acesso.'],
-                ['Endereços de repositórios, branches e chaves SSH públicas de deploy', 'Para ler seu código e executar o pipeline de segurança que você configurou. Aceitamos apenas chaves públicas e nunca pedimos chaves privadas ou senhas dos seus repositórios.'],
+                ['Endereços de repositórios, branches, commit analisado e chaves SSH públicas de deploy', 'Para ler seu código e executar o pipeline de segurança que você configurou. Aceitamos apenas chaves públicas e nunca pedimos chaves privadas ou senhas dos seus repositórios.'],
                 ['Achados, execuções de pipeline, logs, relatórios, políticas e aceitações de risco', 'Para mostrar a postura de segurança dos seus projetos e o histórico.'],
                 ['Tokens de API', 'Armazenados apenas como hash irreversível e os quatro últimos caracteres, para que ninguém — nem nós — consiga lê-los novamente.'],
                 ['O plano da sua organização (Free ou PRO) e desde quando', 'Para oferecer as funcionalidades incluídas no seu plano.'],
@@ -147,14 +150,17 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'source-code',
           title: 'Seu código-fonte',
           blocks: [
-            { kind: 'p', text: 'O Artemis acessa seus repositórios com deploy keys somente leitura, apenas para executar as análises que você ativou. O código-fonte é processado para essas análises e não é usado para nenhuma outra finalidade, vendido ou compartilhado. Os resultados (achados, logs e relatórios) pertencem à sua organização.' },
+            { kind: 'p', text: 'As análises rodam na infraestrutura do próprio Artemis — não enviamos seu código para nenhum serviço de análise de terceiros. Em cada análise, o repositório é clonado (somente leitura, último commit da branch escolhida) em um scanner isolado, sem acesso ao nosso banco de dados, e as ferramentas de código aberto listadas na página Avisos de terceiros o analisam lá.' },
+            { kind: 'p', text: 'A cópia do seu código existe apenas enquanto a análise roda e é apagada assim que ela termina. Guardamos somente os resultados: achados, logs curtos das ferramentas e relatórios. O código-fonte não é usado para nenhuma outra finalidade, vendido ou compartilhado, e os resultados pertencem à sua organização.' },
+            { kind: 'p', text: 'Segredos encontrados no seu código são ocultados pelo scanner antes de qualquer armazenamento: o Artemis registra a regra, o arquivo e a linha, nunca o segredo em si. Os logs têm tamanho limitado e valores que parecem segredos são mascarados.' },
+            { kind: 'p', text: 'Hoje apenas repositórios públicos via HTTPS são analisados; repositórios privados com deploy keys somente leitura virão depois.' },
           ],
         },
         {
           id: 'external-services',
           title: 'Dados públicos de vulnerabilidades',
           blocks: [
-            { kind: 'p', text: 'Para enriquecer os achados consultamos registros públicos de vulnerabilidades (dados de CVE e CVSS) em fontes como a National Vulnerability Database do NIST. Essas consultas contêm apenas identificadores de vulnerabilidades — nunca seu código, seus usuários ou informações da sua organização.' },
+            { kind: 'p', text: 'Para comparar dependências com vulnerabilidades conhecidas, o scanner baixa bancos públicos de vulnerabilidades (publicados pelos projetos Trivy e Grype a partir de fontes como a National Vulnerability Database do NIST e o GitHub Advisory Database) e verifica suas dependências localmente. Esses downloads são iguais para todos e não enviam nenhuma informação sobre você, sua organização ou seu código. A telemetria e as verificações de atualização dos scanners ficam desligadas.' },
           ],
         },
         {
@@ -222,7 +228,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'service',
           title: 'The service',
           blocks: [
-            { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as SAST, dependency scanning and container scanning) and reports findings scored with CVSS. Features may change as the product evolves.' },
+            { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as secret scanning, SAST and dependency scanning) and reports the findings. Features may change as the product evolves.' },
+            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). For now, only public repositories reachable over HTTPS can be scanned; some pipeline stages (container image scanning and dynamic analysis) are not available yet.' },
           ],
         },
         {
@@ -326,7 +333,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'service',
           title: 'O serviço',
           blocks: [
-            { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como SAST, análise de dependências e varredura de contêineres) e reporta achados pontuados com CVSS. As funcionalidades podem mudar conforme o produto evolui.' },
+            { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como varredura de segredos, SAST e análise de dependências) e reporta os achados. As funcionalidades podem mudar conforme o produto evolui.' },
+            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Por enquanto, apenas repositórios públicos acessíveis via HTTPS podem ser analisados; algumas etapas do pipeline (varredura de imagens de contêiner e análise dinâmica) ainda não estão disponíveis.' },
           ],
         },
         {

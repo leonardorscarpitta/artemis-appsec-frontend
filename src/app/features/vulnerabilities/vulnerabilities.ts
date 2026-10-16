@@ -2,7 +2,16 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, WritableSignal, computed, effect, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FindingSummary, findingParams, findingsUrl, packageLabel } from '../../core/api/findings';
+import {
+  FINDING_KINDS,
+  FindingKind,
+  FindingSummary,
+  findingIdentifier,
+  findingParams,
+  findingRoute,
+  findingsUrl,
+  packageLabel,
+} from '../../core/api/findings';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
 import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
@@ -33,8 +42,12 @@ export class Vulnerabilities {
   protected readonly statuses = Object.keys(STATUS_KEYS) as FindingStatus[];
   protected readonly sorts: Sort[] = ['cvssDesc', 'cvssAsc', 'dateDesc', 'dateAsc'];
   protected readonly packageLabel = packageLabel;
+  protected readonly findingIdentifier = findingIdentifier;
+  protected readonly findingRoute = findingRoute;
+  protected readonly kinds = FINDING_KINDS;
 
   protected readonly query = signal('');
+  protected readonly kind = signal<FindingKind | ''>('');
   protected readonly severity = signal<Severity | ''>('');
   protected readonly status = signal<FindingStatus | ''>('');
   protected readonly repository = signal('');
@@ -50,6 +63,7 @@ export class Vulnerabilities {
     url: findingsUrl(),
     params: findingParams({
       q: this.searchTerm(),
+      kind: this.kind(),
       severity: this.severity(),
       status: this.status(),
       repository: this.repository(),
@@ -64,7 +78,7 @@ export class Vulnerabilities {
   });
 
   protected readonly hasFilters = computed(
-    () => !!(this.query() || this.severity() || this.status() || this.repository()),
+    () => !!(this.query() || this.kind() || this.severity() || this.status() || this.repository()),
   );
 
   constructor() {
@@ -77,6 +91,10 @@ export class Vulnerabilities {
 
   protected severityLabel(severity: Severity): string {
     return this.i18n.t(`sev.${severity}`);
+  }
+
+  protected kindLabel(kind: FindingKind | undefined): string {
+    return this.i18n.t(`vuln.kind.${kind ?? 'vulnerability'}`);
   }
 
   protected statusLabel(status: FindingStatus): string {
@@ -94,6 +112,7 @@ export class Vulnerabilities {
   protected clear(): void {
     this.query.set('');
     this.searchTerm.set('');
+    this.kind.set('');
     this.severity.set('');
     this.status.set('');
     this.repository.set('');
