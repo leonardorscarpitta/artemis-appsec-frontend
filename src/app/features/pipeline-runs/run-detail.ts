@@ -1,42 +1,69 @@
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, input, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { problemMessage } from '../../core/api/api';
+import { PipelineRunsApi, RunDetails, RunTrigger, formatDuration, runUrl } from '../../core/api/pipeline-runs';
 import { I18n } from '../../core/i18n';
-import { RUNS, RunStatus, RunTrigger, formatDuration } from '../../core/mock-runs';
-import { FailThreshold, PHASES, Phase, StageId } from '../../core/pipeline';
+import { Severity } from '../../core/mock-data';
+import { PHASES, Phase, StageId } from '../../core/pipeline';
+import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';
 
 @Component({
   selector: 'app-run-detail',
-  imports: [RouterLink, RunStatusBadge],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState],
   templateUrl: './run-detail.html',
   styleUrl: './run-detail.scss',
 })
 export class RunDetail {
   protected readonly i18n = inject(I18n);
+  private readonly api = inject(PipelineRunsApi);
+  private readonly router = inject(Router);
 
   readonly id = input.required<string>();
 
-  protected readonly run = computed(() => RUNS.find((r) => r.id === Number(this.id())));
-  // Local-only until the API exists: re-run/cancel just change what is shown.
-  protected readonly status = linkedSignal<RunStatus | undefined>(() => this.run()?.status);
+  protected readonly details = httpResource<RunDetails>(() => runUrl(this.id()));
+  protected readonly notFound = computed(() => {
+    const status = (this.details.error() as { status?: number } | undefined)?.status;
+    return status === 404 || status === 400;
+  });
+  protected readonly run = computed(() => this.details.value()?.run);
+  protected readonly busy = signal(false);
   protected readonly message = signal('');
+  protected readonly error = signal('');
   protected readonly duration = formatDuration;
 
   protected readonly phases = computed(() => {
-    const stages = this.run()?.stages ?? [];
+    const stages = this.details.value()?.stages ?? [];
     return PHASES.map((phase) => ({ phase, stages: stages.filter((s) => s.phase === phase) })).filter(
       (p) => p.stages.length,
     );
   });
 
-  protected rerun(): void {
-    this.status.set('queued');
-    this.message.set(this.i18n.t('runs.rerunQueued'));
+  protected rerun(number: number): void {
+    this.act(() =>
+      this.api.rerun(number).subscribe({
+        next: (created) => {
+          this.busy.set(false);
+          this.router.navigate(['/pipelines', created.run.number]);
+        },
+        error: (err) => this.fail(err),
+      }),
+    );
   }
 
-  protected cancel(): void {
-    this.status.set('cancelled');
-    this.message.set(this.i18n.t('runs.cancelledMsg'));
+  protected cancel(number: number): void {
+    this.act(() =>
+      this.api.cancel(number).subscribe({
+        next: (updated) => {
+          this.busy.set(false);
+          this.details.set(updated);
+          this.message.set(this.i18n.t('runs.cancelledMsg'));
+        },
+        error: (err) => this.fail(err),
+      }),
+    );
   }
 
   protected stageName(id: StageId): string {
@@ -51,7 +78,19 @@ export class RunDetail {
     return this.i18n.t(`runs.trigger.${trigger}`);
   }
 
-  protected failLabel(threshold: FailThreshold): string {
+  protected failLabel(threshold: Severity): string {
     return this.i18n.t(`pipe.fail.${threshold}`);
+  }
+
+  private act(request: () => void): void {
+    this.busy.set(true);
+    this.message.set('');
+    this.error.set('');
+    request();
+  }
+
+  private fail(err: unknown): void {
+    this.busy.set(false);
+    this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
   }
 }
