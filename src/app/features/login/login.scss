@@ -209,7 +209,7 @@ h1 {
     display: inline-flex;
   }
 
-  .info app-logo {
+  .info .home-link {
     display: none;
   }
 
@@ -243,4 +243,10 @@ h1 {
   .facts {
     grid-template-columns: 1fr;
   }
+}
+
+.home-link {
+  color: inherit;
+  text-decoration: none;
+  align-self: flex-start;
 }

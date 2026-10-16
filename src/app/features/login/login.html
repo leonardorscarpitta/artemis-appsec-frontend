@@ -1,5 +1,5 @@
 <aside class="info">
-  <app-logo />
+  <a routerLink="/" class="home-link"><app-logo /></a>
 
   <div class="pitch">
     <p class="eyebrow">{{ i18n.t('login.product') }}</p>
@@ -39,7 +39,7 @@
 
 <div class="side">
   <header class="bar">
-    <app-logo class="bar-logo" />
+    <a routerLink="/" class="home-link bar-logo"><app-logo /></a>
     <app-lang-switch />
     <app-theme-toggle />
   </header>

@@ -16,6 +16,7 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 
 | Path | Page |
 | --- | --- |
+| `/` | Public home page (product presentation); text in `features/home/home-content.ts` |
 | `/login` | SSO sign-in (Authelia OIDC, not wired yet) |
 | `/dashboard` | CVE overview with CVSS severities |
 | `/repositories` | Connected repositories |

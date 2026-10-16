@@ -9,12 +9,12 @@ const comingSoon = (path: string, title: TranslationKey) => ({
 });
 
 export const routes: Routes = [
+  { path: '', pathMatch: 'full', loadComponent: () => import('./features/home/home').then((m) => m.Home) },
   { path: 'login', loadComponent: () => import('./features/login/login').then((m) => m.Login) },
   {
     path: '',
     component: Shell,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),

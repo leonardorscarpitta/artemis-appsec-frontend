@@ -19,6 +19,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Getting started',
       blocks: [
         { kind: 'p', text: 'Artemis is an application security testing platform. It connects to your Git repositories, runs a configurable DevSecOps pipeline on them and reports vulnerabilities scored with CVSS, using the NIST National Vulnerability Database as the source.' },
+        { kind: 'p', text: 'The home page presents the product, how it works and answers to common questions. Select "Sign in" or "Get started" to open the sign-in screen.' },
         { kind: 'p', text: 'To sign in, choose "Sign in with SSO" and authenticate with your organization account. Authentication is handled by your identity provider through OpenID Connect; Artemis never stores your password.' },
         { kind: 'p', text: 'The interface is organized as follows:' },
         {
@@ -204,6 +205,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Primeiros passos',
       blocks: [
         { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações. Ele se conecta aos seus repositórios Git, executa neles um pipeline DevSecOps configurável e reporta vulnerabilidades pontuadas com CVSS, usando a National Vulnerability Database do NIST como fonte.' },
+        { kind: 'p', text: 'A página inicial apresenta o produto, como ele funciona e respostas a dúvidas comuns. Selecione "Entrar" ou "Começar" para abrir a tela de login.' },
         { kind: 'p', text: 'Para entrar, escolha "Entrar com SSO" e autentique-se com a conta da sua organização. A autenticação é feita pelo seu provedor de identidade via OpenID Connect; o Artemis nunca armazena sua senha.' },
         { kind: 'p', text: 'A interface está organizada assim:' },
         {
