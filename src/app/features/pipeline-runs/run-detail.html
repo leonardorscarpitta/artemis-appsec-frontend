@@ -3,23 +3,28 @@
   {{ i18n.t('runs.back') }}
 </a>
 
-@if (run(); as run) {
+@if (notFound()) {
+  <p class="card">{{ i18n.t('runs.notFound') }}</p>
+} @else if (run(); as run) {
   <header class="page-header">
     <div class="title">
-      <h1>{{ i18n.t('runs.run') }} #{{ run.id }}</h1>
-      <app-run-status [status]="status()" />
+      <h1>{{ i18n.t('runs.run') }} #{{ run.number }}</h1>
+      <app-run-status [status]="run.status" />
     </div>
     <div class="page-actions">
       <a class="btn" [routerLink]="['/repositories', run.repository]">{{ i18n.t('runs.repoSettings') }}</a>
-      @if (status() === 'running' || status() === 'queued') {
-        <button type="button" class="btn" (click)="cancel()">{{ i18n.t('runs.cancel') }}</button>
+      @if (run.status === 'running' || run.status === 'queued') {
+        <button type="button" class="btn" [disabled]="busy()" (click)="cancel(run.number)">{{ i18n.t('runs.cancel') }}</button>
       } @else {
-        <button type="button" class="btn primary" (click)="rerun()">{{ i18n.t('runs.rerun') }}</button>
+        <button type="button" class="btn primary" [disabled]="busy()" (click)="rerun(run.number)">{{ i18n.t('runs.rerun') }}</button>
       }
     </div>
   </header>
 
   <p class="notice" aria-live="polite">{{ message() }}</p>
+  @if (error()) {
+    <p class="notice error" role="alert">{{ error() }}</p>
+  }
 
   <section class="card" [attr.aria-label]="i18n.t('runs.details')">
     <dl class="meta">
@@ -41,11 +46,11 @@
       </div>
       <div>
         <dt>{{ i18n.t('runs.col.started') }}</dt>
-        <dd class="mono">{{ run.started }}</dd>
+        <dd class="mono">{{ run.startedAt | date: 'yyyy-MM-dd HH:mm' }}</dd>
       </div>
       <div>
         <dt>{{ i18n.t('runs.col.duration') }}</dt>
-        <dd class="mono">{{ duration(run.seconds) }}</dd>
+        <dd class="mono">{{ duration(run.durationSeconds) }}</dd>
       </div>
       <div>
         <dt>{{ i18n.t('runs.col.findings') }}</dt>
@@ -74,7 +79,7 @@
                   <span class="muted tool">{{ stage.tool }}</span>
                 </div>
                 <app-run-status [stage]="stage.status" />
-                <span class="mono muted time">{{ duration(stage.seconds) }}</span>
+                <span class="mono muted time">{{ duration(stage.durationSeconds) }}</span>
                 <span class="findings">
                   @if (stage.findings) {
                     <a routerLink="/vulnerabilities">
@@ -105,5 +110,5 @@
     }
   </ol>
 } @else {
-  <p class="card">{{ i18n.t('runs.notFound') }}</p>
+  <app-request-state [resource]="details" />
 }
