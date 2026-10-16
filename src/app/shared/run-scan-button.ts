@@ -1,4 +1,4 @@
-import { Component, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, ElementRef, inject, input, linkedSignal, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { problemMessage } from '../core/api/api';
 import { ProjectsApi } from '../core/api/projects';
@@ -9,8 +9,14 @@ import { LOCK_ICON } from './role-notice';
 /** Queues a scan of a repository and opens the new pipeline run. */
 @Component({
   selector: 'app-run-scan-button',
+  host: {
+    '(document:keydown.escape)': 'picking.set(false)',
+    '(window:resize)': 'picking.set(false)',
+    '(window:scroll)': 'picking.set(false)',
+  },
   template: `
     <button
+      #trigger
       type="button"
       class="btn"
       [class.primary]="primary()"
@@ -26,18 +32,30 @@ import { LOCK_ICON } from './role-notice';
       {{ running() ? i18n.t('scan.starting') : i18n.t('scan.run') }}
     </button>
     @if (picking()) {
-      <div class="picker" role="group" [attr.aria-label]="i18n.t('scan.pickFolders')">
-        <strong>{{ i18n.t('scan.pickFolders') }}</strong>
-        @for (folder of folders(); track folder) {
-          <label class="check">
-            <input type="checkbox" [checked]="selected().includes(folder)" (change)="toggle(folder, $any($event.target).checked)" />
-            <span class="mono">{{ folder }}</span>
-          </label>
-        }
+      <div class="picker" role="group" [attr.aria-label]="i18n.t('scan.pickFolders')" [style.top.px]="position().top" [style.right.px]="position().right">
+        <div class="picker-head">
+          <strong>{{ i18n.t('scan.pickFolders') }}</strong>
+          <button type="button" class="link" (click)="selectAll(selected().length < folders().length)">
+            {{ selected().length < folders().length ? i18n.t('scan.selectAll') : i18n.t('scan.selectNone') }}
+          </button>
+        </div>
+        <ul class="folder-list">
+          @for (folder of folders(); track folder) {
+            <li>
+              <label class="check" [class.on]="selected().includes(folder)">
+                <input type="checkbox" [checked]="selected().includes(folder)" (change)="toggle(folder, $any($event.target).checked)" />
+                <span class="mono path">{{ folder }}</span>
+                @if (stackOf(folder); as stack) {
+                  <span class="tag">{{ stack }}</span>
+                }
+              </label>
+            </li>
+          }
+        </ul>
         <div class="actions">
           <button type="button" class="btn ghost" (click)="picking.set(false)">{{ i18n.t('scan.cancel') }}</button>
           <button type="button" class="btn primary" [disabled]="!selected().length || running()" (click)="run()">
-            {{ i18n.t('scan.runSelected').replace('{n}', '' + selected().length) }}
+            {{ selected().length === 1 ? i18n.t('scan.runOne') : i18n.t('scan.runMany').replace('{n}', '' + selected().length) }}
           </button>
         </div>
       </div>
@@ -61,34 +79,91 @@ import { LOCK_ICON } from './role-notice';
     }
 
     .picker {
-      position: absolute;
-      top: calc(100% + 0.4rem);
-      right: 0;
-      z-index: 20;
+      // Fixed so it is never clipped by scrolling containers such as table cards.
+      position: fixed;
+      z-index: 60;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      min-width: 16rem;
-      padding: 0.9rem 1rem;
+      gap: 0.75rem;
+      width: max-content;
+      min-width: 17rem;
+      max-width: min(26rem, calc(100vw - 2rem));
+      padding: 1rem;
       text-align: left;
+      white-space: nowrap;
       background: var(--surface);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
     }
 
+    .picker-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .link {
+      padding: 0;
+      font: inherit;
+      font-size: 0.82rem;
+      color: var(--primary);
+      background: none;
+      border: 0;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .folder-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
     .check {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease;
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      &.on {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      .path {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tag {
+        font-size: 0.72rem;
+      }
     }
 
     .actions {
       display: flex;
       justify-content: flex-end;
       gap: 0.5rem;
-      margin-top: 0.25rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
     }
 
     .error {
@@ -111,16 +186,30 @@ export class RunScanButton {
   readonly compact = input(false);
   /** Monorepo folders; with more than one, the button first asks which ones to scan. */
   readonly folders = input<string[]>([]);
+  /** Optional stack per folder path, shown next to each folder. */
+  readonly stacks = input<Record<string, string>>({});
 
   protected readonly picking = signal(false);
+  protected readonly position = signal({ top: 0, right: 0 });
+  private readonly trigger = viewChild.required<ElementRef<HTMLButtonElement>>('trigger');
   protected readonly selected = linkedSignal(() => this.folders());
 
   protected readonly running = signal(false);
   protected readonly error = signal<string | null>(null);
 
   protected togglePicker(): void {
+    const rect = this.trigger().nativeElement.getBoundingClientRect();
+    this.position.set({ top: rect.bottom + 6, right: Math.max(16, window.innerWidth - rect.right) });
     this.selected.set(this.folders());
     this.picking.update((open) => !open);
+  }
+
+  protected stackOf(folder: string): string | undefined {
+    return this.stacks()[folder];
+  }
+
+  protected selectAll(all: boolean): void {
+    this.selected.set(all ? this.folders() : []);
   }
 
   protected toggle(folder: string, checked: boolean): void {

@@ -51,6 +51,8 @@ export class RepoAccess {
   constructor() {
     let wasChecking = false;
     effect((onCleanup) => {
+      // Reading the check (a new object on every response) re-arms the timer after each reload, not only on status changes.
+      this.check();
       const checking = this.checking();
       if (wasChecking && !checking) this.changed.emit();
       wasChecking = checking;
