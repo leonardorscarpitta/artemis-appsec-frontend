@@ -52,7 +52,15 @@
         {{ redirecting() ? i18n.t('auth.redirecting') : i18n.t('login.sso') }}
       </button>
       @if (failed()) {
-        <p class="error" role="alert">{{ i18n.t('auth.unreachable') }}</p>
+        <div class="error" role="alert">
+          <p>{{ i18n.t('auth.unreachable') }}</p>
+          @if (localCertificate) {
+            <p>
+              {{ i18n.t('auth.certificateHint') }}
+              <a [href]="authority" target="_blank" rel="noopener">{{ authority }}</a>
+            </p>
+          }
+        </div>
       }
       <p class="provider">{{ i18n.t('login.provider') }}</p>
     </div>

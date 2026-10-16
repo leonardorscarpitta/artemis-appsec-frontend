@@ -252,6 +252,13 @@ h1 {
 }
 
 .error {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   color: var(--sev-critical);
   font-size: 0.85rem;
+
+  a {
+    overflow-wrap: anywhere;
+  }
 }

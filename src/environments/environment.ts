@@ -4,5 +4,6 @@ export const environment = {
     authority: 'https://auth.artemisappsec.com',
     clientId: 'artemis-web',
     scope: 'openid profile email groups',
+    localCertificate: false,
   },
 };
