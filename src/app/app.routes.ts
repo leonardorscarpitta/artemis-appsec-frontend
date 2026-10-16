@@ -29,6 +29,11 @@ export const routes: Routes = [
     path: 'auth/callback',
     loadComponent: () => import('./features/auth-callback/auth-callback').then((m) => m.AuthCallback),
   },
+  {
+    path: 'organizations',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/organizations/organizations').then((m) => m.Organizations),
+  },
   { matcher: legacyPageMatcher, canActivate: [authGuard, legacyPageGuard], children: [] },
   {
     path: ':org',

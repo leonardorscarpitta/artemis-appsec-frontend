@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { Auth } from '../core/auth/auth';
+import { OrgContext } from '../core/org/org-context';
 import { I18n, TranslationKey } from '../core/i18n';
 import { BillingOverview, billingUrl } from '../core/api/billing';
 import { DashboardSummary, dashboardUrl } from '../core/api/findings';
@@ -13,6 +14,7 @@ import { Logo } from '../shared/logo';
 import { ThemeToggle } from '../shared/theme-toggle';
 import { OrgLink } from '../shared/org-link';
 import { UserBadge } from '../shared/user-badge';
+import { LOCK_ICON } from '../shared/role-notice';
 
 interface NavItem {
   path: string;
@@ -45,12 +47,15 @@ const ICONS = {
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch, ThemeToggle, OrgLink, UserBadge],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
-  host: { '(document:keydown.escape)': 'closeMenu()' },
+  host: { '(document:keydown.escape)': 'closeMenu(); orgMenuOpen.set(false)' },
 })
 export class Shell {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(Auth);
+  protected readonly org = inject(OrgContext);
   private readonly router = inject(Router);
+  protected readonly lock = LOCK_ICON;
+  protected readonly orgMenuOpen = signal(false);
 
   // Only relevant below the tablet breakpoint, where the sidebar becomes a drawer.
   protected readonly menuOpen = signal(false);
@@ -68,6 +73,7 @@ export class Shell {
       )
       .subscribe(() => {
         this.menuOpen.set(false);
+        this.orgMenuOpen.set(false);
         this.counts.reload();
       });
 
@@ -79,9 +85,8 @@ export class Shell {
     });
   }
 
-  protected async signOut(): Promise<void> {
-    await this.auth.logout();
-    await this.router.navigateByUrl('/');
+  protected signOut(): void {
+    void this.auth.logout();
   }
 
   protected closeMenu(): void {
@@ -90,8 +95,13 @@ export class Shell {
 
 
   // Badge counts; refreshed on every navigation so status changes are reflected.
-  private readonly counts = httpResource<DashboardSummary>(() => dashboardUrl());
-  private readonly billing = httpResource<BillingOverview>(() => billingUrl());
+  // Reading the slug re-fetches both when the user switches organization.
+  private readonly counts = httpResource<DashboardSummary>(() => (this.org.slug() ? dashboardUrl() : undefined));
+  private readonly billing = httpResource<BillingOverview>(() => (this.org.slug() ? billingUrl() : undefined));
+  protected readonly roleLabel = computed(() => {
+    const role = this.org.current()?.role;
+    return role ? this.i18n.t(`team.role.${role}`) : '';
+  });
   protected readonly usage = computed(() => {
     const usage = this.billing.value()?.usage;
     return usage ? { used: usage.scansThisMonth, limit: usage.scanLimit } : null;

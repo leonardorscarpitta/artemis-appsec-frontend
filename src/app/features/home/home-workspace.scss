@@ -22,11 +22,6 @@
   h2 {
     font-size: 1.5rem;
   }
-
-  // The header already offers "Go to dashboard" on larger screens.
-  .btn {
-    display: none;
-  }
 }
 
 .eyebrow {
@@ -38,40 +33,52 @@
   color: var(--primary);
 }
 
-.grid {
+.orgs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 1.25rem;
-  align-items: start;
-}
-
-h3 {
-  font-size: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 0.75rem;
 }
 
 .org {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s;
 
-  h3 a {
-    color: var(--text);
-    text-decoration: none;
-
-    &:hover {
-      color: var(--primary);
-    }
+  &:hover {
+    border-color: var(--primary);
   }
 }
 
-.org-head {
+.org-text {
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .mono {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
+}
+
+.tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
 }
 
 .org-avatar {
@@ -86,21 +93,8 @@ h3 {
   font-weight: 600;
 }
 
-.facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin: 0;
-
-  dt {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-
-  dd {
-    margin: 0.15rem 0 0;
-    font-weight: 600;
-  }
+.info-notice {
+  margin: 0 0 1rem;
 }
 
 .text-link {
@@ -113,50 +107,6 @@ h3 {
   }
 }
 
-.projects-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 0.75rem;
-}
-
-.projects ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-}
-
-.project {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  height: 100%;
-  padding: 1rem 1.1rem;
-  color: var(--text);
-  text-decoration: none;
-  transition: border-color 0.15s;
-
-  &:hover {
-    border-color: var(--primary);
-  }
-
-  .meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    font-size: 0.8rem;
-  }
-
-  .alert {
-    color: var(--sev-high);
-    font-weight: 600;
-  }
-}
-
 .empty {
   display: flex;
   flex-direction: column;
@@ -164,19 +114,8 @@ h3 {
   gap: 0.75rem;
 }
 
-@media (max-width: 899px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 @media (max-width: 599px) {
   .container {
     padding-inline: 1rem;
-  }
-
-  .ws-head .btn {
-    display: inline-flex;
-    width: 100%;
   }
 }

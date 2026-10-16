@@ -64,6 +64,26 @@ export interface Invitation {
   email: string;
   role: Role;
   sentAt: string;
+  expiresAt: string;
+}
+
+/** An organization the signed-in user belongs to, with their role in it. */
+export interface OrganizationSummary {
+  slug: string;
+  name: string;
+  role: Role;
+  permissions: Permission[];
+  plan: 'free' | 'pro';
+}
+
+/** An invitation addressed to the signed-in user's verified e-mail. */
+export interface MyInvitation {
+  id: string;
+  organization: { slug: string; name: string };
+  role: Role;
+  invitedBy: string | null;
+  sentAt: string;
+  expiresAt: string;
 }
 
 export interface RoleInfo {
@@ -117,6 +137,8 @@ export const invitationsUrl = () => apiUrl('/invitations');
 export const rolesUrl = () => apiUrl('/roles');
 export const organizationSettingsUrl = () => apiUrl('/organization/settings');
 export const apiTokensUrl = () => apiUrl('/api-tokens');
+export const myOrganizationsUrl = () => apiUrl('/me/organizations');
+export const myInvitationsUrl = () => apiUrl('/me/invitations');
 
 @Service()
 export class OrganizationApi {
@@ -164,6 +186,26 @@ export class OrganizationApi {
 
   deleteOrganization(): Observable<void> {
     return this.http.delete<void>(apiUrl('/organization'));
+  }
+
+  createOrganization(name: string, slug: string): Observable<OrganizationSummary> {
+    return this.http.post<OrganizationSummary>(apiUrl('/organizations'), { name, slug });
+  }
+
+  acceptInvitation(id: string): Observable<OrganizationSummary> {
+    return this.http.post<OrganizationSummary>(`${myInvitationsUrl()}/${id}/accept`, null);
+  }
+
+  declineInvitation(id: string): Observable<void> {
+    return this.http.post<void>(`${myInvitationsUrl()}/${id}/decline`, null);
+  }
+
+  leaveOrganization(slug: string): Observable<void> {
+    return this.http.post<void>(`${myOrganizationsUrl()}/${slug}/leave`, null);
+  }
+
+  transferOwnership(memberId: string): Observable<void> {
+    return this.http.post<void>(`${membersUrl()}/transfer-ownership`, { memberId });
   }
 
   createToken(name: string, scopes: TokenScope[], expiresInDays: number): Observable<CreatedApiToken> {

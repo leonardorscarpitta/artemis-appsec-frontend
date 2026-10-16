@@ -4,16 +4,19 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { problemMessage } from '../../core/api/api';
 import { BillingApi, BillingOverview, PLAN_FEATURES, Plan, PlanId, billingUrl, formatPrice } from '../../core/api/billing';
 import { I18n } from '../../core/i18n';
+import { OrgContext } from '../../core/org/org-context';
 import { RequestState } from '../../shared/request-state';
+import { RoleNotice } from '../../shared/role-notice';
 
 @Component({
   selector: 'app-billing',
-  imports: [DatePipe, RequestState],
+  imports: [DatePipe, RequestState, RoleNotice],
   templateUrl: './billing.html',
   styleUrl: './billing.scss',
 })
 export class Billing {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
   private readonly api = inject(BillingApi);
 
   protected readonly billing = httpResource<BillingOverview>(() => billingUrl());

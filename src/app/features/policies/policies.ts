@@ -3,21 +3,26 @@ import { Component, computed, inject, linkedSignal, signal } from '@angular/core
 import { problemMessage } from '../../core/api/api';
 import { Policies as PolicyModel, PoliciesApi, RiskAcceptance, policiesUrl, riskAcceptancesUrl } from '../../core/api/policies';
 import { I18n } from '../../core/i18n';
+import { OrgContext } from '../../core/org/org-context';
 import { Severity } from '../../core/domain';
 import { FAIL_THRESHOLDS, FailThreshold, StageId } from '../../core/pipeline';
 import { RequestState } from '../../shared/request-state';
+import { RoleNotice } from '../../shared/role-notice';
 
 type LicenseList = 'licensesAllowed' | 'licensesDenied';
 
 @Component({
   selector: 'app-policies',
-  imports: [RequestState],
+  imports: [RequestState, RoleNotice],
   templateUrl: './policies.html',
   styleUrl: './policies.scss',
 })
 export class Policies {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(PoliciesApi);
+  protected readonly org = inject(OrgContext);
+  protected readonly canEdit = computed(() => this.org.can('pipelines'));
+  protected readonly canTriage = computed(() => this.org.can('triage'));
 
   protected readonly server = httpResource<PolicyModel>(() => policiesUrl());
   protected readonly acceptances = httpResource<RiskAcceptance[]>(() => riskAcceptancesUrl());

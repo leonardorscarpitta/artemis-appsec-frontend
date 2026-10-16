@@ -4,7 +4,7 @@ export const environment = {
     authority: 'https://auth.artemisappsec.localhost:9443/realms/artemisappsec',
     clientId: 'artemisappsec-web',
     scope: 'openid profile email',
-    // Local Authelia uses a self-signed certificate the browser must accept once.
+    // Local Keycloak (behind Caddy) uses a self-signed certificate the browser must accept once.
     localCertificate: true,
   },
 };

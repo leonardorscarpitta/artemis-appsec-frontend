@@ -25,7 +25,7 @@ const SCANNERS_PT = [
 ];
 
 const PLATFORM = [
-  ['Authelia', 'Apache-2.0', 'https://github.com/authelia/authelia'],
+  ['Keycloak', 'Apache-2.0', 'https://github.com/keycloak/keycloak'],
   ['Caddy', 'Apache-2.0', 'https://github.com/caddyserver/caddy'],
   ['PostgreSQL', 'PostgreSQL License', 'https://www.postgresql.org'],
   ['Spring Boot', 'Apache-2.0', 'https://github.com/spring-projects/spring-boot'],

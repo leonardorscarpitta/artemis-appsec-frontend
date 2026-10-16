@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { ReportAuthor, ReportPeriod, ReportStatus, ReportSummary, ReportType, ReportsApi, reportsUrl } from '../../core/api/reports';
+import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
@@ -17,6 +18,7 @@ import { OrgLink } from '../../shared/org-link';
 })
 export class Reports {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
   private readonly api = inject(ReportsApi);
 
   // Titles are localized by the API, so the list is fetched again when the language changes.

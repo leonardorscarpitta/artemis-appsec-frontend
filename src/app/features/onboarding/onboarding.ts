@@ -9,13 +9,14 @@ import { PipelineStage, defaultPipeline } from '../../core/pipeline';
 import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';
 import { OrgContext } from '../../core/org/org-context';
+import { RoleNotice } from '../../shared/role-notice';
 
 // Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
 const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({
   selector: 'app-onboarding',
-  imports: [ScanSettings, PipelineEditor],
+  imports: [ScanSettings, PipelineEditor, RoleNotice],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.scss',
 })
@@ -23,7 +24,7 @@ export class Onboarding {
   protected readonly i18n = inject(I18n);
   private readonly router = inject(Router);
   private readonly api = inject(ProjectsApi);
-  private readonly org = inject(OrgContext);
+  protected readonly org = inject(OrgContext);
 
   protected readonly steps: TranslationKey[] = ['ob.step1', 'ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
   protected readonly step = signal(0);

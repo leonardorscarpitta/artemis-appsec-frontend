@@ -14,10 +14,10 @@
       <app-theme-toggle />
       @if (auth.isAuthenticated()) {
         <app-user-badge [showName]="false" />
-        <a class="btn primary open-app" routerLink="/dashboard">{{ i18n.t('nav.openApp') }}</a>
+        <a class="btn primary open-app" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
       } @else {
         <a class="btn ghost sign-in" routerLink="/login">{{ c().nav.signIn }}</a>
-        <a class="btn primary" routerLink="/login">{{ c().nav.cta }}</a>
+        <button type="button" class="btn primary" (click)="register()">{{ c().nav.cta }}</button>
       }
     </div>
   </div>
@@ -34,9 +34,11 @@
         <h1>{{ c().hero.title }}</h1>
         <p class="lead">{{ c().hero.lead }}</p>
         <div class="hero-cta">
-          <a class="btn primary large" [routerLink]="auth.isAuthenticated() ? '/dashboard' : '/login'">
-            {{ auth.isAuthenticated() ? i18n.t('nav.openApp') : c().hero.primary }}
-          </a>
+          @if (auth.isAuthenticated()) {
+            <a class="btn primary large" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
+          } @else {
+            <button type="button" class="btn primary large" (click)="register()">{{ c().hero.primary }}</button>
+          }
           <a class="btn large" routerLink="/" fragment="how">{{ c().hero.secondary }}</a>
         </div>
       </div>
@@ -162,9 +164,11 @@
                 }
               </ul>
               @if (plan.id === 'free') {
-                <a class="btn primary" [routerLink]="auth.isAuthenticated() ? '/dashboard' : '/login'">
-                  {{ auth.isAuthenticated() ? i18n.t('nav.openApp') : c().pricing.freeCta }}
-                </a>
+                @if (auth.isAuthenticated()) {
+                  <a class="btn primary" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
+                } @else {
+                  <button type="button" class="btn primary" (click)="register()">{{ c().pricing.freeCta }}</button>
+                }
               } @else {
                 <button type="button" class="btn" disabled>{{ i18n.t('billing.comingSoon') }}</button>
               }
@@ -198,7 +202,11 @@
         <h2 id="cta-title">{{ c().cta.title }}</h2>
         <p>{{ c().cta.lead }}</p>
       </div>
-      <a class="btn large light" routerLink="/login">{{ c().cta.button }}</a>
+      @if (auth.isAuthenticated()) {
+        <a class="btn large light" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
+      } @else {
+        <button type="button" class="btn large light" (click)="register()">{{ c().cta.button }}</button>
+      }
     </div>
   </section>
 </main>

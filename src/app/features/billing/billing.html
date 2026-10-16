@@ -5,6 +5,8 @@
   </div>
 </header>
 
+<app-role-notice permission="billing" />
+
 @if (billing.value(); as b) {
   @if (!b.enabled) {
     <div class="notice" role="status">
@@ -78,7 +80,7 @@
             {{ i18n.t('billing.unavailable') }}
           </button>
         } @else {
-          <button type="button" class="btn" [class.primary]="plan.id === 'pro'" [disabled]="changing()" (click)="choose(plan.id)">
+          <button type="button" class="btn" [class.primary]="plan.id === 'pro'" [disabled]="changing() || !org.can('billing')" (click)="choose(plan.id)">
             {{ plan.id === 'pro' ? i18n.t('billing.upgrade') : i18n.t('billing.downgrade') }}
           </button>
         }

@@ -13,20 +13,27 @@ import {
   membersUrl,
   rolesUrl,
 } from '../../core/api/organization';
+import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
+import { OrgContext } from '../../core/org/org-context';
 import { RequestState } from '../../shared/request-state';
+import { RoleNotice } from '../../shared/role-notice';
 
 const PERMISSIONS: Permission[] = ['viewFindings', 'triage', 'pipelines', 'integrations', 'team', 'billing'];
 
 @Component({
   selector: 'app-team',
-  imports: [DatePipe, RequestState],
+  imports: [DatePipe, RequestState, RoleNotice],
   templateUrl: './team.html',
   styleUrl: './team.scss',
 })
 export class Team {
   protected readonly i18n = inject(I18n);
   private readonly api = inject(OrganizationApi);
+  protected readonly org = inject(OrgContext);
+  private readonly auth = inject(Auth);
+  protected readonly canManage = computed(() => this.org.can('team'));
+  protected readonly isOwner = computed(() => this.org.current()?.role === 'owner');
 
   protected readonly members = httpResource<Member[]>(() => membersUrl(), { defaultValue: [] });
   protected readonly invitations = httpResource<Invitation[]>(() => invitationsUrl(), { defaultValue: [] });
@@ -55,6 +62,22 @@ export class Team {
 
   protected can(role: Role, permission: Permission): boolean {
     return this.roleInfo.value().find((r) => r.role === role)?.permissions.includes(permission) ?? false;
+  }
+
+  protected isSelf(member: Member): boolean {
+    return member.email.toLowerCase() === this.auth.profile()?.email?.toLowerCase();
+  }
+
+  protected transferOwnership(member: Member): void {
+    if (!confirm(this.i18n.t('team.transferConfirm').replace('{name}', member.name))) return;
+    this.error.set(null);
+    this.api.transferOwnership(member.id).subscribe({
+      next: () => {
+        this.members.reload();
+        void this.org.load(true);
+      },
+      error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
   }
 
   protected initials(name: string): string {

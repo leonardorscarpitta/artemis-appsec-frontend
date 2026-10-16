@@ -3,7 +3,7 @@ import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts';
 import { environment } from '../../../environments/environment';
 
 interface LoginState {
-  returnUrl: string;
+  returnUrl: string | null;
 }
 
 export interface Profile {
@@ -13,13 +13,14 @@ export interface Profile {
   initials: string;
 }
 
-/** OpenID Connect session with Authelia (Authorization Code + PKCE; tokens in localStorage so every tab shares the session). */
+/** OpenID Connect session with Keycloak (Authorization Code + PKCE; tokens in localStorage so every tab shares the session). */
 @Service()
 export class Auth {
   private readonly manager = new UserManager({
     authority: environment.auth.authority,
     client_id: environment.auth.clientId,
     redirect_uri: `${location.origin}/auth/callback`,
+    post_logout_redirect_uri: `${location.origin}/`,
     response_type: 'code',
     scope: environment.auth.scope,
     loadUserInfo: false,
@@ -29,8 +30,8 @@ export class Auth {
 
   private readonly user = signal<User | null>(null);
 
-  /** The user's own account page at the identity provider (password, two-factor). */
-  readonly accountUrl = `${environment.auth.authority}/settings`;
+  /** The user's own account page at the identity provider (profile, password, two-factor, deletion). */
+  readonly accountUrl = `${environment.auth.authority}/account`;
 
   readonly isAuthenticated = computed(() => {
     const user = this.user();
@@ -68,19 +69,34 @@ export class Auth {
     return this.isAuthenticated() ? (this.user()?.access_token ?? null) : null;
   }
 
-  login(returnUrl = '/dashboard'): Promise<void> {
+  login(returnUrl: string | null = null): Promise<void> {
     return this.manager.signinRedirect({ state: { returnUrl } satisfies LoginState });
   }
 
-  /** Completes the redirect from Authelia and returns where the user was heading. */
-  async completeLogin(): Promise<string> {
-    const user = await this.manager.signinRedirectCallback();
-    this.user.set(user);
-    return (user.state as LoginState | undefined)?.returnUrl ?? '/dashboard';
+  /** Opens the identity provider's sign-up form; the new user returns signed in. */
+  register(returnUrl: string | null = null): Promise<void> {
+    return this.manager.signinRedirect({ prompt: 'create', state: { returnUrl } satisfies LoginState });
   }
 
-  /** Ends the Artemis session. Authelia does not support RP-initiated logout yet, so its own session remains. */
+  /** Completes the redirect from the identity provider and returns where the user was heading, if anywhere. */
+  async completeLogin(): Promise<string | null> {
+    const user = await this.manager.signinRedirectCallback();
+    this.user.set(user);
+    return (user.state as LoginState | undefined)?.returnUrl ?? null;
+  }
+
+  /** Signs out of Artemis and of the identity provider, which then returns to the home page. */
   async logout(): Promise<void> {
+    try {
+      await this.manager.signoutRedirect();
+    } catch (error) {
+      console.error('Could not reach the identity provider to sign out', error);
+      await this.clearSession();
+    }
+  }
+
+  /** Forgets the tokens in this browser only (e.g. when the API rejects them). */
+  async clearSession(): Promise<void> {
     await this.manager.removeUser();
     this.user.set(null);
   }

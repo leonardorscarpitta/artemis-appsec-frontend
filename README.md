@@ -46,7 +46,7 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080 and Authelia at https://auth.artemisappsec.localhost:9443); see the backend README. Development logins are in the backend's `authelia/secrets/dev-credentials.txt`. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Authelia. A development build check:
+The app is served at http://localhost:4200 with live reload. The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080, Keycloak at https://auth.artemisappsec.localhost:9443 and Mailpit at http://localhost:8025 for verification e-mails); see the backend README. Development logins are in the backend's `keycloak/secrets/dev-credentials.txt`, or register a new account from the home page. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Keycloak. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
@@ -67,21 +67,23 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`, `billing.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
-| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
-| `src/app/features/` | One folder per page: `home`, `login`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
+| `src/app/core/org/` | `OrgContext` (memberships, current organization, `can()`/`reason()`), `orgGuard`, `orgInterceptor` |
+| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `role-notice`, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
+| `src/app/features/` | One folder per page: `home`, `login`, `organizations`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
 
 ## Routes
 
-In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). The slug comes from `GET /organization/settings` (`OrgContext`); `orgGuard` rewrites a wrong slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page under the slug. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login` and `/auth/callback` are public and unprefixed.
+In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). `OrgContext` loads the user's memberships from `GET /me/organizations`; `orgGuard` only lets users into organizations they belong to (otherwise → `/organizations`) and sets the current slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page in the user's first organization. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login`, `/auth/callback` and `/organizations` are unprefixed.
 
 | Path | Page |
 | --- | --- |
-| `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): organization, role, members and project shortcuts from the API |
+| `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): their organizations (role, plan) and pending invitations. "Get started" opens Keycloak's sign-up form |
 | `/docs` | Public user guide (same content as `/help`) for visitors who are not signed in |
 | `/privacy`, `/terms` | Privacy Policy and Terms of Use (text in `features/legal/legal-content.ts`, en-US + pt-BR) |
 | `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
-| `/login` | SSO sign-in (redirects to Authelia) |
-| `/auth/callback` | OpenID Connect redirect target; completes sign-in and returns to the requested page |
+| `/login` | Sign in or create an account (redirects to Keycloak) |
+| `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
+| `/organizations` | Organization picker: the user's organizations, invitations to their verified e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
 | `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs) |
@@ -90,8 +92,8 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
 | `/integrations` | Integrations and SSH deploy keys |
 | `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
-| `/team` | Members, invitations, roles and permissions |
-| `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone) |
+| `/team` | Members, invitations, roles and permissions, ownership transfer |
+| `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
 | `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
 | `/help` | In-app user guide |
 
@@ -131,7 +133,14 @@ The catalog comes from the API (`GET /pipeline/stages`, field `available`); `cor
 
 ## Authentication
 
-Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemisappsec-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. The user badge (`shared/user-badge.ts`) links to the account page at Authelia (`<authority>/settings`). Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
+Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Authorization Code + PKCE, public client `artemisappsec-web`). `Auth.register()` opens Keycloak's sign-up form (`prompt=create`; e-mail verification and Terms acceptance happen there). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. On a 401 the local session is cleared and the user signs in again. The user badge (`shared/user-badge.ts`) links to the Keycloak account console (`<authority>/account`). "Sign out" is RP-initiated logout (`signoutRedirect`, back to `/`), ending the Keycloak session too.
+
+## Organizations and permissions
+
+- Every org-scoped API call carries `X-Artemis-Organization: <slug>` (added by `orgInterceptor` from the URL slug; not sent to `/me/**` and `/organizations`). A `404` with code `organization-not-found` drops the membership and goes to `/organizations`; a `403` reloads the memberships (the role may have changed).
+- `OrgContext.current()` holds the role and permission list returned by the API (`viewFindings`, `triage`, `pipelines`, `integrations`, `team`, `billing`). Gate actions with `org.can('<permission>')`; the API enforces the same matrix.
+- When a permission is missing, don't hide the feature: disable the controls (wrap forms in `<fieldset class="contents" [disabled]>`), and show `<app-role-notice permission="…" />` or a `title` with `org.reason('<permission>')` ("Your role (Viewer) can't …").
+- The shell re-creates its `<router-outlet>` when the slug changes, so pages reload their data after switching organization from the sidebar.
 
 ## Talking to the API
 

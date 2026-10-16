@@ -14,9 +14,9 @@
     <div class="page-actions">
       <a class="btn" [routerLink]="['/repositories', run.repository] | orgLink">{{ i18n.t('runs.repoSettings') }}</a>
       @if (run.status === 'running' || run.status === 'queued') {
-        <button type="button" class="btn" [disabled]="busy()" (click)="cancel(run.number)">{{ i18n.t('runs.cancel') }}</button>
+        <button type="button" class="btn" [disabled]="busy() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="cancel(run.number)">{{ i18n.t('runs.cancel') }}</button>
       } @else {
-        <button type="button" class="btn primary" [disabled]="busy()" (click)="rerun(run.number)">{{ i18n.t('runs.rerun') }}</button>
+        <button type="button" class="btn primary" [disabled]="busy() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="rerun(run.number)">{{ i18n.t('runs.rerun') }}</button>
       }
     </div>
   </header>

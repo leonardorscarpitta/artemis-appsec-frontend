@@ -5,12 +5,13 @@ import { routes } from './app.routes';
 import { languageInterceptor } from './core/api/api';
 import { Auth } from './core/auth/auth';
 import { authInterceptor } from './core/auth/auth-interceptor';
+import { orgInterceptor } from './core/org/org-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideAppInitializer(() => inject(Auth).init()),
-    provideHttpClient(withFetch(), withInterceptors([languageInterceptor, authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([languageInterceptor, orgInterceptor, authInterceptor])),
     provideRouter(
       routes,
       withComponentInputBinding(),

@@ -37,8 +37,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               kind: 'table',
               head: ['Information', 'Why we need it'],
               rows: [
-                ['Name, username, e-mail and groups provided by your sign-in provider', 'To sign you in, show who you are and apply your role in the organization.'],
-                ['Organization settings, team members and invitations', 'To run your organization’s workspace and control who can access it.'],
+                ['Your account: name, username, e-mail address and whether it is verified. It is kept by our identity service (Keycloak, running on Artemis’s own infrastructure); your password is stored there only as a salted one-way hash and Artemis itself never receives it', 'To create your account, sign you in, protect it (password rules, temporary lockout after repeated failed attempts, optional two-factor authentication) and show who you are.'],
+                ['The date you accepted the Terms of Use and this Privacy Policy when registering', 'To record your consent, as the law requires.'],
+                ['E-mail verification and password-reset messages', 'Sent only to your address, to confirm it or help you recover your account. We never send marketing e-mails.'],
+                ['Memberships: the organizations you belong to, your role in each, your last activity, and invitations (invited e-mail, role, who invited and when it expires)', 'To apply your permissions, keep each organization’s data separate and let you join organizations you are invited to.'],
+                ['Organization settings and who owns each organization', 'To run each organization’s workspace and let its owner control it.'],
                 ['Repository addresses, branches, scanned commit and public SSH deploy keys', 'To read your code and run the security pipeline you configured. We only accept public keys and never ask for private keys or passwords to your repositories.'],
                 ['Findings, pipeline runs, logs, reports, policies and risk acceptances', 'To show the security posture of your projects and their history.'],
                 ['API tokens', 'Stored only as a one-way hash plus the last four characters, so nobody — including us — can read them back.'],
@@ -83,7 +86,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Sign-in through OpenID Connect; Artemis never sees or stores your password.',
                 'Encrypted connections (HTTPS) between your browser, the app and the sign-in service.',
                 'Secrets such as API tokens are stored only as hashes; identity-provider client secrets are never stored by the app.',
-                'Access to an organization’s data is limited to its members.',
+                'Each organization’s data is isolated: every request is checked against your membership and your role in that organization.',
+                'Password policy, mandatory e-mail verification and protection against repeated sign-in attempts at the identity service.',
               ],
             },
           ],
@@ -92,7 +96,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retention and deletion',
           blocks: [
-            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When an organization is deleted, its data is deleted with it. You can ask us to delete your personal information at any time.' },
+            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When its owner deletes an organization, all of its data is deleted with it. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
+            { kind: 'p', text: 'You can delete your account at any time from your account page at the identity service (select your name in the top bar) or by asking us. Deleting it removes your profile and memberships; if you own an organization, transfer ownership or delete the organization first. You can also ask us to delete your personal information at any time.' },
           ],
         },
         {
@@ -134,8 +139,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               kind: 'table',
               head: ['Informação', 'Por que precisamos'],
               rows: [
-                ['Nome, usuário, e-mail e grupos fornecidos pelo seu provedor de login', 'Para fazer seu login, mostrar quem você é e aplicar seu papel na organização.'],
-                ['Configurações da organização, membros da equipe e convites', 'Para manter o espaço de trabalho da sua organização e controlar quem tem acesso.'],
+                ['Sua conta: nome, usuário, e-mail e se ele foi verificado. Ela fica no nosso serviço de identidade (Keycloak, rodando na infraestrutura do próprio Artemis); sua senha é guardada lá apenas como hash irreversível com salt e o Artemis em si nunca a recebe', 'Para criar sua conta, fazer seu login, protegê-la (regras de senha, bloqueio temporário após tentativas erradas repetidas, verificação em duas etapas opcional) e mostrar quem você é.'],
+                ['A data em que você aceitou os Termos de Uso e esta Política de Privacidade no cadastro', 'Para registrar o seu consentimento, como a lei exige.'],
+                ['Mensagens de verificação de e-mail e de redefinição de senha', 'Enviadas apenas ao seu endereço, para confirmá-lo ou ajudar você a recuperar a conta. Nunca enviamos e-mails de marketing.'],
+                ['Vínculos: as organizações de que você participa, seu papel em cada uma, sua última atividade e convites (e-mail convidado, papel, quem convidou e quando expira)', 'Para aplicar suas permissões, manter os dados de cada organização separados e permitir que você entre nas organizações para as quais foi convidado.'],
+                ['Configurações da organização e quem é o proprietário de cada uma', 'Para manter o espaço de trabalho de cada organização e permitir que o proprietário a controle.'],
                 ['Endereços de repositórios, branches, commit analisado e chaves SSH públicas de deploy', 'Para ler seu código e executar o pipeline de segurança que você configurou. Aceitamos apenas chaves públicas e nunca pedimos chaves privadas ou senhas dos seus repositórios.'],
                 ['Achados, execuções de pipeline, logs, relatórios, políticas e aceitações de risco', 'Para mostrar a postura de segurança dos seus projetos e o histórico.'],
                 ['Tokens de API', 'Armazenados apenas como hash irreversível e os quatro últimos caracteres, para que ninguém — nem nós — consiga lê-los novamente.'],
@@ -180,7 +188,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Login via OpenID Connect; o Artemis nunca vê nem armazena sua senha.',
                 'Conexões criptografadas (HTTPS) entre seu navegador, a aplicação e o serviço de login.',
                 'Segredos como tokens de API são armazenados apenas como hash; segredos de cliente do provedor de identidade nunca são armazenados pela aplicação.',
-                'O acesso aos dados de uma organização é limitado aos seus membros.',
+                'Os dados de cada organização são isolados: toda requisição é verificada contra o seu vínculo e o seu papel naquela organização.',
+                'Política de senhas, verificação obrigatória de e-mail e proteção contra tentativas repetidas de login no serviço de identidade.',
               ],
             },
           ],
@@ -189,7 +198,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retenção e exclusão',
           blocks: [
-            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando uma organização é excluída, seus dados são excluídos junto. Você pode pedir a exclusão das suas informações pessoais a qualquer momento.' },
+            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando o proprietário exclui uma organização, todos os dados dela são excluídos junto. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
+            { kind: 'p', text: 'Você pode excluir sua conta a qualquer momento pela página da sua conta no serviço de identidade (selecione seu nome na barra superior) ou pedindo para nós. A exclusão remove seu perfil e seus vínculos; se você for proprietário de uma organização, transfira a propriedade ou exclua a organização antes. Você também pode pedir a exclusão das suas informações pessoais a qualquer momento.' },
           ],
         },
         {
@@ -221,7 +231,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'acceptance',
           title: 'Acceptance',
           blocks: [
-            { kind: 'p', text: 'By signing in to or using Artemis you agree to these Terms of Use and to the Privacy Policy. If you use Artemis on behalf of an organization, you confirm you are allowed to accept these terms for it.' },
+            { kind: 'p', text: 'You accept these Terms of Use and the Privacy Policy when you create your account, and by signing in to or using Artemis. If you use Artemis on behalf of a company or another organization, you confirm you are allowed to accept these terms for it.' },
           ],
         },
         {
@@ -239,9 +249,24 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'You sign in through your organization’s identity provider; keep your credentials and API tokens confidential.',
-                'Organization owners and admins decide who belongs to the organization and which role each member has.',
+                'Register with an e-mail address you control and verify it; give accurate information and keep one account per person.',
+                'Keep your password and API tokens confidential. You are responsible for what is done with your account.',
                 'Tell us immediately at the contact below if you suspect unauthorized access.',
+              ],
+            },
+          ],
+        },
+        {
+          id: 'organizations',
+          title: 'Organizations and roles',
+          blocks: [
+            {
+              kind: 'ul',
+              items: [
+                'Whoever creates an organization becomes its owner and is responsible for it: who is invited, the roles assigned, the repositories connected and the organization’s compliance with these terms. Each organization has exactly one owner.',
+                'Owners and admins decide who belongs to the organization and which role each member has. Members act on behalf of the organization and only within the permissions of their role.',
+                'The owner may transfer ownership to another active member. Members may leave at any time; information they created remains with the organization.',
+                'The owner may delete the organization, which permanently deletes all of its data.',
               ],
             },
           ],
@@ -303,7 +328,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'termination',
           title: 'Suspension and termination',
           blocks: [
-            { kind: 'p', text: 'You may stop using Artemis and delete your organization at any time. We may suspend access that violates these terms, explaining the reason whenever possible.' },
+            { kind: 'p', text: 'You may stop using Artemis, leave or delete your organizations and delete your account at any time. We may suspend access that violates these terms, explaining the reason whenever possible.' },
           ],
         },
         {
@@ -326,7 +351,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'acceptance',
           title: 'Aceitação',
           blocks: [
-            { kind: 'p', text: 'Ao entrar ou usar o Artemis você concorda com estes Termos de Uso e com a Política de Privacidade. Se usar o Artemis em nome de uma organização, você confirma que pode aceitar estes termos por ela.' },
+            { kind: 'p', text: 'Você aceita estes Termos de Uso e a Política de Privacidade ao criar sua conta, e ao entrar ou usar o Artemis. Se usar o Artemis em nome de uma empresa ou outra organização, você confirma que pode aceitar estes termos por ela.' },
           ],
         },
         {
@@ -344,9 +369,24 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Você entra pelo provedor de identidade da sua organização; mantenha suas credenciais e tokens de API em sigilo.',
-                'Proprietários e administradores da organização decidem quem faz parte dela e qual o papel de cada membro.',
+                'Cadastre-se com um e-mail que você controla e confirme-o; informe dados corretos e mantenha uma conta por pessoa.',
+                'Mantenha sua senha e seus tokens de API em sigilo. Você é responsável pelo que for feito com a sua conta.',
                 'Avise-nos imediatamente pelo contato abaixo se suspeitar de acesso não autorizado.',
+              ],
+            },
+          ],
+        },
+        {
+          id: 'organizations',
+          title: 'Organizações e papéis',
+          blocks: [
+            {
+              kind: 'ul',
+              items: [
+                'Quem cria uma organização passa a ser o proprietário e é responsável por ela: quem é convidado, os papéis atribuídos, os repositórios conectados e o cumprimento destes termos pela organização. Cada organização tem exatamente um proprietário.',
+                'Proprietários e administradores decidem quem faz parte da organização e qual o papel de cada membro. Os membros agem em nome da organização e somente dentro das permissões do seu papel.',
+                'O proprietário pode transferir a propriedade para outro membro ativo. Membros podem sair a qualquer momento; as informações que criaram permanecem com a organização.',
+                'O proprietário pode excluir a organização, o que apaga permanentemente todos os dados dela.',
               ],
             },
           ],
@@ -408,7 +448,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'termination',
           title: 'Suspensão e encerramento',
           blocks: [
-            { kind: 'p', text: 'Você pode deixar de usar o Artemis e excluir sua organização a qualquer momento. Podemos suspender acessos que violem estes termos, explicando o motivo sempre que possível.' },
+            { kind: 'p', text: 'Você pode deixar de usar o Artemis, sair das suas organizações ou excluí-las e excluir sua conta a qualquer momento. Podemos suspender acessos que violem estes termos, explicando o motivo sempre que possível.' },
           ],
         },
         {

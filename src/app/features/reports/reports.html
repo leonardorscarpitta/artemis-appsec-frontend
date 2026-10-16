@@ -4,7 +4,15 @@
     <p>{{ i18n.t('reports.subtitle') }}</p>
   </div>
   <div class="page-actions">
-    <button type="button" class="btn primary" aria-controls="new-report" [attr.aria-expanded]="formOpen()" (click)="toggleForm()">
+    <button
+      type="button"
+      class="btn primary"
+      aria-controls="new-report"
+      [attr.aria-expanded]="formOpen()"
+      [disabled]="!org.can('triage')"
+      [title]="org.can('triage') ? '' : org.reason('triage')"
+      (click)="toggleForm()"
+    >
       {{ i18n.t('reports.generate') }}
     </button>
   </div>
