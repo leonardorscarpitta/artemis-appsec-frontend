@@ -13,7 +13,7 @@ import { RoleNotice } from '../../shared/role-notice';
 import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
 // Public HTTPS URLs (no embedded credentials) or SSH URLs of private repositories (cloned with an Artemis deploy key).
-const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
+const REPO_URL = /^(git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({
   selector: 'app-onboarding',
@@ -39,7 +39,6 @@ export class Onboarding {
   protected readonly stacks: Stack[] = STACKS;
   protected readonly stack = signal<Stack | null>(null);
 
-  protected readonly isSsh = computed(() => /^(git@|ssh:\/\/)/.test(this.url().trim()));
   protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
   protected readonly monorepo = computed(() => this.settings().folders.length > 0);
   protected readonly showErrors = signal(false);

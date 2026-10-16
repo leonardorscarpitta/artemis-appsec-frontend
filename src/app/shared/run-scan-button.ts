@@ -21,13 +21,13 @@ import { LOCK_ICON } from './role-notice';
       class="btn"
       [class.primary]="primary()"
       [class.compact]="compact()"
-      [disabled]="running() || !org.can('pipelines')"
-      [title]="org.can('pipelines') ? '' : org.reason('pipelines')"
+      [disabled]="running() || !org.can('pipelines') || !ready()"
+      [title]="!org.can('pipelines') ? org.reason('pipelines') : ready() ? '' : i18n.t('scan.needsAccess')"
       [attr.aria-expanded]="folders().length > 1 ? picking() : null"
       (click)="folders().length > 1 ? togglePicker() : run()"
     >
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="currentColor" [attr.d]="org.can('pipelines') ? 'M8 5v14l11-7z' : lock" />
+        <path fill="currentColor" [attr.d]="org.can('pipelines') && ready() ? 'M8 5v14l11-7z' : lock" />
       </svg>
       {{ running() ? i18n.t('scan.starting') : i18n.t('scan.run') }}
     </button>
@@ -184,6 +184,8 @@ export class RunScanButton {
   readonly repository = input.required<string>();
   readonly primary = input(false);
   readonly compact = input(false);
+  /** False while the repository's deploy key is not verified: scans would be refused. */
+  readonly ready = input(true);
   /** Monorepo folders; with more than one, the button first asks which ones to scan. */
   readonly folders = input<string[]>([]);
   /** Optional stack per folder path, shown next to each folder. */
