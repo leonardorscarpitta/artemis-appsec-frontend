@@ -13,7 +13,7 @@ import { I18n, Lang } from '../core/i18n';
   styles: `
     select {
       width: auto;
-      padding: 0.4rem 0.6rem;
+      padding: 0.35rem 0.5rem;
       font-size: 0.85rem;
     }
   `,

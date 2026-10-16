@@ -3,6 +3,7 @@
 <aside class="sidebar">
   <app-logo />
   <nav [attr.aria-label]="i18n.t('nav.main')">
+    <div class="section" aria-hidden="true">{{ i18n.t('nav.section') }}</div>
     <ul>
       @for (item of nav; track item.path) {
         <li>
@@ -16,6 +17,10 @@
       }
     </ul>
   </nav>
+  <div class="org">
+    {{ i18n.t('nav.organization') }}
+    <strong>Acme Corp</strong>
+  </div>
 </aside>
 
 <div class="content">

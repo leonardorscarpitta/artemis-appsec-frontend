@@ -3,7 +3,10 @@
     <h1>{{ i18n.t('dash.title') }}</h1>
     <p>{{ i18n.t('dash.subtitle') }}</p>
   </div>
-  <a class="btn primary" routerLink="/onboarding">{{ i18n.t('dash.newScan') }}</a>
+  <div class="header-actions">
+    <button type="button" class="btn">{{ i18n.t('dash.export') }}</button>
+    <a class="btn primary" routerLink="/onboarding">{{ i18n.t('dash.newScan') }}</a>
+  </div>
 </header>
 
 <section class="stats" aria-label="Summary">
@@ -25,31 +28,30 @@
   </div>
 </section>
 
-<section class="card" aria-labelledby="dist-title">
-  <h2 id="dist-title">{{ i18n.t('dash.severity') }}</h2>
-  <div class="bar" role="img" [attr.aria-label]="i18n.t('dash.severity')">
-    @for (d of distribution(); track d.severity) {
-      @if (d.count) {
-        <span [style.width.%]="d.percent" [style.background]="'var(--sev-' + d.severity + ')'"></span>
+<div class="grid">
+  <section class="card" aria-labelledby="dist-title">
+    <div class="card-header">
+      <h2 id="dist-title">{{ i18n.t('dash.severity') }}</h2>
+      <span class="muted note">{{ stats().open }} {{ i18n.t('dash.ofTotal') }}</span>
+    </div>
+    <ul class="breakdown">
+      @for (d of distribution(); track d.severity) {
+        <li>
+          <span class="name">{{ d.label }}</span>
+          <span class="track">
+            <span class="fill" [style.width.%]="d.percent" [style.background]="'var(--sev-' + d.severity + ')'"></span>
+          </span>
+          <span class="count">{{ d.count }}</span>
+        </li>
       }
-    }
-  </div>
-  <ul class="legend">
-    @for (d of distribution(); track d.severity) {
-      <li>
-        <span class="dot" [style.background]="'var(--sev-' + d.severity + ')'"></span>
-        {{ d.label }} <strong>{{ d.count }}</strong>
-      </li>
-    }
-  </ul>
-</section>
+    </ul>
+  </section>
 
-<section class="card" aria-labelledby="recent-title">
-  <div class="section-head">
-    <h2 id="recent-title">{{ i18n.t('dash.recent') }}</h2>
-    <span class="muted source">{{ i18n.t('dash.source') }}</span>
-  </div>
-  <div class="table-wrap">
+  <section class="card table-card" aria-labelledby="recent-title">
+    <div class="card-header">
+      <h2 id="recent-title">{{ i18n.t('dash.recent') }}</h2>
+      <span class="muted source">{{ i18n.t('dash.source') }}</span>
+    </div>
     <table class="table">
       <thead>
         <tr>
@@ -76,5 +78,5 @@
         }
       </tbody>
     </table>
-  </div>
-</section>
+  </section>
+</div>

@@ -21,6 +21,15 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 
 ## Styling
 
-Design tokens (colors, radius, fonts) live as CSS variables in `src/styles.scss`, together with global primitives: `.card`, `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.badge`, `.table`. Severity colors: `--sev-critical`, `--sev-high`, `--sev-medium`, `--sev-low`.
+Light, enterprise-style theme. Design tokens live as CSS variables in `src/styles.scss`:
+
+- Brand: `--primary` (navy blue), `--primary-soft`, `--primary-contrast`
+- Navigation (dark sidebar): `--nav-bg`, `--nav-text`, `--nav-hover`
+- Severity: `--sev-{critical,high,medium,low}` (text) and `--sev-*-bg` (tag background)
+- Fonts: IBM Plex Sans / IBM Plex Mono
+
+Global primitives: `.card` (+ `.card-header`, `.table-card`), `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.tag`, `.table` (`.num` for numeric columns).
+
+The logo (`shared/logo.ts`) reads `--logo-color`; the favicon is `public/favicon.svg`.
 
 CVSS → severity follows NVD v3 ranges (`severityOf` in `mock-data.ts`).
