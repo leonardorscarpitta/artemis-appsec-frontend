@@ -140,6 +140,8 @@ const dictionary = {
     'dash.source': 'Source: NIST NVD',
     'dash.newScan': 'Run scan',
     'dash.export': 'Export CSV',
+    'dash.exporting': 'Exporting…',
+    'dash.exportError': 'The CSV could not be exported. Try again.',
     'dash.ofTotal': 'of open findings',
 
     'col.cve': 'CVE',
@@ -891,6 +893,8 @@ const dictionary = {
     'dash.source': 'Fonte: NIST NVD',
     'dash.newScan': 'Executar análise',
     'dash.export': 'Exportar CSV',
+    'dash.exporting': 'Exportando…',
+    'dash.exportError': 'Não foi possível exportar o CSV. Tente novamente.',
     'dash.ofTotal': 'dos achados abertos',
 
     'col.cve': 'CVE',
