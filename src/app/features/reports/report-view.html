@@ -1,0 +1,164 @@
+<a class="back" routerLink="/reports">
+  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" /></svg>
+  {{ i18n.t('reports.back') }}
+</a>
+
+@if (report(); as report) {
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">{{ typeLabel(report.type) }} · {{ report.scope ?? i18n.t('reports.scope.org') }}</p>
+      <h1>{{ report.title }}</h1>
+      <p>{{ report.period }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt }}</p>
+    </div>
+    <div class="page-actions">
+      <button type="button" class="btn" (click)="share()">
+        <span aria-live="polite">{{ copied() ? i18n.t('reports.copied') : i18n.t('reports.share') }}</span>
+      </button>
+      <button type="button" class="btn primary" (click)="print()">{{ i18n.t('reports.export') }}</button>
+    </div>
+  </header>
+
+  <div class="report">
+    <section class="card summary" aria-labelledby="summary-title">
+      <h2 id="summary-title">{{ i18n.t('reports.summary.title') }}</h2>
+      <p>{{ i18n.t('reports.summary.text') }}</p>
+    </section>
+
+    <dl class="kpis">
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.opened') }}</dt>
+        <dd>{{ detail.kpis.opened }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.fixed') }}</dt>
+        <dd>{{ detail.kpis.fixed }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.open') }}</dt>
+        <dd>{{ detail.kpis.open }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.mttr') }}</dt>
+        <dd>{{ detail.kpis.mttrDays }} <small>{{ i18n.t(detail.kpis.mttrDays === 1 ? 'reports.day' : 'reports.days') }}</small></dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.sla') }}</dt>
+        <dd>{{ detail.kpis.slaCompliance }}%</dd>
+      </div>
+    </dl>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="trend-title">
+        <div class="card-header">
+          <h2 id="trend-title">{{ i18n.t('reports.trend.title') }}</h2>
+          <span class="muted note">{{ i18n.t('reports.trend.desc') }}</span>
+        </div>
+        <app-trend-chart [data]="detail.trend" />
+      </section>
+
+      <section class="card" aria-labelledby="sev-title">
+        <div class="card-header">
+          <h2 id="sev-title">{{ i18n.t('reports.severity.title') }}</h2>
+        </div>
+        <ul class="breakdown">
+          @for (s of severity(); track s.severity) {
+            <li>
+              <span class="name">{{ s.label }}</span>
+              <span class="track"><span class="fill" [style.width.%]="s.percent" [style.background]="'var(--sev-' + s.severity + ')'"></span></span>
+              <span class="count">{{ s.count }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section class="card table-card" aria-labelledby="risks-title">
+      <div class="card-header">
+        <h2 id="risks-title">{{ i18n.t('reports.risks.title') }}</h2>
+      </div>
+      <table class="table stack">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('col.cve') }}</th>
+            <th scope="col">{{ i18n.t('col.repository') }}</th>
+            <th scope="col">{{ i18n.t('col.cvss') }}</th>
+            <th scope="col" class="num">{{ i18n.t('reports.risks.age') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (risk of detail.topRisks; track risk.cve) {
+            <tr>
+              <td class="primary-cell">
+                <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + risk.cve" target="_blank" rel="noopener">{{ risk.cve }}</a>
+              </td>
+              <td [attr.data-label]="i18n.t('col.repository')">{{ risk.repository }}</td>
+              <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="risk.cvss" /></td>
+              <td class="num" [attr.data-label]="i18n.t('reports.risks.age')">{{ risk.ageDays }} {{ i18n.t(risk.ageDays === 1 ? 'reports.day' : 'reports.days') }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="ai-title">
+        <div class="card-header">
+          <h2 id="ai-title">{{ i18n.t('reports.ai.title') }}</h2>
+        </div>
+        <p class="muted">{{ i18n.t('reports.ai.desc') }}</p>
+        <dl class="ai">
+          <div>
+            <dt>{{ i18n.t('reports.ai.reviewed') }}</dt>
+            <dd>{{ detail.aiTriage.reviewed }}</dd>
+          </div>
+          <div>
+            <dt>{{ i18n.t('reports.ai.dismissed') }}</dt>
+            <dd>{{ detail.aiTriage.dismissed }}</dd>
+          </div>
+          <div>
+            <dt>{{ i18n.t('reports.ai.confidence') }}</dt>
+            <dd>{{ detail.aiTriage.confidence }}%</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="card" aria-labelledby="recs-title">
+        <div class="card-header">
+          <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
+        </div>
+        <ol class="recs">
+          @for (rec of recommendations; track rec) {
+            <li>{{ i18n.t(rec) }}</li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    <section class="card table-card" aria-labelledby="owasp-title">
+      <div class="card-header">
+        <h2 id="owasp-title">{{ i18n.t('reports.owasp.title') }}</h2>
+      </div>
+      <table class="table owasp">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('reports.owasp.category') }}</th>
+            <th scope="col" class="num">{{ i18n.t('col.findings') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of detail.owasp; track o.id) {
+            <tr [class.zero]="!o.findings">
+              <th scope="row"><span class="mono code">{{ o.id }}</span> {{ o.name }}</th>
+              <td class="num">
+                <span class="bar" aria-hidden="true"><span [style.width.%]="(o.findings / owaspMax) * 100"></span></span>
+                {{ o.findings }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  </div>
+} @else {
+  <p class="card">{{ i18n.t('reports.notFound') }}</p>
+}

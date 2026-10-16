@@ -1,0 +1,76 @@
+<ul class="legend">
+  <li><span class="key opened" aria-hidden="true"></span>{{ i18n.t('reports.trend.opened') }}</li>
+  <li><span class="key fixed" aria-hidden="true"></span>{{ i18n.t('reports.trend.fixed') }}</li>
+</ul>
+
+<div class="plot">
+  <div class="canvas">
+  <svg
+    [attr.viewBox]="'0 0 ' + width + ' ' + height"
+    role="img"
+    tabindex="0"
+    [attr.aria-label]="i18n.t('reports.trend.desc')"
+    (pointermove)="hover($event)"
+    (pointerleave)="active.set(null)"
+    (keydown)="key($event)"
+    (blur)="active.set(null)"
+  >
+    @for (t of ticks(); track t) {
+      <line class="grid" [attr.x1]="pad.left" [attr.x2]="width - pad.right" [attr.y1]="y(t)" [attr.y2]="y(t)" />
+      <text class="axis" [attr.x]="pad.left - 8" [attr.y]="y(t)" text-anchor="end" dominant-baseline="middle">{{ t }}</text>
+    }
+    @for (d of data(); track d.week; let i = $index) {
+      <text class="axis" [attr.x]="x(i)" [attr.y]="height - 10" text-anchor="middle">{{ d.week }}</text>
+    }
+
+    @if (active() !== null) {
+      <line class="crosshair" [attr.x1]="x(active()!)" [attr.x2]="x(active()!)" [attr.y1]="pad.top" [attr.y2]="height - pad.bottom" />
+    }
+
+    <path class="line opened" [attr.d]="path('opened')" />
+    <path class="line fixed" [attr.d]="path('fixed')" />
+
+    @for (d of data(); track d.week; let i = $index) {
+      <circle class="dot opened" [attr.cx]="x(i)" [attr.cy]="y(d.opened)" [attr.r]="active() === i ? 5 : 3.5" />
+      <circle class="dot fixed" [attr.cx]="x(i)" [attr.cy]="y(d.fixed)" [attr.r]="active() === i ? 5 : 3.5" />
+    }
+
+    <text class="end-label" [attr.x]="width - pad.right + 10" [attr.y]="labelY().opened" dominant-baseline="middle">
+      {{ i18n.t('reports.trend.opened') }} {{ last().opened }}
+    </text>
+    <text class="end-label" [attr.x]="width - pad.right + 10" [attr.y]="labelY().fixed" dominant-baseline="middle">
+      {{ i18n.t('reports.trend.fixed') }} {{ last().fixed }}
+    </text>
+  </svg>
+
+  @if (tooltip(); as tip) {
+    <div class="tooltip" [class.flip]="tip.flip" [style.left.%]="tip.left" aria-hidden="true">
+      <strong>{{ i18n.t('reports.trend.week') }} {{ tip.week }}</strong>
+      <span><span class="key opened"></span>{{ i18n.t('reports.trend.opened') }} <b>{{ tip.opened }}</b></span>
+      <span><span class="key fixed"></span>{{ i18n.t('reports.trend.fixed') }} <b>{{ tip.fixed }}</b></span>
+    </div>
+  }
+  </div>
+</div>
+
+<details class="data">
+  <summary>{{ i18n.t('reports.trend.table') }}</summary>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">{{ i18n.t('reports.trend.week') }}</th>
+        <th scope="col" class="num">{{ i18n.t('reports.trend.opened') }}</th>
+        <th scope="col" class="num">{{ i18n.t('reports.trend.fixed') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (d of data(); track d.week) {
+        <tr>
+          <th scope="row">{{ d.week }}</th>
+          <td class="num">{{ d.opened }}</td>
+          <td class="num">{{ d.fixed }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</details>

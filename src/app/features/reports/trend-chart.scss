@@ -1,0 +1,182 @@
+// Categorical slots 1-2 of the reference palette, validated for both surfaces.
+:host {
+  --series-opened: #2a78d6;
+  --series-fixed: #eb6834;
+  display: block;
+}
+
+:host-context([data-theme='dark']) {
+  --series-opened: #3987e5;
+  --series-fixed: #d95926;
+}
+
+.legend {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.key {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+
+  &.opened {
+    background: var(--series-opened);
+  }
+
+  &.fixed {
+    background: var(--series-fixed);
+  }
+}
+
+.plot {
+  overflow-x: auto;
+  // Room for the focus outline inside the scroll container.
+  padding: 6px;
+  margin: -6px;
+}
+
+// Below this width the axis text becomes unreadable, so the plot scrolls instead.
+.canvas {
+  position: relative;
+  min-width: 520px;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.axis {
+  fill: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font);
+}
+
+.crosshair {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+
+  &.opened {
+    stroke: var(--series-opened);
+  }
+
+  &.fixed {
+    stroke: var(--series-fixed);
+  }
+}
+
+.dot {
+  stroke: var(--surface);
+  stroke-width: 2;
+
+  &.opened {
+    fill: var(--series-opened);
+  }
+
+  &.fixed {
+    fill: var(--series-fixed);
+  }
+}
+
+.end-label {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 120px;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+  font-size: 0.8rem;
+  pointer-events: none;
+  white-space: nowrap;
+
+  &.flip {
+    transform: translateX(calc(-100% - 12px));
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  b {
+    margin-left: auto;
+    padding-left: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.data {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+
+  summary {
+    cursor: pointer;
+    color: var(--primary);
+  }
+
+  .table {
+    margin-top: 0.5rem;
+
+    th[scope='row'] {
+      background: none;
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+  }
+}
+
+@media print {
+  .tooltip,
+  .data {
+    display: none;
+  }
+}

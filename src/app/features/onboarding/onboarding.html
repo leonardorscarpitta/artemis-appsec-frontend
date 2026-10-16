@@ -1,0 +1,77 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('ob.title') }}</h1>
+    <p>{{ i18n.t('ob.subtitle') }}</p>
+  </div>
+</header>
+
+<ol class="stepper">
+  @for (s of steps; track s; let i = $index) {
+    <li [class.done]="i < step()" [class.current]="i === step()" [attr.aria-current]="i === step() ? 'step' : null">
+      <span class="index" aria-hidden="true">{{ i < step() ? '✓' : i + 1 }}</span>
+      <span class="step-label">{{ i18n.t(s) }}</span>
+    </li>
+  }
+</ol>
+
+<section class="card panel">
+  @switch (step()) {
+    @case (0) {
+      <h2>{{ i18n.t('ob.ssh.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.ssh.desc') }}</p>
+      <div class="field">
+        <label for="ssh">{{ i18n.t('ob.ssh.label') }}</label>
+        <textarea id="ssh" class="input" aria-describedby="ssh-hint" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... dev@acme"></textarea>
+        <span id="ssh-hint" class="hint">{{ i18n.t('ob.ssh.hint') }}</span>
+      </div>
+      <button type="button" class="btn">{{ i18n.t('ob.ssh.generate') }}</button>
+    }
+    @case (1) {
+      <h2>{{ i18n.t('ob.repo.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.repo.desc') }}</p>
+      <div class="grid-2">
+        <div class="field">
+          <label for="repo">{{ i18n.t('ob.repo.label') }}</label>
+          <input id="repo" class="input mono" type="text" placeholder="git@github.com:acme/project.git" />
+        </div>
+        <div class="field">
+          <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
+          <input id="branch" class="input mono" type="text" value="main" />
+        </div>
+      </div>
+    }
+    @case (2) {
+      <h2>{{ i18n.t('ob.settings.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.settings.desc') }}</p>
+
+      <app-scan-settings />
+    }
+    @case (3) {
+      <h2>{{ i18n.t('ob.pipeline.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.pipeline.desc') }}</p>
+      <app-pipeline-editor [(stages)]="pipeline" />
+    }
+    @case (4) {
+      <h2>{{ i18n.t('ob.detect.title') }}</h2>
+      <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
+      <h3 class="sub">{{ i18n.t('ob.detect.supported') }}</h3>
+      <ul class="stacks">
+        @for (stack of stacks; track stack) {
+          <li [class.detected]="stack === detected">
+            <strong>{{ stack }}</strong>
+            @if (stack === detected) {
+              <span class="tag">{{ i18n.t('ob.detect.detected') }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <footer class="actions">
+    <button type="button" class="btn ghost" [disabled]="step() === 0" (click)="back()">{{ i18n.t('ob.back') }}</button>
+    <button type="button" class="btn primary" (click)="next()">
+      {{ isLast() ? i18n.t('ob.finish') : i18n.t('ob.next') }}
+    </button>
+  </footer>
+</section>

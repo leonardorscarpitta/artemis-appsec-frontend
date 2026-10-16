@@ -1,0 +1,109 @@
+<div class="toolbar">
+  <div class="presets">
+    <span class="label" id="preset-label">{{ i18n.t('pipe.preset') }}</span>
+    <div class="segmented" role="group" aria-labelledby="preset-label">
+      @for (preset of presets; track preset) {
+        <button type="button" [attr.aria-pressed]="activePreset() === preset" (click)="setPreset(preset)">
+          {{ presetLabel(preset) }}
+        </button>
+      }
+    </div>
+    @if (!activePreset()) {
+      <span class="tag">{{ i18n.t('pipe.preset.custom') }}</span>
+    }
+  </div>
+  <dl class="summary">
+    <div>
+      <dt>{{ i18n.t('pipe.stagesEnabled') }}</dt>
+      <dd>{{ enabledCount() }} / {{ stages().length }}</dd>
+    </div>
+    <div>
+      <dt>{{ i18n.t('pipe.estimate') }}</dt>
+      <dd>~{{ minutes() }} min</dd>
+    </div>
+  </dl>
+</div>
+
+<ol class="flow" aria-hidden="true">
+  @for (phase of phases; track phase) {
+    <li>
+      <span class="phase-name">{{ phaseName(phase) }}</span>
+      <ul>
+        @for (stage of byPhase(phase); track stage.id) {
+          <li [class.off]="!stage.enabled">{{ stageText(stage.id, 'name') }}</li>
+        }
+      </ul>
+    </li>
+  }
+</ol>
+
+@for (phase of phases; track phase; let i = $index) {
+  <section class="phase" [attr.aria-labelledby]="'phase-' + phase">
+    <header>
+      <h3 [id]="'phase-' + phase"><span class="step">{{ i + 1 }}</span>{{ phaseName(phase) }}</h3>
+      <p class="muted">{{ phaseDesc(phase) }}</p>
+    </header>
+
+    <ul class="stages">
+      @for (stage of byPhase(phase); track stage.id) {
+        <li [class.off]="!stage.enabled">
+          <button
+            type="button"
+            role="switch"
+            class="switch"
+            [attr.aria-checked]="stage.enabled"
+            [attr.aria-labelledby]="'stage-' + stage.id"
+            (click)="patch(stage.id, { enabled: !stage.enabled })"
+          ></button>
+
+          <div class="info">
+            <strong [id]="'stage-' + stage.id">{{ stageText(stage.id, 'name') }}</strong>
+            <p>{{ stageText(stage.id, 'desc') }}</p>
+            <p class="why"><span>{{ i18n.t('pipe.whyLabel') }}</span> {{ stageText(stage.id, 'why') }}</p>
+          </div>
+
+          <div class="field">
+            <label [for]="'tool-' + stage.id">{{ i18n.t('pipe.tool') }}</label>
+            <select class="input" [id]="'tool-' + stage.id" [disabled]="!stage.enabled" (change)="setTool(stage.id, $event)">
+              @for (tool of stage.tools; track tool) {
+                <option [value]="tool" [selected]="tool === stage.tool">{{ tool }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            @if (stage.failOn) {
+              <label [for]="'fail-' + stage.id">{{ i18n.t('pipe.failOn') }}</label>
+              <select class="input" [id]="'fail-' + stage.id" [disabled]="!stage.enabled" (change)="setFailOn(stage.id, $event)">
+                @for (t of thresholds; track t) {
+                  <option [value]="t" [selected]="t === stage.failOn">{{ failLabel(t) }}</option>
+                }
+              </select>
+            } @else {
+              <span class="label-text">{{ i18n.t('pipe.failOn') }}</span>
+              <span class="input static">{{ i18n.t('pipe.reportOnly') }}</span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+<details class="code">
+  <summary>
+    <strong>{{ i18n.t('pipe.code') }}</strong>
+    <span class="muted">{{ i18n.t('pipe.codeDesc') }}</span>
+  </summary>
+  <div class="code-bar">
+    <label class="sr-only" for="ci-provider">{{ i18n.t('pipe.provider') }}</label>
+    <select id="ci-provider" class="input" (change)="setProvider($event)">
+      <option value="github">GitHub Actions</option>
+      <option value="gitlab">GitLab CI</option>
+    </select>
+    <button type="button" class="btn" (click)="copy()">
+      {{ copied() ? i18n.t('pipe.copied') : i18n.t('pipe.copy') }}
+    </button>
+  </div>
+  <pre><code>{{ yaml() }}</code></pre>
+</details>

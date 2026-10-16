@@ -1,0 +1,100 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('nav.reports') }}</h1>
+    <p>{{ i18n.t('reports.subtitle') }}</p>
+  </div>
+  <div class="page-actions">
+    <button type="button" class="btn primary" aria-controls="new-report" [attr.aria-expanded]="formOpen()" (click)="toggleForm()">
+      {{ i18n.t('reports.generate') }}
+    </button>
+  </div>
+</header>
+
+@if (formOpen()) {
+  <form id="new-report" class="card form" (submit)="$event.preventDefault(); generate()">
+    <h2>{{ i18n.t('reports.form.title') }}</h2>
+    <div class="fields">
+      <div class="field">
+        <label for="report-type">{{ i18n.t('reports.form.type') }}</label>
+        <select id="report-type" class="input" (change)="type.set($any(value($event)))">
+          @for (t of types; track t) {
+            <option [value]="t" [selected]="t === type()">{{ typeLabel(t) }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="report-scope">{{ i18n.t('reports.form.scope') }}</label>
+        <select id="report-scope" class="input" (change)="scope.set(value($event))">
+          <option value="" [selected]="!scope()">{{ i18n.t('reports.scope.org') }}</option>
+          @for (repo of repositories; track repo) {
+            <option [value]="repo" [selected]="repo === scope()">{{ repo }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="report-period">{{ i18n.t('reports.form.period') }}</label>
+        <select id="report-period" class="input" (change)="period.set($any(value($event)))">
+          @for (p of periods; track p) {
+            <option [value]="p" [selected]="p === period()">{{ periodLabel(p) }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="toggleForm()">{{ i18n.t('reports.form.cancel') }}</button>
+      <button type="submit" class="btn primary">{{ i18n.t('reports.form.submit') }}</button>
+    </div>
+  </form>
+}
+
+<p class="queued" aria-live="polite">
+  @if (queued()) {
+    {{ i18n.t('reports.form.queued') }}
+  }
+</p>
+
+<div class="card table-card">
+  <table class="table stack">
+    <thead>
+      <tr>
+        <th scope="col">{{ i18n.t('reports.col.title') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.type') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.scope') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.period') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.generatedAt') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.generatedBy') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.status') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (report of reports(); track report.id) {
+        <tr>
+          <td class="primary-cell">
+            @if (report.status === 'ready') {
+              <a class="title" [routerLink]="['/reports', report.id]">{{ report.title }}</a>
+            } @else {
+              <span class="title">{{ report.title }}</span>
+            }
+          </td>
+          <td [attr.data-label]="i18n.t('reports.col.type')"><span class="tag">{{ typeLabel(report.type) }}</span></td>
+          <td [attr.data-label]="i18n.t('reports.col.scope')">{{ report.scope ?? i18n.t('reports.scope.org') }}</td>
+          <td class="muted period" [attr.data-label]="i18n.t('reports.col.period')">
+            <span>
+              @for (part of report.period.split(' – '); track $index) {
+                @if (!$first) {
+                  –
+                }
+                <span class="date">{{ part }}</span>
+              }
+            </span>
+          </td>
+          <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt }}</td>
+          <td [attr.data-label]="i18n.t('reports.col.generatedBy')">{{ authorLabel(report.generatedBy) }}</td>
+          <td [attr.data-label]="i18n.t('reports.col.status')">
+            <span [class]="'status ' + report.status">{{ statusLabel(report.status) }}</span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

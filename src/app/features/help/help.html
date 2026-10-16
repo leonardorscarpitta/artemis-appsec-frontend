@@ -1,0 +1,71 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('nav.help') }}</h1>
+    <p>{{ i18n.t('help.subtitle') }}</p>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" [attr.aria-label]="i18n.t('help.toc')">
+    <h2>{{ i18n.t('help.toc') }}</h2>
+    <ol>
+      @for (section of sections(); track section.id) {
+        <li><a routerLink="." [fragment]="section.id">{{ section.title }}</a></li>
+      }
+    </ol>
+  </nav>
+
+  <div class="articles">
+    @for (section of sections(); track section.id) {
+      <article class="card" [id]="section.id" [attr.aria-labelledby]="section.id + '-title'">
+        <h2 [id]="section.id + '-title'">{{ section.title }}</h2>
+        @for (block of section.blocks; track $index) {
+          @switch (block.kind) {
+            @case ('p') {
+              <p>{{ block.text }}</p>
+            }
+            @case ('note') {
+              <p class="note">{{ block.text }}</p>
+            }
+            @case ('ul') {
+              <ul>
+                @for (item of block.items; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            }
+            @case ('ol') {
+              <ol>
+                @for (item of block.items; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ol>
+            }
+            @case ('table') {
+              <div class="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      @for (h of block.head; track $index) {
+                        <th scope="col">{{ h }}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of block.rows; track $index) {
+                      <tr>
+                        @for (cell of row; track $index) {
+                          <td>{{ cell }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        }
+      </article>
+    }
+  </div>
+</div>
