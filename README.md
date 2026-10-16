@@ -120,7 +120,7 @@ Stages are grouped in three phases. Each stage has a tool (from the self-hosted 
 | Phase | Stage → tools |
 | --- | --- |
 | Source | Secret scanning → Gitleaks · SAST → Semgrep CE (Artemis rules) · SCA → Trivy / Grype · License → Trivy |
-| Build | Dockerfile audit → Hadolint / Trivy · Container image scan → Trivy (**not available yet**) · SBOM → Syft |
+| Build | Dockerfile audit → Hadolint / Trivy · Container image scan → Trivy (published image from the repository's `containerImage` setting; pulled, never built) · SBOM → Syft |
 | Pre-deploy | Infrastructure as code → Trivy · DAST → OWASP ZAP (**not available yet**) |
 
 The catalog comes from the API (`GET /pipeline/stages`, field `available`); `core/pipeline.ts` holds the same defaults as a fallback. Unavailable stages are shown locked in the pipeline editor and are never enabled by presets. Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The "Pipeline as code" YAML is a preview for running the same runner in your own CI.

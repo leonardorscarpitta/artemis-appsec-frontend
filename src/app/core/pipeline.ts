@@ -35,7 +35,7 @@ export function defaultPipeline(): PipelineStage[] {
     { id: 'sca', phase: 'source', tools: ['Trivy', 'Grype'], tool: 'Trivy', enabled: true, failOn: 'critical', minutes: 2, available: true },
     { id: 'license', phase: 'source', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'never', minutes: 1, available: true },
     { id: 'dockerfile', phase: 'build', tools: ['Hadolint', 'Trivy'], tool: 'Hadolint', enabled: true, failOn: 'high', minutes: 1, available: true },
-    { id: 'image', phase: 'build', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'critical', minutes: 3, available: false },
+    { id: 'image', phase: 'build', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'critical', minutes: 3, available: true },
     { id: 'sbom', phase: 'build', tools: ['Syft'], tool: 'Syft', enabled: true, minutes: 1, available: true },
     { id: 'iac', phase: 'deploy', tools: ['Trivy'], tool: 'Trivy', enabled: false, failOn: 'high', minutes: 2, available: true },
     { id: 'dast', phase: 'deploy', tools: ['OWASP ZAP'], tool: 'OWASP ZAP', enabled: false, failOn: 'high', minutes: 12, available: false },

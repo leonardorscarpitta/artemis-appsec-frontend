@@ -29,6 +29,8 @@ export interface ProjectSettings {
   dockerfileMode: DockerfileMode;
   customDockerfile: string | null;
   folders: ProjectFolder[];
+  /** Published image scanned by the image stage, e.g. ghcr.io/acme/app:1.4; null skips that stage. */
+  containerImage: string | null;
 }
 
 /** `stack` is null only while the user has not picked one in the form. */
@@ -59,6 +61,7 @@ export const DEFAULT_SETTINGS: ProjectSettings = {
   dockerfileMode: 'recommended',
   customDockerfile: null,
   folders: [],
+  containerImage: null,
 };
 
 export const repositoriesUrl = () => apiUrl('/repositories');

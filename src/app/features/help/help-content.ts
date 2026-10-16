@@ -143,7 +143,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Source', 'Dependency scanning (SCA)', 'Matches third-party libraries against known CVEs.', 'Trivy or Grype'],
             ['Source', 'License compliance', 'Flags dependencies with licenses not allowed by your policy.', 'Trivy'],
             ['Build', 'Dockerfile audit', 'Checks the Dockerfile for insecure instructions.', 'Hadolint or Trivy'],
-            ['Build', 'Container image scan', 'Scans the built image for vulnerable OS packages. Not available yet.', 'Trivy'],
+            ['Build', 'Container image scan', 'Scans a published image (set under General settings, e.g. ghcr.io/acme/app:1.4) for vulnerable OS packages and libraries. Artemis pulls it from a public registry and never builds or runs it.', 'Trivy'],
             ['Build', 'SBOM generation', 'Produces a software bill of materials for each scan.', 'Syft'],
             ['Pre-deploy', 'Infrastructure as code', 'Checks Terraform, Kubernetes and Compose files for misconfigurations.', 'Trivy'],
             ['Pre-deploy', 'Dynamic analysis (DAST)', 'Tests a running instance of the application. Not available yet.', 'OWASP ZAP'],
@@ -181,7 +181,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'The scanner clones the latest commit of the chosen branch (public HTTPS repositories only, for now) into an isolated, temporary workspace. For a monorepo, every listed folder is scanned by each stage (one after the other) and the results are combined; file paths in findings stay relative to the repository root.',
-            'Each enabled stage runs its tool. Stages that are not available yet (container image scan, DAST) are skipped.',
+            'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
           ],
@@ -210,7 +210,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'General tab: monorepo folders and their stacks, scan schedule, automatic actions, build environment and AI triage.',
+            'General tab: monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
           ],
         },
@@ -573,7 +573,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Código-fonte', 'Análise de dependências (SCA)', 'Compara bibliotecas de terceiros com CVEs conhecidas.', 'Trivy ou Grype'],
             ['Código-fonte', 'Conformidade de licenças', 'Sinaliza dependências com licenças não permitidas pela sua política.', 'Trivy'],
             ['Build', 'Auditoria do Dockerfile', 'Verifica o Dockerfile em busca de instruções inseguras.', 'Hadolint ou Trivy'],
-            ['Build', 'Varredura da imagem de contêiner', 'Analisa a imagem gerada em busca de pacotes do SO vulneráveis. Ainda não disponível.', 'Trivy'],
+            ['Build', 'Varredura da imagem de contêiner', 'Analisa uma imagem publicada (definida nas configurações gerais, por exemplo ghcr.io/acme/app:1.4) em busca de pacotes do SO e bibliotecas vulneráveis. O Artemis a baixa de um registry público e nunca a constrói nem a executa.', 'Trivy'],
             ['Build', 'Geração de SBOM', 'Gera uma lista de materiais de software a cada análise.', 'Syft'],
             ['Pré-deploy', 'Infraestrutura como código', 'Verifica arquivos Terraform, Kubernetes e Compose em busca de erros de configuração.', 'Trivy'],
             ['Pré-deploy', 'Análise dinâmica (DAST)', 'Testa uma instância da aplicação em execução. Ainda não disponível.', 'OWASP ZAP'],
@@ -611,7 +611,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'O scanner clona o último commit da branch escolhida (por enquanto, apenas repositórios públicos via HTTPS) em um espaço de trabalho isolado e temporário. Em um monorepo, cada etapa analisa todas as pastas listadas (uma após a outra) e junta os resultados; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
-            'Cada etapa ativa executa sua ferramenta. Etapas ainda não disponíveis (varredura de imagem, DAST) são puladas.',
+            'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
           ],
@@ -640,7 +640,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Aba Geral: pastas do monorepo e suas stacks, agendamento, ações automáticas, ambiente de build e triagem com IA.',
+            'Aba Geral: pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
           ],
         },
