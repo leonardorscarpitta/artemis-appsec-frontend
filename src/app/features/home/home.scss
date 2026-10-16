@@ -637,3 +637,12 @@ h3 {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.powered {
+  max-width: 28rem;
+  font-size: 0.8rem;
+
+  a {
+    color: var(--text-muted);
+  }
+}
