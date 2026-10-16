@@ -16,7 +16,6 @@ const CREATE_ERRORS: Record<string, TranslationKey> = {
   'slug-taken': 'orgs.error.slugTaken',
   'slug-reserved': 'orgs.error.slugReserved',
   'organization-limit': 'orgs.error.limit',
-  'email-not-verified': 'orgs.error.emailNotVerified',
 };
 
 export function slugify(name: string): string {
