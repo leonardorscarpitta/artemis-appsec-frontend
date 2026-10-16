@@ -15,6 +15,8 @@ export interface ProjectSummary {
   name: string;
   url: string;
   branch: string;
+  /** Folder scanned inside the repository (monorepos); null scans everything. */
+  directory: string | null;
   stack: Stack;
   schedule: ScanSchedule;
   lastScanAt: string | null;
@@ -37,6 +39,7 @@ export interface ProjectDetails {
 export interface CreateProject {
   url: string;
   branch: string;
+  directory: string | null;
   stack: Stack;
   settings: ProjectSettings;
   pipeline: StageUpdate[];
@@ -70,6 +73,11 @@ export class ProjectsApi {
   /** Queues a scan of the repository's default branch; 409 when the monthly scan limit is reached. */
   runScan(name: string): Observable<RunDetails> {
     return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, null);
+  }
+
+  /** Removes the repository with its findings, runs and reports. */
+  remove(name: string): Observable<void> {
+    return this.http.delete<void>(repositoryUrl(name));
   }
 
   updatePipeline(name: string, stages: PipelineStage[]): Observable<ProjectDetails> {

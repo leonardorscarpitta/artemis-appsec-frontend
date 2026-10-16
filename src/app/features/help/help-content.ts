@@ -105,7 +105,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'SSH key: paste the public part of an ed25519 or RSA key, or let Artemis generate one. Add it to your repository as a read-only deploy key. Never paste a private key.',
-            'Repository: enter the public HTTPS URL (for example https://github.com/acme/project.git) and the branch to analyze. SSH URLs for private repositories are accepted but not scanned yet.',
+            'Repository: enter the public HTTPS URL (for example https://github.com/acme/project.git) and the branch to analyze. SSH URLs for private repositories are accepted but not scanned yet. In a monorepo, fill in "Folder" (for example frontend) to scan only that folder; add the repository again with another folder (for example backend) to monitor it separately — each gets its own name (project-frontend, project-backend), pipeline and findings.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: select the technology used by the repository — React, Angular or Java + Spring. Automatic detection will be available soon.',
@@ -180,9 +180,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch (public HTTPS repositories only, for now) into an isolated, temporary workspace.',
+            'The scanner clones the latest commit of the chosen branch (public HTTPS repositories only, for now) into an isolated, temporary workspace. If the repository has a folder set, only that folder is scanned; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. Stages that are not available yet (container image scan, DAST) are skipped.',
-            'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). The run fails if any stage fails.',
+            'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
           ],
         },
@@ -215,6 +215,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
+        { kind: 'p', text: 'To stop monitoring a repository, open its General tab and use "Remove repository": type the repository name to confirm. Its findings, pipeline runs, reports, deploy keys and risk acceptances are deleted permanently; the repository itself is not touched. Removing requires a role that can manage pipelines.' },
       ],
     },
     // --- vulnerabilities ---
@@ -534,7 +535,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'Chave SSH: cole a parte pública de uma chave ed25519 ou RSA, ou deixe o Artemis gerar uma. Adicione-a ao repositório como deploy key somente leitura. Nunca cole uma chave privada.',
-            'Repositório: informe a URL HTTPS pública (por exemplo https://github.com/acme/projeto.git) e a branch a ser analisada. URLs SSH de repositórios privados são aceitas, mas ainda não são analisadas.',
+            'Repositório: informe a URL HTTPS pública (por exemplo https://github.com/acme/projeto.git) e a branch a ser analisada. URLs SSH de repositórios privados são aceitas, mas ainda não são analisadas. Em um monorepo, preencha "Pasta" (por exemplo frontend) para analisar só essa pasta; adicione o repositório de novo com outra pasta (por exemplo backend) para monitorá-la separadamente — cada um ganha nome próprio (projeto-frontend, projeto-backend), pipeline e achados.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: selecione a tecnologia usada pelo repositório — React, Angular ou Java + Spring. A detecção automática estará disponível em breve.',
@@ -609,9 +610,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida (por enquanto, apenas repositórios públicos via HTTPS) em um espaço de trabalho isolado e temporário.',
+            'O scanner clona o último commit da branch escolhida (por enquanto, apenas repositórios públicos via HTTPS) em um espaço de trabalho isolado e temporário. Se o repositório tiver uma pasta definida, só essa pasta é analisada; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. Etapas ainda não disponíveis (varredura de imagem, DAST) são puladas.',
-            'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). A execução falha se alguma etapa falhar.',
+            'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
           ],
         },
@@ -644,6 +645,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
+        { kind: 'p', text: 'Para parar de monitorar um repositório, abra a aba Geral e use "Remover repositório": digite o nome do repositório para confirmar. Os achados, execuções de pipeline, relatórios, deploy keys e aceites de risco dele são apagados definitivamente; o repositório em si não é alterado. Remover exige um papel que possa gerenciar pipelines.' },
       ],
     },
     // --- vulnerabilities ---

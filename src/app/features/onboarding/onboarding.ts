@@ -14,6 +14,9 @@ import { RoleNotice } from '../../shared/role-notice';
 // Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
 const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
+/** Relative folder such as `frontend` or `apps/web`; no `.`/`..` segments (same rule as the API). */
+const DIRECTORY = /^(?!\.{1,2}(\/|$))(?!.*\/\.{1,2}(\/|$))[\w.-]+(\/[\w.-]+)*$/;
+
 @Component({
   selector: 'app-onboarding',
   imports: [ScanSettings, PipelineEditor, RoleNotice],
@@ -32,6 +35,7 @@ export class Onboarding {
 
   protected readonly url = signal('');
   protected readonly branch = signal('main');
+  protected readonly directory = signal('');
   protected readonly settings = signal(DEFAULT_SETTINGS);
   private readonly catalog = httpResource<PipelineStage[]>(() => stageCatalogUrl());
   protected readonly pipeline = linkedSignal(() => this.catalog.value() ?? defaultPipeline());
@@ -40,12 +44,13 @@ export class Onboarding {
 
   protected readonly isSsh = computed(() => /^(git@|ssh:\/\/)/.test(this.url().trim()));
   protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
+  protected readonly directoryValid = computed(() => !normalizeDirectory(this.directory()) || (normalizeDirectory(this.directory()).length <= 120 && DIRECTORY.test(normalizeDirectory(this.directory()))));
   protected readonly showErrors = signal(false);
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);
 
   protected next(): void {
-    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim())) {
+    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim() || !this.directoryValid())) {
       this.showErrors.set(true);
       return;
     }
@@ -77,6 +82,7 @@ export class Onboarding {
       .create({
         url: this.url().trim(),
         branch: this.branch().trim(),
+        directory: normalizeDirectory(this.directory()) || null,
         stack,
         settings: this.settings(),
         pipeline: this.pipeline().map(toStageUpdate),
@@ -89,4 +95,8 @@ export class Onboarding {
         },
       });
   }
+}
+
+function normalizeDirectory(value: string): string {
+  return value.trim().replace(/^(\.\/)+/, '').replace(/^\/+|\/+$/g, '');
 }
