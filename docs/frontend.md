@@ -8,7 +8,7 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 - `src/app/core/theme.ts` — light/dark theme; sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference. An inline script in `index.html` applies it before boot to avoid a flash.
 - `src/app/core/pipeline.ts` — DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation (GitHub Actions / GitLab CI).
 - `src/app/core/mock-data.ts` — placeholder findings and repositories until the API exists.
-- `src/app/layout/shell.ts` — authenticated layout (sidebar + top bar).
+- `src/app/layout/shell.ts` — authenticated layout. Sidebar navigation is defined in the `groups` array (Overview / Security / Configuration); counts come from mock data. Bottom area: scan usage meter, help link, organization switcher (visual only).
 - `src/app/shared/` — reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` (schedule, automatic actions, Dockerfile, AI triage) and `pipeline-editor` (two-way bound with `[(stages)]`). The last two are used both in onboarding and in repository settings.
 - `src/app/features/` — pages: `login`, `dashboard`, `repositories`, `repo-settings`, `onboarding`.
 
@@ -20,6 +20,7 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 | `/dashboard` | CVE overview with CVSS severities |
 | `/repositories` | Connected repositories |
 | `/repositories/:name` | Repository settings (General / Pipeline tabs) |
+| `/vulnerabilities`, `/pipelines`, `/reports`, `/integrations`, `/policies`, `/team`, `/settings`, `/help` | "Coming soon" placeholder (`shared/coming-soon.ts`, title via route `data`) |
 | `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
 
 ## Styling

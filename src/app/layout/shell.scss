@@ -30,38 +30,36 @@
 
   app-logo {
     --logo-color: #4a90d9;
+    flex-shrink: 0;
     height: 56px;
     padding: 0 1.25rem;
     border-bottom: 1px solid rgb(255 255 255 / 8%);
   }
 
-  .section {
-    padding: 1.25rem 1.25rem 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8592a3;
-  }
-
   ul {
     list-style: none;
     margin: 0;
-    padding: 0 0.5rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
   }
 
-  a {
+  nav a,
+  .help {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.75rem;
     border-radius: var(--radius-sm);
     color: var(--nav-text);
     text-decoration: none;
     font-weight: 500;
+
+    svg {
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
 
     &:hover {
       background: var(--nav-hover);
@@ -72,21 +70,158 @@
       background: var(--nav-hover);
       color: var(--nav-text-active);
       box-shadow: inset 3px 0 0 #4a90d9;
+
+      svg {
+        opacity: 1;
+      }
     }
   }
+}
 
-  .org {
-    margin-top: auto;
-    padding: 1rem 1.25rem;
-    border-top: 1px solid rgb(255 255 255 / 8%);
-    font-size: 0.8rem;
-    color: var(--nav-text);
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 0.75rem;
+}
 
-    strong {
-      display: block;
+.new-project {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgb(255 255 255 / 14%);
+  color: var(--nav-text-active);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+
+  &:hover,
+  &.active {
+    background: var(--nav-hover);
+    border-color: #4a90d9;
+  }
+}
+
+.section {
+  margin: 1.1rem 0 0.4rem;
+  padding: 0 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8592a3;
+}
+
+.label {
+  flex: 1;
+}
+
+.count {
+  min-width: 1.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+  color: var(--nav-text-active);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  text-align: center;
+
+  &.alert {
+    background: #c0392b;
+  }
+}
+
+.bottom {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+}
+
+.usage {
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: rgb(255 255 255 / 4%);
+  font-size: 0.75rem;
+  color: var(--nav-text);
+
+  .usage-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+
+    .mono {
       color: var(--nav-text-active);
-      font-weight: 500;
     }
+  }
+}
+
+.meter {
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: #4a90d9;
+  }
+}
+
+.help {
+  font-size: 0.85rem;
+}
+
+.org {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--nav-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--nav-hover);
+  }
+}
+
+.org-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: #2c4a6b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.org-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
+  line-height: 1.35;
+
+  strong {
+    color: var(--nav-text-active);
+    font-size: 0.85rem;
+    font-weight: 500;
   }
 }
 
@@ -148,20 +283,39 @@ main {
     height: auto;
     flex-direction: row;
     align-items: center;
-    overflow-x: auto;
 
     app-logo {
       border-bottom: 0;
     }
+  }
 
+  .scroll {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+
+    nav,
+    .group,
     ul {
+      display: flex;
       flex-direction: row;
     }
+  }
 
-    .section,
-    .org {
-      display: none;
-    }
+  .new-project {
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .section,
+  .bottom {
+    display: none;
+  }
+
+  nav a {
+    white-space: nowrap;
   }
 
   main,
