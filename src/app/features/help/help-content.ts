@@ -61,6 +61,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Dashboard',
       blocks: [
         { kind: 'p', text: 'The dashboard summarizes the security posture of every monitored repository.' },
+        { kind: 'p', text: '"Export CSV" downloads every finding of the organization (all statuses) as a spreadsheet-ready CSV file with reference, type, severity, CVSS, status, repository, package or file, stage, tool and dates. Values that start with =, +, -, @ get a leading apostrophe so spreadsheet apps never run them as formulas.' },
         {
           kind: 'ul',
           items: [
@@ -521,6 +522,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Painel',
       blocks: [
         { kind: 'p', text: 'O painel resume a postura de segurança de todos os repositórios monitorados.' },
+        { kind: 'p', text: '"Exportar CSV" baixa todos os achados da organização (todos os status) em um arquivo CSV pronto para planilhas, com referência, tipo, severidade, CVSS, status, repositório, pacote ou arquivo, etapa, ferramenta e datas. Valores que começam com =, +, -, @ recebem um apóstrofo no início para que as planilhas nunca os executem como fórmulas.' },
         {
           kind: 'ul',
           items: [

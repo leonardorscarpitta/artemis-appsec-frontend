@@ -116,6 +116,11 @@ export function findingRoute(f: Pick<FindingSummary, 'cve' | 'id'>): string {
 export class FindingsApi {
   private readonly http = inject(HttpClient);
 
+  /** Every finding of the organization as CSV (same filters as the list). */
+  exportCsv(filters: Record<string, string> = {}): Observable<Blob> {
+    return this.http.get(`${findingsUrl()}/export`, { params: filters, responseType: 'blob' });
+  }
+
   changeStatus(id: string, status: FindingStatus, note?: string): Observable<FindingDetails> {
     return this.http.post<FindingDetails>(`${findingUrl(id)}/status`, { status, note: note ?? null });
   }

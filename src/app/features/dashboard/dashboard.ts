@@ -1,8 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DashboardSummary, dashboardUrl, findingIdentifier, findingRoute, packageLabel } from '../../core/api/findings';
+import { DashboardSummary, FindingsApi, dashboardUrl, findingIdentifier, findingRoute, packageLabel } from '../../core/api/findings';
+import { problemMessage } from '../../core/api/api';
+import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
@@ -17,6 +19,10 @@ import { OrgLink } from '../../shared/org-link';
 })
 export class Dashboard {
   protected readonly i18n = inject(I18n);
+  private readonly findingsApi = inject(FindingsApi);
+  private readonly org = inject(OrgContext);
+  protected readonly exporting = signal(false);
+  protected readonly exportError = signal<string | null>(null);
   protected readonly summary = httpResource<DashboardSummary>(() => dashboardUrl());
   protected readonly packageLabel = packageLabel;
   protected readonly findingIdentifier = findingIdentifier;
@@ -32,4 +38,23 @@ export class Dashboard {
       label: this.i18n.t(`sev.${severity}`),
     }));
   });
+
+  protected exportCsv(): void {
+    this.exporting.set(true);
+    this.exportError.set(null);
+    this.findingsApi.exportCsv().subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `artemis-findings-${this.org.slug()}-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        this.exporting.set(false);
+      },
+      error: (err) => {
+        this.exporting.set(false);
+        this.exportError.set(problemMessage(err) ?? this.i18n.t('dash.exportError'));
+      },
+    });
+  }
 }
