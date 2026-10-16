@@ -1,19 +1,60 @@
-<header class="bar">
+<aside class="info">
   <app-logo />
-  <app-lang-switch />
-</header>
 
-<main class="center">
-  <div class="card">
-    <h1>{{ i18n.t('login.title') }}</h1>
-    <p class="muted">{{ i18n.t('login.subtitle') }}</p>
-    <a class="btn primary" routerLink="/dashboard">{{ i18n.t('login.sso') }}</a>
-    <p class="provider">{{ i18n.t('login.provider') }}</p>
+  <div class="pitch">
+    <p class="eyebrow">{{ i18n.t('login.product') }}</p>
+    <h1>{{ i18n.t('login.heading') }}</h1>
+    <p class="lead">{{ i18n.t('login.lead') }}</p>
+
+    <ul class="caps">
+      @for (cap of capabilities; track cap.title) {
+        <li>
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" [attr.d]="cap.icon" /></svg>
+          </span>
+          <div>
+            <strong>{{ i18n.t(cap.title) }}</strong>
+            <p>{{ i18n.t(cap.desc) }}</p>
+          </div>
+        </li>
+      }
+    </ul>
   </div>
-  <p class="help muted">{{ i18n.t('login.help') }}</p>
-</main>
 
-<footer class="foot muted">
-  <span>Artemis · {{ i18n.t('login.product') }}</span>
-  <span>artemisappsec.com</span>
-</footer>
+  <dl class="facts">
+    <div>
+      <dt>{{ i18n.t('login.stat.stacks') }}</dt>
+      <dd>React · Angular · Spring</dd>
+    </div>
+    <div>
+      <dt>{{ i18n.t('login.stat.source') }}</dt>
+      <dd>NIST NVD</dd>
+    </div>
+    <div>
+      <dt>{{ i18n.t('login.stat.auth') }}</dt>
+      <dd>OpenID Connect</dd>
+    </div>
+  </dl>
+</aside>
+
+<div class="side">
+  <header class="bar">
+    <app-lang-switch />
+    <app-theme-toggle />
+  </header>
+
+  <main class="center">
+    <div class="card">
+      <h2>{{ i18n.t('login.title') }}</h2>
+      <p class="muted">{{ i18n.t('login.subtitle') }}</p>
+      <a class="btn primary" routerLink="/dashboard">{{ i18n.t('login.sso') }}</a>
+      <p class="provider">{{ i18n.t('login.provider') }}</p>
+    </div>
+    <p class="help muted">{{ i18n.t('login.help') }}</p>
+  </main>
+
+  <footer class="foot muted">
+    <span>© 2026 Artemis</span>
+    <span>artemisappsec.com</span>
+  </footer>
+</div>

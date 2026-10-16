@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { I18n, TranslationKey } from '../core/i18n';
 import { LangSwitch } from '../shared/lang-switch';
 import { Logo } from '../shared/logo';
+import { ThemeToggle } from '../shared/theme-toggle';
 
 interface NavItem {
   path: string;
@@ -12,7 +13,7 @@ interface NavItem {
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch, ThemeToggle],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })

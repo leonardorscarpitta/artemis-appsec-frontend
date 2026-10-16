@@ -1,17 +1,116 @@
 :host {
+  display: grid;
+  grid-template-columns: minmax(420px, 5fr) 6fr;
+  min-height: 100vh;
+}
+
+.info {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding: 2.5rem 3rem;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--border);
+  color: #e3e8ef;
+
+  app-logo {
+    --logo-color: #5b9bdc;
+    color: #fff;
+  }
+}
+
+.pitch {
+  max-width: 460px;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8fb8e6;
+  margin-bottom: 0.75rem;
+}
+
+h1 {
+  font-size: 1.85rem;
+  color: #fff;
+}
+
+.lead {
+  margin-top: 1rem;
+  color: #a9b4c2;
+  font-size: 0.95rem;
+}
+
+.caps {
+  list-style: none;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  li {
+    display: flex;
+    gap: 0.9rem;
+  }
+
+  .icon {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: rgb(91 155 220 / 15%);
+    color: #8fb8e6;
+  }
+
+  strong {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  p {
+    color: #a9b4c2;
+    font-size: 0.875rem;
+  }
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 2rem;
+  margin: 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+
+  dt {
+    font-size: 0.75rem;
+    color: #8592a3;
+  }
+
+  dd {
+    margin: 0.2rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e3e8ef;
+  }
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
 }
 
 .bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 56px;
-  padding: 0 1.75rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.75rem;
 }
 
 .center {
@@ -32,6 +131,10 @@
   gap: 0.5rem;
   padding: 2rem;
   border-top: 3px solid var(--primary);
+
+  h2 {
+    font-size: 1.375rem;
+  }
 
   .btn {
     margin-top: 1.25rem;
@@ -58,5 +161,20 @@
   gap: 0.5rem;
   padding: 1rem 1.75rem;
   font-size: 0.8rem;
-  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  :host {
+    grid-template-columns: 1fr;
+  }
+
+  .info {
+    order: 2;
+    padding: 2rem 1rem;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
