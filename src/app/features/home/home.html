@@ -43,14 +43,13 @@
             <div><span>{{ c().preview.repos }}</span><strong>{{ preview.repos }}</strong></div>
           </div>
           <div class="sev-bar">
-            <span class="critical"></span>
-            <span class="high"></span>
-            <span class="medium"></span>
-            <span class="low"></span>
+            @for (s of preview.severities; track s.severity) {
+              <span [style.flex]="s.count" [style.background]="'var(--sev-' + s.severity + ')'"></span>
+            }
           </div>
           <div class="rows">
             <p>{{ c().preview.recent }}</p>
-            @for (f of preview.rows; track f.cve) {
+            @for (f of preview.rows; track f.id) {
               <div class="row">
                 <span class="mono">{{ f.cve }}</span>
                 <span class="mono pkg">{{ f.pkg }}</span>

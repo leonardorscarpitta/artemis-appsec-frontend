@@ -1,20 +1,22 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { I18n } from '../../core/i18n';
-import { FINDINGS, FindingStatus, Severity, severityOf } from '../../core/mock-data';
+import { FINDINGS, Severity, severityOf } from '../../core/mock-data';
 import { SeverityBadge } from '../../shared/severity-badge';
+import { StatusLabel } from '../vulnerabilities/status-label';
 
 const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low'];
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, SeverityBadge],
+  imports: [RouterLink, SeverityBadge, StatusLabel],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
   protected readonly i18n = inject(I18n);
   protected readonly findings = FINDINGS;
+  protected readonly recent = [...FINDINGS].sort((a, b) => b.detected.localeCompare(a.detected)).slice(0, 8);
 
   private readonly open = computed(() => this.findings.filter((f) => f.status === 'open' || f.status === 'triaged'));
 
@@ -40,8 +42,4 @@ export class Dashboard {
       };
     });
   });
-
-  protected statusLabel(status: FindingStatus): string {
-    return this.i18n.t(`status.${status}`);
-  }
 }

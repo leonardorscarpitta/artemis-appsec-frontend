@@ -193,11 +193,6 @@ h1 {
   height: 8px;
   border-radius: 2px;
   overflow: hidden;
-
-  .critical { flex: 2; background: var(--sev-critical); }
-  .high { flex: 2; background: var(--sev-high); }
-  .medium { flex: 2; background: var(--sev-medium); }
-  .low { flex: 1; background: var(--sev-low); }
 }
 
 .rows {
