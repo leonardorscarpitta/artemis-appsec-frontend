@@ -81,7 +81,7 @@
         @for (f of rows(); track f.id) {
           <tr>
             <td class="primary-cell">
-              <a class="mono cve" [routerLink]="['/vulnerabilities', f.cve]">{{ f.cve }}</a>
+              <a class="mono cve" [routerLink]="['/vulnerabilities', f.cve] | orgLink">{{ f.cve }}</a>
               <span class="title">{{ f.title }}</span>
             </td>
             <td class="mono" [attr.data-label]="i18n.t('col.package')">{{ packageLabel(f) }}</td>

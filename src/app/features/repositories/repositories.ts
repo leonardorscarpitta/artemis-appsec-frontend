@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { OrgLink } from '../../shared/org-link';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   push: 'ob.settings.interval.push',
@@ -15,7 +16,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink],
   template: `
     <header class="page-header">
       <div>
@@ -23,7 +24,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
         <p>{{ i18n.t('repo.subtitle') }}</p>
       </div>
       <div class="page-actions">
-        <a class="btn primary" routerLink="/onboarding">{{ i18n.t('repo.add') }}</a>
+        <a class="btn primary" [routerLink]="'/onboarding' | orgLink">{{ i18n.t('repo.add') }}</a>
       </div>
     </header>
 
@@ -53,7 +54,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               <td class="num" [attr.data-label]="i18n.t('col.findings')">{{ repo.openFindings ?? '—' }}</td>
               <td class="muted mono" [attr.data-label]="i18n.t('dash.lastScan')">{{ (repo.lastScanAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</td>
               <td class="num actions" data-label="">
-                <a class="btn" [routerLink]="['/repositories', repo.name]" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
+                <a class="btn" [routerLink]="['/repositories', repo.name] | orgLink" [attr.aria-label]="i18n.t('repo.configure') + ': ' + repo.name">
                   {{ i18n.t('repo.configure') }}
                 </a>
               </td>

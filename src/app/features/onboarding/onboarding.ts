@@ -8,6 +8,7 @@ import { Stack } from '../../core/domain';
 import { PipelineStage, defaultPipeline } from '../../core/pipeline';
 import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';
+import { OrgContext } from '../../core/org/org-context';
 
 const SSH_URL = /^(git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
@@ -21,6 +22,7 @@ export class Onboarding {
   protected readonly i18n = inject(I18n);
   private readonly router = inject(Router);
   private readonly api = inject(ProjectsApi);
+  private readonly org = inject(OrgContext);
 
   protected readonly steps: TranslationKey[] = ['ob.step1', 'ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
   protected readonly step = signal(0);
@@ -77,7 +79,7 @@ export class Onboarding {
         pipeline: this.pipeline().map(toStageUpdate),
       })
       .subscribe({
-        next: (created) => this.router.navigate(['/repositories', created.project.name]),
+        next: (created) => this.router.navigate([this.org.url('/repositories'), created.project.name]),
         error: (err) => {
           this.submitting.set(false);
           this.submitError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));

@@ -7,10 +7,11 @@ import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { ReportAuthor, ReportPeriod, ReportStatus, ReportSummary, ReportType, ReportsApi, reportsUrl } from '../../core/api/reports';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
+import { OrgLink } from '../../shared/org-link';
 
 @Component({
   selector: 'app-reports',
-  imports: [RouterLink, DatePipe, RequestState],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })

@@ -21,7 +21,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'Artemis is an application security testing platform. It connects to your Git repositories, runs a configurable DevSecOps pipeline on them and reports vulnerabilities scored with CVSS, using the NIST National Vulnerability Database as the source.' },
         { kind: 'p', text: 'The home page presents the product, how it works and answers to common questions. Select "Sign in" or "Get started" to open the sign-in screen. This guide is also available without signing in, from "Documentation" on the home page.' },
         { kind: 'p', text: 'To sign in, choose "Sign in with SSO". You are taken to your organization\'s sign-in page (Authelia), and after entering your username and password you return to the page you were trying to open. Authentication uses OpenID Connect; Artemis never sees or stores your password.' },
-        { kind: 'p', text: 'Your name appears in the top bar while you are signed in. The session lasts for the current browser tab; if it expires you are asked to sign in again. "Sign out" ends your Artemis session — the sign-in page may still remember you, so you can return without typing your password again.' },
+        { kind: 'p', text: 'Your name appears in the top bar while you are signed in; select it to open your account page at the sign-in service (password and two-factor settings). The session is shared by all tabs of the browser, and the home page shows you as signed in with a "Go to dashboard" button. If the session expires you are asked to sign in again. "Sign out" ends your Artemis session — the sign-in page may still remember you, so you can return without typing your password again.' },
         { kind: 'p', text: 'The interface is organized as follows:' },
         {
           kind: 'ul',
@@ -30,9 +30,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'New project button: starts the flow to connect a new repository.',
             'Bottom of the sidebar: scans used this month against your plan limit, this help page and the current organization.',
             'Top bar: language selector (English or Portuguese), light/dark theme toggle and sign out. Language and theme are remembered in your browser.',
+            'Addresses: every page lives under your organization, for example /acme/vulnerabilities. Links you share point to the same page for your colleagues.',
           ],
         },
-        { kind: 'p', text: 'Artemis adapts to your screen. On smaller laptop screens the sidebar shows icons only; hover over an icon to see its name. On tablets and phones the sidebar is hidden: open it with the menu button at the top left and close it with the X button, the Escape key or by tapping outside it.' },
+        { kind: 'p', text: 'Artemis adapts to your screen. On smaller laptop screens the sidebar shows icons only; point at it (or move the keyboard focus into it) and it expands to show every name. On tablets and phones the sidebar is hidden: open it with the menu button at the top left and close it with the X button, the Escape key or by tapping outside it.' },
       ],
     },
     {
@@ -370,7 +371,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações. Ele se conecta aos seus repositórios Git, executa neles um pipeline DevSecOps configurável e reporta vulnerabilidades pontuadas com CVSS, usando a National Vulnerability Database do NIST como fonte.' },
         { kind: 'p', text: 'A página inicial apresenta o produto, como ele funciona e respostas a dúvidas comuns. Selecione "Entrar" ou "Começar" para abrir a tela de login. Este guia também está disponível sem login, em "Documentação" na página inicial.' },
         { kind: 'p', text: 'Para entrar, escolha "Entrar com SSO". Você será levado à página de login da sua organização (Authelia) e, depois de informar usuário e senha, voltará para a página que tentava abrir. A autenticação usa OpenID Connect; o Artemis nunca vê nem armazena sua senha.' },
-        { kind: 'p', text: 'Seu nome aparece na barra superior enquanto você estiver conectado. A sessão vale para a aba atual do navegador; se expirar, será pedido um novo login. "Sair" encerra sua sessão no Artemis — a página de login pode continuar lembrando de você, permitindo voltar sem digitar a senha novamente.' },
+        { kind: 'p', text: 'Seu nome aparece na barra superior enquanto você estiver conectado; selecione-o para abrir sua conta no serviço de login (senha e verificação em duas etapas). A sessão é compartilhada por todas as abas do navegador, e a página inicial mostra você conectado com o botão "Ir para o painel". Se a sessão expirar, será pedido um novo login. "Sair" encerra sua sessão no Artemis — a página de login pode continuar lembrando de você, permitindo voltar sem digitar a senha novamente.' },
         { kind: 'p', text: 'A interface está organizada assim:' },
         {
           kind: 'ul',
@@ -379,9 +380,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Botão Novo projeto: inicia o fluxo para conectar um novo repositório.',
             'Rodapé da barra lateral: análises usadas no mês em relação ao limite do plano, esta página de ajuda e a organização atual.',
             'Barra superior: seletor de idioma (inglês ou português), alternância entre tema claro e escuro e sair. Idioma e tema ficam salvos no seu navegador.',
+            'Endereços: todas as páginas ficam sob a sua organização, por exemplo /acme/vulnerabilities. Links compartilhados levam seus colegas à mesma página.',
           ],
         },
-        { kind: 'p', text: 'O Artemis se adapta à sua tela. Em notebooks com telas menores a barra lateral mostra apenas ícones; passe o mouse sobre um ícone para ver o nome. Em tablets e celulares a barra lateral fica oculta: abra-a pelo botão de menu no canto superior esquerdo e feche pelo botão X, pela tecla Esc ou tocando fora dela.' },
+        { kind: 'p', text: 'O Artemis se adapta à sua tela. Em notebooks com telas menores a barra lateral mostra apenas ícones; aponte o mouse para ela (ou mova o foco do teclado até ela) e ela se expande mostrando todos os nomes. Em tablets e celulares a barra lateral fica oculta: abra-a pelo botão de menu no canto superior esquerdo e feche pelo botão X, pela tecla Esc ou tocando fora dela.' },
       ],
     },
     {

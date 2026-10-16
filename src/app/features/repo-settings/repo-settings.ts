@@ -8,12 +8,13 @@ import { I18n } from '../../core/i18n';
 import { PipelineEditor } from '../../shared/pipeline-editor';
 import { RequestState } from '../../shared/request-state';
 import { ScanSettings } from '../../shared/scan-settings';
+import { OrgLink } from '../../shared/org-link';
 
 type Tab = 'general' | 'pipeline';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })

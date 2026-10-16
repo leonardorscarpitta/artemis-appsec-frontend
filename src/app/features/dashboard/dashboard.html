@@ -5,7 +5,7 @@
   </div>
   <div class="page-actions">
     <button type="button" class="btn">{{ i18n.t('dash.export') }}</button>
-    <a class="btn primary" routerLink="/onboarding">{{ i18n.t('dash.newScan') }}</a>
+    <a class="btn primary" [routerLink]="'/onboarding' | orgLink">{{ i18n.t('dash.newScan') }}</a>
   </div>
 </header>
 
@@ -53,7 +53,7 @@
       <h2 id="recent-title">{{ i18n.t('dash.recent') }}</h2>
       <div class="head-links">
         <span class="muted source">{{ i18n.t('dash.source') }}</span>
-        <a routerLink="/vulnerabilities">{{ i18n.t('vuln.viewAll') }}</a>
+        <a [routerLink]="'/vulnerabilities' | orgLink">{{ i18n.t('vuln.viewAll') }}</a>
       </div>
     </div>
     <table class="table stack">
@@ -71,7 +71,7 @@
         @for (f of s.recent; track f.id) {
           <tr>
             <td class="primary-cell">
-              <a class="mono" [routerLink]="['/vulnerabilities', f.cve]">{{ f.cve }}</a>
+              <a class="mono" [routerLink]="['/vulnerabilities', f.cve] | orgLink">{{ f.cve }}</a>
             </td>
             <td class="mono" [attr.data-label]="i18n.t('col.package')">{{ packageLabel(f) }}</td>
             <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>

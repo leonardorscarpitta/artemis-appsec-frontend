@@ -56,7 +56,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/theme.ts` | Light/dark theme: sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference (an inline script in `index.html` applies it before boot) |
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
 | `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
-| `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
+| `src/app/core/org/` | `OrgContext` (current organization slug), `orgGuard` and legacy URL redirects; `shared/org-link.ts` is the `orgLink` pipe |
+| `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, account URL, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
 | `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
@@ -64,6 +65,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/features/` | One folder per page: `home`, `login`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
 
 ## Routes
+
+In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). The slug comes from `GET /organization/settings` (`OrgContext`); `orgGuard` rewrites a wrong slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page under the slug. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login` and `/auth/callback` are public and unprefixed.
 
 | Path | Page |
 | --- | --- |
@@ -94,7 +97,7 @@ Enterprise-style light and dark themes. Design tokens are CSS variables in `src/
 
 Global primitives: `.card` (`.card-header`, `.table-card`), `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.tag`, `.segmented`, `.switch`, `.table` (`.num`, and `.stack` with `data-label` for stacked rows on phones).
 
-Responsive breakpoints: `599px` (phone), `899px` (tablet — sidebar becomes a drawer), `1199px` (sidebar becomes an icon rail), `1600px` (wide). Grid columns use `minmax(0, 1fr)` to avoid horizontal overflow.
+Responsive breakpoints: `599px` (phone), `899px` (tablet — sidebar becomes a drawer), `1199px` (sidebar becomes an icon rail that expands over the page on hover/focus), `1600px` (wide). Grid columns use `minmax(0, 1fr)` to avoid horizontal overflow.
 
 The logo (`shared/logo.ts`) reads `--logo-color` and `--logo-name-display`; the favicon is `public/favicon.svg`. CVSS → severity follows the NVD v3 ranges (`severityOf` in `domain.ts`).
 
@@ -112,7 +115,7 @@ Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manu
 
 ## Authentication
 
-Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `sessionStorage` and sent as a Bearer token to the API only. Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
+Sign-in uses Authelia as the OpenID Connect provider (Authorization Code + PKCE, public client `artemis-web`). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. The user badge (`shared/user-badge.ts`) links to the account page at Authelia (`<authority>/settings`). Authelia does not support RP-initiated logout yet, so "Sign out" ends the Artemis session while the Authelia session may persist.
 
 ## Talking to the API
 

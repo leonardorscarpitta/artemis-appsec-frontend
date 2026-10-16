@@ -7,10 +7,11 @@ import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from '../vulnerabilities/status-label';
+import { OrgLink } from '../../shared/org-link';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

@@ -305,30 +305,7 @@
   border-left: 1px solid var(--border);
 }
 
-.user-name {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  font-size: 0.8rem;
-  color: var(--text-muted);
 
-  strong {
-    color: var(--text);
-    font-weight: 500;
-  }
-}
-
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--primary-soft);
-  color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
 
 main {
   padding: 1.75rem;
@@ -348,15 +325,57 @@ main {
   }
 }
 
-// Compact desktop: icon rail.
+// Compact desktop: icon rail that expands over the page on hover or keyboard focus.
 @media (max-width: 1199px) and (min-width: 900px) {
   :host {
     grid-template-columns: 64px minmax(0, 1fr);
   }
 
+  .sidebar {
+    z-index: 30;
+    width: 64px;
+    overflow-x: hidden;
+    transition:
+      width 0.18s ease,
+      box-shadow 0.18s ease;
+
+    &:hover,
+    &:focus-within {
+      width: 232px;
+      box-shadow: 6px 0 24px rgb(0 0 0 / 28%);
+      transition-delay: 0.12s;
+
+      .text,
+      .org-text,
+      .org > svg {
+        opacity: 1;
+        transition-delay: 0.18s;
+      }
+
+      app-logo {
+        --logo-name-display: inline;
+      }
+
+      .count {
+        top: 50%;
+        left: auto;
+        right: 8px;
+        transform: translateY(-50%);
+      }
+    }
+
+    .text,
+    .org-text,
+    .org > svg {
+      opacity: 0;
+      white-space: nowrap;
+      transition: opacity 0.12s ease;
+    }
+  }
+
+  // Fixed left padding keeps every icon centered in the 64px rail while labels sit after it.
   .brand {
-    justify-content: center;
-    padding: 0;
+    padding: 0 0 0 18px;
 
     app-logo {
       --logo-name-display: none;
@@ -365,17 +384,21 @@ main {
 
   .scroll {
     padding: 0.75rem 0.5rem;
+    overflow-x: hidden;
   }
 
-  .sidebar .text,
-  .usage,
-  .org-text,
-  .org > svg {
+  .usage {
     display: none;
   }
 
   .new-project {
-    padding: 0.55rem 0;
+    justify-content: flex-start;
+    padding: 0.55rem 0 0.55rem 15px;
+    white-space: nowrap;
+
+    svg {
+      flex-shrink: 0;
+    }
   }
 
   .section {
@@ -390,14 +413,13 @@ main {
   .sidebar nav a,
   .sidebar .help {
     position: relative;
-    justify-content: center;
-    padding: 0.6rem 0;
+    padding: 0.6rem 0 0.6rem 15px;
   }
 
   .count {
     position: absolute;
     top: 2px;
-    right: 4px;
+    left: 30px;
     min-width: 1.1rem;
     padding: 0 0.25rem;
     font-size: 0.65rem;
@@ -405,17 +427,20 @@ main {
   }
 
   .bottom {
-    align-items: center;
     padding: 0.5rem;
   }
 
-  .help {
-    width: 100%;
-  }
-
   .org {
-    justify-content: center;
-    padding: 0.4rem 0;
+    padding: 0.4rem 0 0.4rem 8px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 900px) and (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar .text,
+  .sidebar .org-text,
+  .sidebar .org > svg {
+    transition: none;
   }
 }
 
@@ -479,13 +504,7 @@ main {
     padding-left: 0.5rem;
   }
 
-  .avatar {
-    display: none;
-  }
 
-  .user-name {
-    display: none;
-  }
 
   .sign-out {
     padding: 0.5rem;

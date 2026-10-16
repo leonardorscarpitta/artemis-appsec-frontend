@@ -8,12 +8,13 @@ import { Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { TrendChart } from './trend-chart';
+import { OrgLink } from '../../shared/org-link';
 
 const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low'];
 
 @Component({
   selector: 'app-report-view',
-  imports: [RouterLink, DatePipe, SeverityBadge, TrendChart, RequestState],
+  imports: [RouterLink, DatePipe, SeverityBadge, TrendChart, RequestState, OrgLink],
   templateUrl: './report-view.html',
   styleUrl: './report-view.scss',
 })

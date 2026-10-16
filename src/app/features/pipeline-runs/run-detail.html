@@ -1,4 +1,4 @@
-<a class="back" routerLink="/pipelines">
+<a class="back" [routerLink]="'/pipelines' | orgLink">
   <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z" /></svg>
   {{ i18n.t('runs.back') }}
 </a>
@@ -12,7 +12,7 @@
       <app-run-status [status]="run.status" />
     </div>
     <div class="page-actions">
-      <a class="btn" [routerLink]="['/repositories', run.repository]">{{ i18n.t('runs.repoSettings') }}</a>
+      <a class="btn" [routerLink]="['/repositories', run.repository] | orgLink">{{ i18n.t('runs.repoSettings') }}</a>
       @if (run.status === 'running' || run.status === 'queued') {
         <button type="button" class="btn" [disabled]="busy()" (click)="cancel(run.number)">{{ i18n.t('runs.cancel') }}</button>
       } @else {
@@ -82,7 +82,7 @@
                 <span class="mono muted time">{{ duration(stage.durationSeconds) }}</span>
                 <span class="findings">
                   @if (stage.findings) {
-                    <a routerLink="/vulnerabilities">
+                    <a [routerLink]="'/vulnerabilities' | orgLink">
                       {{ stage.findings }} {{ i18n.t(stage.findings === 1 ? 'runs.finding' : 'runs.findings') }}
                     </a>
                   } @else {

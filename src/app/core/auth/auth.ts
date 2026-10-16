@@ -13,7 +13,7 @@ export interface Profile {
   initials: string;
 }
 
-/** OpenID Connect session with Authelia (Authorization Code + PKCE, tokens kept in sessionStorage). */
+/** OpenID Connect session with Authelia (Authorization Code + PKCE; tokens in localStorage so every tab shares the session). */
 @Service()
 export class Auth {
   private readonly manager = new UserManager({
@@ -24,10 +24,13 @@ export class Auth {
     scope: environment.auth.scope,
     loadUserInfo: false,
     automaticSilentRenew: false,
-    userStore: new WebStorageStateStore({ store: sessionStorage }),
+    userStore: new WebStorageStateStore({ store: localStorage }),
   });
 
   private readonly user = signal<User | null>(null);
+
+  /** The user's own account page at the identity provider (password, two-factor). */
+  readonly accountUrl = `${environment.auth.authority}/settings`;
 
   readonly isAuthenticated = computed(() => {
     const user = this.user();

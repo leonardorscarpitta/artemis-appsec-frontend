@@ -11,8 +11,13 @@
     <div class="actions">
       <app-lang-switch />
       <app-theme-toggle />
-      <a class="btn ghost sign-in" routerLink="/login">{{ c().nav.signIn }}</a>
-      <a class="btn primary" routerLink="/login">{{ c().nav.cta }}</a>
+      @if (auth.isAuthenticated()) {
+        <app-user-badge [showName]="false" />
+        <a class="btn primary" routerLink="/dashboard">{{ i18n.t('nav.openApp') }}</a>
+      } @else {
+        <a class="btn ghost sign-in" routerLink="/login">{{ c().nav.signIn }}</a>
+        <a class="btn primary" routerLink="/login">{{ c().nav.cta }}</a>
+      }
     </div>
   </div>
 </header>
@@ -25,7 +30,9 @@
         <h1>{{ c().hero.title }}</h1>
         <p class="lead">{{ c().hero.lead }}</p>
         <div class="hero-cta">
-          <a class="btn primary large" routerLink="/login">{{ c().hero.primary }}</a>
+          <a class="btn primary large" [routerLink]="auth.isAuthenticated() ? '/dashboard' : '/login'">
+            {{ auth.isAuthenticated() ? i18n.t('nav.openApp') : c().hero.primary }}
+          </a>
           <a class="btn large" routerLink="/" fragment="how">{{ c().hero.secondary }}</a>
         </div>
       </div>

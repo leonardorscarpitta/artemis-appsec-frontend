@@ -88,7 +88,7 @@
         @for (run of runs.value(); track run.number) {
           <tr>
             <td class="primary-cell">
-              <a class="run-link" [routerLink]="['/pipelines', run.number]" [attr.aria-label]="i18n.t('runs.open') + ' #' + run.number">#{{ run.number }}</a>
+              <a class="run-link" [routerLink]="['/pipelines', run.number] | orgLink" [attr.aria-label]="i18n.t('runs.open') + ' #' + run.number">#{{ run.number }}</a>
               <div class="repo">{{ run.repository }}</div>
             </td>
             <td [attr.data-label]="i18n.t('col.status')"><app-run-status [status]="run.status" /></td>
