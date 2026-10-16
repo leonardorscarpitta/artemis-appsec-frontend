@@ -157,6 +157,10 @@ export class OrganizationApi {
     return this.http.delete<void>(`${deployKeysUrl()}/${id}`);
   }
 
+  removeMember(memberId: string): Observable<void> {
+    return this.http.delete<void>(`${membersUrl()}/${memberId}`);
+  }
+
   changeRole(memberId: string, role: Role): Observable<Member> {
     return this.http.patch<Member>(`${membersUrl()}/${memberId}`, { role });
   }
