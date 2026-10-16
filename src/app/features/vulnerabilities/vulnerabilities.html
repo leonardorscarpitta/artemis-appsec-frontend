@@ -39,7 +39,7 @@
     <label for="vuln-repo">{{ i18n.t('col.repository') }}</label>
     <select id="vuln-repo" class="input" (change)="update(repository, $event)">
       <option value="" [selected]="!repository()">{{ i18n.t('vuln.all') }}</option>
-      @for (r of repositories; track r) {
+      @for (r of repositories(); track r) {
         <option [value]="r" [selected]="repository() === r">{{ r }}</option>
       }
     </select>
@@ -54,15 +54,18 @@
   </div>
 </section>
 
-<div class="summary">
-  <p aria-live="polite"><strong>{{ filtered().length }}</strong> {{ i18n.t('vuln.results') }}</p>
+@if (results.error()) {
+  <app-request-state [resource]="results" />
+} @else if (results.hasValue() || rows().length) {
+<div class="summary" [attr.aria-busy]="results.isLoading()">
+  <p aria-live="polite"><strong>{{ rows().length }}</strong> {{ i18n.t('vuln.results') }}</p>
   @if (hasFilters()) {
     <button type="button" class="btn ghost" (click)="clear()">{{ i18n.t('vuln.clear') }}</button>
   }
 </div>
 
-<section class="card table-card">
-  @if (filtered().length) {
+<section class="card table-card" [class.loading]="results.isLoading()">
+  @if (rows().length) {
     <table class="table stack">
       <thead>
         <tr>
@@ -75,17 +78,17 @@
         </tr>
       </thead>
       <tbody>
-        @for (f of filtered(); track f.id) {
+        @for (f of rows(); track f.id) {
           <tr>
             <td class="primary-cell">
               <a class="mono cve" [routerLink]="['/vulnerabilities', f.cve]">{{ f.cve }}</a>
               <span class="title">{{ f.title }}</span>
             </td>
-            <td class="mono" [attr.data-label]="i18n.t('col.package')">{{ f.pkg }}</td>
+            <td class="mono" [attr.data-label]="i18n.t('col.package')">{{ packageLabel(f) }}</td>
             <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>
             <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="f.cvss" /></td>
             <td [attr.data-label]="i18n.t('col.status')"><app-status-label [status]="f.status" /></td>
-            <td class="muted" [attr.data-label]="i18n.t('col.detected')">{{ f.detected }}</td>
+            <td class="muted" [attr.data-label]="i18n.t('col.detected')">{{ f.detectedAt | date: 'yyyy-MM-dd' }}</td>
           </tr>
         }
       </tbody>
@@ -101,3 +104,6 @@
     </div>
   }
 </section>
+} @else {
+  <app-request-state [resource]="results" />
+}

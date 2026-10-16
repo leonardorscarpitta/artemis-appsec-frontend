@@ -56,8 +56,8 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/theme.ts` | Light/dark theme: sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference (an inline script in `index.html` applies it before boot) |
 | `src/app/core/pipeline.ts` | DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation |
 | `src/environments/` | `apiUrl` per build: `http://localhost:8080/api/v1` in development, `/api/v1` in production |
-| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `pipeline-runs.ts`, ...) |
-| `src/app/core/mock-*.ts` | Mock data: `mock-data.ts` (findings, repositories), `mock-reports.ts`, `mock-policies.ts`, `mock-org.ts` (integrations, team, settings) |
+| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, ...) |
+| `src/app/core/mock-*.ts` | Mock data: `mock-data.ts` (shared finding/severity types and a static repository list for screens not yet on the API), `mock-reports.ts`, `mock-policies.ts`, `mock-org.ts` (integrations, team, settings) |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
 | `src/app/features/` | One folder per page: `home`, `login`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
@@ -66,7 +66,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 
 | Path | Page |
 | --- | --- |
-| `/` | Public home page (text in `features/home/home-content.ts`) |
+| `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`) |
 | `/login` | SSO sign-in (Authelia / OpenID Connect, not wired yet) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
