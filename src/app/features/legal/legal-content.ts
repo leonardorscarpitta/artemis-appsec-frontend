@@ -57,7 +57,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Your source code',
           blocks: [
             { kind: 'p', text: 'Scans run on Artemis’s own infrastructure — we do not send your code to any third-party scanning service. For each scan, the repository is cloned (read-only, latest commit of the chosen branch) into an isolated scanner that has no access to our database, and the open-source tools listed on the Third-party notices page analyze it there.' },
-            { kind: 'p', text: 'The copy of your code exists only while the scan runs and is deleted as soon as it finishes. We keep only the results: findings, short tool logs and reports. Source code is not used for any other purpose, sold or shared, and results belong to your organization.' },
+            { kind: 'p', text: 'The copy of your code exists only while the scan runs and is deleted as soon as it finishes. We keep only the results: findings, short tool logs and reports. Source code is not used for any other purpose, sold or shared, and results belong to your organization. The same applies to container images you ask us to scan: we pull them from their registry into the isolated scanner, never build or run them, and delete them after the scan; the registry sees only an anonymous download from our servers.' },
             { kind: 'p', text: 'Secrets found in your code are redacted by the scanner before anything is stored: Artemis records the rule, file and line, never the secret itself. Logs are limited in size and secret-looking values are masked.' },
             { kind: 'p', text: 'Today only public repositories over HTTPS are scanned; private repositories through read-only deploy keys will come later.' },
           ],
@@ -159,7 +159,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Seu código-fonte',
           blocks: [
             { kind: 'p', text: 'As análises rodam na infraestrutura do próprio Artemis — não enviamos seu código para nenhum serviço de análise de terceiros. Em cada análise, o repositório é clonado (somente leitura, último commit da branch escolhida) em um scanner isolado, sem acesso ao nosso banco de dados, e as ferramentas de código aberto listadas na página Avisos de terceiros o analisam lá.' },
-            { kind: 'p', text: 'A cópia do seu código existe apenas enquanto a análise roda e é apagada assim que ela termina. Guardamos somente os resultados: achados, logs curtos das ferramentas e relatórios. O código-fonte não é usado para nenhuma outra finalidade, vendido ou compartilhado, e os resultados pertencem à sua organização.' },
+            { kind: 'p', text: 'A cópia do seu código existe apenas enquanto a análise roda e é apagada assim que ela termina. Guardamos somente os resultados: achados, logs curtos das ferramentas e relatórios. O código-fonte não é usado para nenhuma outra finalidade, vendido ou compartilhado, e os resultados pertencem à sua organização. O mesmo vale para as imagens de contêiner que você pede para analisar: nós as baixamos do registry para o scanner isolado, nunca as construímos nem executamos, e as apagamos após a análise; o registry vê apenas um download anônimo vindo dos nossos servidores.' },
             { kind: 'p', text: 'Segredos encontrados no seu código são ocultados pelo scanner antes de qualquer armazenamento: o Artemis registra a regra, o arquivo e a linha, nunca o segredo em si. Os logs têm tamanho limitado e valores que parecem segredos são mascarados.' },
             { kind: 'p', text: 'Hoje apenas repositórios públicos via HTTPS são analisados; repositórios privados com deploy keys somente leitura virão depois.' },
           ],
@@ -239,7 +239,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'The service',
           blocks: [
             { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as secret scanning, SAST and dependency scanning) and reports the findings. Features may change as the product evolves.' },
-            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). For now, only public repositories reachable over HTTPS can be scanned; some pipeline stages (container image scanning and dynamic analysis) are not available yet.' },
+            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). For now, only public repositories reachable over HTTPS can be scanned; container images are pulled only from public registries, and dynamic analysis is not available yet.' },
           ],
         },
         {
@@ -275,7 +275,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'acceptable-use',
           title: 'Acceptable use',
           blocks: [
-            { kind: 'p', text: 'You may only connect repositories and test environments that you own or are explicitly authorized to test. You must not:' },
+            { kind: 'p', text: 'You may only connect repositories, container images and test environments that you own or are explicitly authorized to test. You must not:' },
             {
               kind: 'ul',
               items: [
@@ -359,7 +359,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'O serviço',
           blocks: [
             { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como varredura de segredos, SAST e análise de dependências) e reporta os achados. As funcionalidades podem mudar conforme o produto evolui.' },
-            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Por enquanto, apenas repositórios públicos acessíveis via HTTPS podem ser analisados; algumas etapas do pipeline (varredura de imagens de contêiner e análise dinâmica) ainda não estão disponíveis.' },
+            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Por enquanto, apenas repositórios públicos acessíveis via HTTPS podem ser analisados; imagens de contêiner são baixadas apenas de registries públicos, e a análise dinâmica ainda não está disponível.' },
           ],
         },
         {
@@ -395,7 +395,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'acceptable-use',
           title: 'Uso aceitável',
           blocks: [
-            { kind: 'p', text: 'Você só pode conectar repositórios e ambientes de teste que sejam seus ou que esteja expressamente autorizado a testar. Você não pode:' },
+            { kind: 'p', text: 'Você só pode conectar repositórios, imagens de contêiner e ambientes de teste que sejam seus ou que esteja expressamente autorizado a testar. Você não pode:' },
             {
               kind: 'ul',
               items: [

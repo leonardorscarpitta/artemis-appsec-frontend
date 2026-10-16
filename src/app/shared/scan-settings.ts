@@ -44,6 +44,11 @@ export class ScanSettings {
     this.patch({ customDockerfile: (event.target as HTMLTextAreaElement).value });
   }
 
+  protected setContainerImage(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim();
+    this.patch({ containerImage: value || null });
+  }
+
   private patch(change: Partial<ProjectSettings>): void {
     this.settings.update((s) => ({ ...s, ...change }));
   }

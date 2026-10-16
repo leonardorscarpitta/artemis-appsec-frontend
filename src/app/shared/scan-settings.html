@@ -50,6 +50,22 @@
   }
 </fieldset>
 
+<div class="field">
+  <label for="container-image">{{ i18n.t('ob.settings.image') }}</label>
+  <input
+    id="container-image"
+    class="input mono"
+    type="text"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="ghcr.io/acme/app:1.4"
+    [value]="settings().containerImage ?? ''"
+    (input)="setContainerImage($event)"
+    aria-describedby="container-image-hint"
+  />
+  <span id="container-image-hint" class="hint">{{ i18n.t('ob.settings.imageHint') }}</span>
+</div>
+
 <div class="toggle-row locked">
   <div>
     <strong id="ai-label">{{ i18n.t('ob.settings.ai') }}</strong>
