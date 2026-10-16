@@ -1,5 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, ElementRef, afterRenderEffect, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { I18n, TranslationKey } from '../core/i18n';
 import { FINDINGS, REPOSITORIES } from '../core/mock-data';
 import { LangSwitch } from '../shared/lang-switch';
@@ -36,9 +38,36 @@ const ICONS = {
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Logo, LangSwitch, ThemeToggle],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
+  host: { '(document:keydown.escape)': 'closeMenu()' },
 })
 export class Shell {
   protected readonly i18n = inject(I18n);
+
+  // Only relevant below the tablet breakpoint, where the sidebar becomes a drawer.
+  protected readonly menuOpen = signal(false);
+  private readonly menuButton = viewChild.required<ElementRef<HTMLButtonElement>>('menuButton');
+  private readonly closeButton = viewChild.required<ElementRef<HTMLButtonElement>>('closeButton');
+  private wasOpen = false;
+
+  constructor() {
+    inject(Router)
+      .events.pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.menuOpen.set(false));
+
+    afterRenderEffect(() => {
+      const open = this.menuOpen();
+      if (open) this.closeButton().nativeElement.focus();
+      else if (this.wasOpen) this.menuButton().nativeElement.focus();
+      this.wasOpen = open;
+    });
+  }
+
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
+  }
 
   protected readonly usage = { used: 142, limit: 500 };
 

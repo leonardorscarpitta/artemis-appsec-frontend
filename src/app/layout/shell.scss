@@ -30,10 +30,6 @@
 
   app-logo {
     --logo-color: #4a90d9;
-    flex-shrink: 0;
-    height: 56px;
-    padding: 0 1.25rem;
-    border-bottom: 1px solid rgb(255 255 255 / 8%);
   }
 
   ul {
@@ -76,6 +72,49 @@
       }
     }
   }
+}
+
+.brand {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 0.75rem 0 1.25rem;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+
+  .close {
+    display: none;
+    color: var(--nav-text-active);
+
+    &:hover {
+      background: var(--nav-hover);
+    }
+  }
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(0 0 0 / 45%);
 }
 
 .scroll {
@@ -232,14 +271,29 @@
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   height: 56px;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 0.5rem;
   padding: 0 1.75rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+
+  .menu,
+  .topbar-logo {
+    display: none;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+.sign-out svg {
+  display: none;
 }
 
 .user {
@@ -273,53 +327,164 @@ main {
   }
 }
 
-@media (max-width: 800px) {
+@media (min-width: 1600px) {
+  main {
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: 2.5rem;
+  }
+}
+
+// Compact desktop: icon rail.
+@media (max-width: 1199px) and (min-width: 900px) {
+  :host {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .brand {
+    justify-content: center;
+    padding: 0;
+
+    app-logo {
+      --logo-name-display: none;
+    }
+  }
+
+  .scroll {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .sidebar .text,
+  .usage,
+  .org-text,
+  .org > svg {
+    display: none;
+  }
+
+  .new-project {
+    padding: 0.55rem 0;
+  }
+
+  .section {
+    height: 1px;
+    margin: 0.75rem 0.5rem;
+    padding: 0;
+    overflow: hidden;
+    color: transparent;
+    background: rgb(255 255 255 / 10%);
+  }
+
+  .sidebar nav a,
+  .sidebar .help {
+    position: relative;
+    justify-content: center;
+    padding: 0.6rem 0;
+  }
+
+  .count {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    min-width: 1.1rem;
+    padding: 0 0.25rem;
+    font-size: 0.65rem;
+    line-height: 1.1rem;
+  }
+
+  .bottom {
+    align-items: center;
+    padding: 0.5rem;
+  }
+
+  .help {
+    width: 100%;
+  }
+
+  .org {
+    justify-content: center;
+    padding: 0.4rem 0;
+  }
+}
+
+// Tablet and phone: off-canvas drawer.
+@media (max-width: 899px) {
   :host {
     grid-template-columns: 1fr;
   }
 
   .sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    width: min(288px, 85vw);
+    height: 100dvh;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s ease,
+      visibility 0s 0.2s;
 
-    app-logo {
-      border-bottom: 0;
+    &.open {
+      transform: none;
+      visibility: visible;
+      transition: transform 0.2s ease;
     }
   }
 
-  .scroll {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding: 0.5rem;
+  .brand .close {
+    display: grid;
+  }
 
-    nav,
-    .group,
-    ul {
-      display: flex;
-      flex-direction: row;
+  .topbar {
+    padding: 0 1rem 0 0.5rem;
+
+    .menu {
+      display: grid;
+    }
+
+    .topbar-logo {
+      display: inline-flex;
     }
   }
 
-  .new-project {
-    margin: 0;
-    white-space: nowrap;
+  main {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .topbar {
+    gap: 0.25rem;
+
+    .topbar-logo {
+      --logo-name-display: none;
+    }
   }
 
-  .section,
-  .bottom {
+  .user {
+    margin-left: 0.25rem;
+    padding-left: 0.5rem;
+  }
+
+  .avatar {
     display: none;
   }
 
-  nav a {
-    white-space: nowrap;
-  }
+  .sign-out {
+    padding: 0.5rem;
 
-  main,
-  .topbar {
-    padding-inline: 1rem;
+    svg {
+      display: block;
+    }
+
+    .text {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
   }
 }

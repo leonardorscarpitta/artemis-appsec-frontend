@@ -19,6 +19,10 @@ import { Component } from '@angular/core';
       font-size: 1.05rem;
       letter-spacing: 0.01em;
     }
+
+    span {
+      display: var(--logo-name-display, inline);
+    }
   `,
 })
 export class Logo {}

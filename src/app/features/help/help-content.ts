@@ -30,6 +30,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Top bar: language selector (English or Portuguese), light/dark theme toggle and sign out. Language and theme are remembered in your browser.',
           ],
         },
+        { kind: 'p', text: 'Artemis adapts to your screen. On smaller laptop screens the sidebar shows icons only; hover over an icon to see its name. On tablets and phones the sidebar is hidden: open it with the menu button at the top left and close it with the X button, the Escape key or by tapping outside it.' },
       ],
     },
     {
@@ -202,6 +203,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Barra superior: seletor de idioma (inglês ou português), alternância entre tema claro e escuro e sair. Idioma e tema ficam salvos no seu navegador.',
           ],
         },
+        { kind: 'p', text: 'O Artemis se adapta à sua tela. Em notebooks com telas menores a barra lateral mostra apenas ícones; passe o mouse sobre um ícone para ver o nome. Em tablets e celulares a barra lateral fica oculta: abra-a pelo botão de menu no canto superior esquerdo e feche pelo botão X, pela tecla Esc ou tocando fora dela.' },
       ],
     },
     {
