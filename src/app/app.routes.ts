@@ -1,12 +1,5 @@
 import { Routes } from '@angular/router';
-import { TranslationKey } from './core/i18n';
 import { Shell } from './layout/shell';
-
-const comingSoon = (path: string, title: TranslationKey) => ({
-  path,
-  data: { title },
-  loadComponent: () => import('./shared/coming-soon').then((m) => m.ComingSoon),
-});
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', loadComponent: () => import('./features/home/home').then((m) => m.Home) },
@@ -57,10 +50,17 @@ export const routes: Routes = [
         path: 'reports/:id',
         loadComponent: () => import('./features/reports/report-view').then((m) => m.ReportView),
       },
-      comingSoon('integrations', 'nav.integrations'),
+      {
+        path: 'integrations',
+        loadComponent: () =>
+          import('./features/integrations/integrations').then((m) => m.Integrations),
+      },
       { path: 'policies', loadComponent: () => import('./features/policies/policies').then((m) => m.Policies) },
-      comingSoon('team', 'nav.team'),
-      comingSoon('settings', 'nav.settings'),
+      { path: 'team', loadComponent: () => import('./features/team/team').then((m) => m.Team) },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
+      },
       { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
     ],
   },

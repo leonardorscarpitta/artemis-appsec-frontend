@@ -4,10 +4,10 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 
 ## Structure
 
-- `src/app/core/i18n.ts` — translations (`en-US`, `pt-BR`); use `i18n.t('key')` in templates. Selected language is kept in `localStorage`.
+- `src/app/core/i18n.ts` — translations (grouped by `// --- area ---` comments) (`en-US`, `pt-BR`); use `i18n.t('key')` in templates. Selected language is kept in `localStorage`.
 - `src/app/core/theme.ts` — light/dark theme; sets `data-theme` on `<html>`, persisted in `localStorage`, defaults to the OS preference. An inline script in `index.html` applies it before boot to avoid a flash.
 - `src/app/core/pipeline.ts` — DevSecOps pipeline model: stages, phases, presets, fail thresholds and YAML generation (GitHub Actions / GitLab CI).
-- `src/app/core/mock-data.ts` — placeholder findings and repositories until the API exists.
+- `src/app/core/mock-*.ts` — mock data until the API exists: `mock-data.ts` (findings, repositories), `mock-runs.ts`, `mock-reports.ts`, `mock-policies.ts`, `mock-org.ts` (integrations, team, settings).
 - `src/app/layout/shell.ts` — authenticated layout. Sidebar navigation is defined in the `groups` array (Overview / Security / Configuration); counts come from mock data. Bottom area: scan usage meter, help link, organization switcher (visual only).
 - `src/app/shared/` — reusable components: logo, language switch, theme toggle, severity badge, `scan-settings` (schedule, automatic actions, Dockerfile, AI triage) and `pipeline-editor` (two-way bound with `[(stages)]`). The last two are used both in onboarding and in repository settings.
 - `src/app/features/` — pages: `login`, `dashboard`, `repositories`, `repo-settings`, `onboarding`.
@@ -22,7 +22,13 @@ Angular 22 app in `frontend/`, standalone components, signals, lazy-loaded route
 | `/repositories` | Connected repositories |
 | `/repositories/:name` | Repository settings (General / Pipeline tabs) |
 | `/help` | User guide (Help & documentation) |
-| `/vulnerabilities`, `/pipelines`, `/reports`, `/integrations`, `/policies`, `/team`, `/settings` | "Coming soon" placeholder (`shared/coming-soon.ts`, title via route `data`) |
+| `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (filters, sort) and finding detail |
+| `/pipelines`, `/pipelines/:id` | Pipeline runs and run detail (stages, logs) |
+| `/reports`, `/reports/:id` | Reports list and printable report view |
+| `/policies` | Organization-wide pipeline gates, SLAs, license policy, risk acceptances |
+| `/integrations` | Integrations and SSH deploy keys |
+| `/team` | Members, invitations, roles & permissions |
+| `/settings` | Organization settings (general, auth, notifications, API tokens, retention, danger zone) |
 | `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
 
 ## Styling
@@ -56,4 +62,4 @@ Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manu
 
 End-user docs live in-app at `/help`, with content in `src/app/features/help/help-content.ts` (`HELP['en-US']` and `HELP['pt-BR']`). Sections are lists of typed blocks (`p`, `ul`, `ol`, `note`, `table`).
 
-**Every feature must update this content in both languages in the same change.** Placeholder ("Coming soon") sections are not documented until implemented.
+**Every feature must update this content in both languages in the same change.**
