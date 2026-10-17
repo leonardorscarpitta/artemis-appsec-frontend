@@ -1,10 +1,43 @@
 <div class="field narrow">
-  <label for="interval">{{ i18n.t('ob.settings.interval') }} <app-unavailable [hint]="'unavailable.schedule'" /></label>
-  <select id="interval" class="input" disabled [title]="i18n.t('unavailable.schedule')" (change)="setSchedule($event)">
+  <label for="interval" class="schedule-label">
+    {{ i18n.t('ob.settings.interval') }}
+    @if (!scheduledScans()) {
+      <span class="lock">
+        <a class="tag" [routerLink]="'/billing' | orgLink" [title]="i18n.t('ob.settings.scheduleLockedHint')">
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="lock" /></svg>
+          {{ i18n.t('ob.settings.scheduleLocked') }}
+        </a>
+      </span>
+    }
+  </label>
+  <select
+    id="interval"
+    class="input"
+    [disabled]="!scheduledScans()"
+    aria-describedby="interval-hint"
+    (change)="setSchedule($event)"
+  >
     @for (opt of schedules; track opt.value) {
-      <option [value]="opt.value" [selected]="opt.value === settings().schedule">{{ i18n.t(opt.label) }}</option>
+      <option
+        [value]="opt.value"
+        [selected]="opt.value === settings().schedule"
+        [disabled]="opt.value === 'push' && settings().schedule !== 'push'"
+      >
+        {{ i18n.t(opt.label) }}@if (opt.value === 'push') { ({{ i18n.t('unavailable.tag') }})}
+      </option>
     }
   </select>
+  <span id="interval-hint" class="hint">
+    @if (!scheduledScans()) {
+      {{ i18n.t(timed() ? 'ob.settings.scheduleInactive' : 'ob.settings.scheduleLockedHint') }}
+    } @else if (settings().schedule === 'push') {
+      {{ i18n.t('unavailable.push') }}
+    } @else if (nextScan(); as next) {
+      {{ i18n.t('ob.settings.nextScan') }}: {{ next | date: 'yyyy-MM-dd HH:mm' }} · {{ i18n.t('ob.settings.scheduleQuota') }}
+    } @else if (timed()) {
+      {{ i18n.t('ob.settings.scheduleQuota') }}
+    }
+  </span>
 </div>
 
 <fieldset disabled>

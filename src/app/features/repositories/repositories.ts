@@ -13,6 +13,7 @@ import { NoRepositories } from '../../shared/no-repositories';
 import { RoleNotice } from '../../shared/role-notice';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
+  manual: 'ob.settings.interval.manual',
   push: 'ob.settings.interval.push',
   '6h': 'ob.settings.interval.6h',
   '24h': 'ob.settings.interval.24h',
