@@ -15,7 +15,7 @@
   @if (summary.value(); as s) {
     <dl class="stats">
       <div>
-        <dt>{{ i18n.t('home.ws.openFindings') }}</dt>
+        <dt>{{ i18n.t('home.ws.openShort') }}</dt>
         <dd>{{ s.openFindings }}</dd>
       </div>
       <div [class.alert]="s.criticalFindings > 0">
