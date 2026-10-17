@@ -10,11 +10,12 @@ import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
+import { Unavailable } from '../../shared/unavailable';
 import { OrgLink } from '../../shared/org-link';
 
 @Component({
   selector: 'app-reports',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories, Unavailable],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })

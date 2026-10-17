@@ -26,8 +26,8 @@
       <textarea id="deploy-public-key" class="input mono key" readonly rows="3" [value]="key.publicKey"></textarea>
       <div class="key-meta">
         <span class="mono">{{ key.fingerprint }}</span>
-        <span class="muted">· {{ i18n.t('access.created') }} {{ key.createdAt.slice(0, 10) }}</span>
-        <span class="muted">· {{ i18n.t('access.lastUsed') }} {{ key.lastUsedAt ? key.lastUsedAt.slice(0, 16).replace('T', ' ') : '—' }}</span>
+        <span class="muted">· {{ i18n.t('access.created') }} {{ key.createdAt | date: 'yyyy-MM-dd' }}</span>
+        <span class="muted">· {{ i18n.t('access.lastUsed') }} {{ (key.lastUsedAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</span>
       </div>
       <button type="button" class="btn copy" (click)="copy(key.publicKey)">
         {{ copied() ? i18n.t('access.copied') : i18n.t('access.copy') }}
@@ -73,7 +73,7 @@
       @if (c.message) {
         <span>{{ c.message }}</span>
       }
-      <span class="muted mono">{{ (c.finishedAt ?? c.requestedAt).slice(0, 16).replace('T', ' ') }}</span>
+      <span class="muted mono">{{ c.finishedAt ?? c.requestedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
     </div>
   }
 
