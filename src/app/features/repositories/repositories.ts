@@ -21,6 +21,7 @@ import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { RoleNotice } from '../../shared/role-notice';
 import { StackSourceIcon } from '../../shared/stack-source';
+import { Paginator, paginate } from '../../shared/paginator';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   manual: 'ob.settings.interval.manual',
@@ -32,7 +33,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories, StackSourceIcon],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories, StackSourceIcon, Paginator],
   template: `
     <header class="page-header">
       <div>
@@ -67,7 +68,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
           </tr>
         </thead>
         <tbody>
-          @for (repo of repositories.value(); track repo.id) {
+          @for (repo of repoPager.items(); track repo.id) {
             <tr>
               <td class="primary-cell">
                 <a class="repo-link" [routerLink]="['/repositories', repo.name] | orgLink" [queryParams]="{ tab: 'general' }"><strong>{{ repo.name }}</strong></a>
@@ -107,6 +108,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
           }
         </tbody>
       </table>
+      <app-paginator [pager]="repoPager" />
     </div>
     }
     }
@@ -129,7 +131,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
             </tr>
           </thead>
           <tbody>
-            @for (r of removed.value(); track r.id) {
+            @for (r of removedPager.items(); track r.id) {
               <tr>
                 <td class="primary-cell"><strong>{{ r.name }}</strong></td>
                 <td class="muted mono" [attr.data-label]="i18n.t('repo.removed.at')">{{ r.removedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
@@ -142,6 +144,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
             }
           </tbody>
         </table>
+        <app-paginator [pager]="removedPager" />
       </section>
     }
   `,
@@ -257,6 +260,8 @@ export class Repositories {
   protected readonly scheduleLabels = SCHEDULE_LABELS;
   private readonly api = inject(ProjectsApi);
   protected readonly removed = httpResource<RemovedRepository[]>(() => removedRepositoriesUrl());
+  protected readonly repoPager = paginate(() => this.repositories.value() ?? []);
+  protected readonly removedPager = paginate(() => this.removed.value() ?? []);
   protected readonly purging = signal(false);
   protected readonly purgeError = signal<string | null>(null);
 

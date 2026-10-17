@@ -133,7 +133,7 @@
         <tr>
           @if (selecting()) {
             <th scope="col" class="select-cell">
-              <input type="checkbox" [checked]="allSelected()" [indeterminate]="selected().length > 0 && !allSelected()" (change)="toggleAll()" [attr.aria-label]="i18n.t('vuln.bulk.all')" />
+              <input type="checkbox" [checked]="allSelected()" [indeterminate]="someSelected()" (change)="toggleAll()" [attr.aria-label]="i18n.t('vuln.bulk.all')" />
             </th>
           }
           <th scope="col">{{ i18n.t('col.finding') }}</th>
@@ -145,7 +145,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (f of rows(); track f.id) {
+        @for (f of pager.items(); track f.id) {
           <tr [class.selected]="selecting() && isSelected(f.id)">
             @if (selecting()) {
               <td class="select-cell">
@@ -170,6 +170,7 @@
         }
       </tbody>
     </table>
+    <app-paginator [pager]="pager" />
   } @else {
     <div class="empty">
       <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">

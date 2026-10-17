@@ -25,6 +25,7 @@ import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 import { RepoName } from '../../shared/repo-name';
+import { Paginator, paginate } from '../../shared/paginator';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
 
@@ -37,7 +38,7 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories, RepoName],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories, RepoName, Paginator],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })
@@ -96,6 +97,15 @@ export class Vulnerabilities {
     computation: (value, previous) => value ?? previous?.value ?? [],
   });
 
+  protected readonly pager = paginate(this.rows, () => [
+    this.searchTerm(),
+    this.kind(),
+    this.severity(),
+    this.status(),
+    this.repository(),
+    this.sort(),
+  ]);
+
   protected readonly hasFilters = computed(
     () => !!(this.query() || this.kind() || this.severity() || this.status() || this.repository()),
   );
@@ -105,7 +115,10 @@ export class Vulnerabilities {
   private readonly selectedIds = signal<ReadonlySet<string>>(new Set());
   /** Only rows still on screen count, so changing filters never acts on hidden findings. */
   protected readonly selected = computed(() => this.rows().filter((f) => this.selectedIds().has(f.id)));
-  protected readonly allSelected = computed(() => this.rows().length > 0 && this.selected().length === this.rows().length);
+  /** The header checkbox acts on the rows of the current page. */
+  private readonly pageSelected = computed(() => this.pager.items().filter((f) => this.selectedIds().has(f.id)).length);
+  protected readonly allSelected = computed(() => this.pager.items().length > 0 && this.pageSelected() === this.pager.items().length);
+  protected readonly someSelected = computed(() => this.pageSelected() > 0 && !this.allSelected());
   protected readonly actions = STATUS_ACTIONS;
   protected readonly accepting = signal(false);
   protected readonly saving = signal(false);
@@ -143,7 +156,15 @@ export class Vulnerabilities {
   }
 
   protected toggleAll(): void {
-    this.selectedIds.set(this.allSelected() ? new Set() : new Set(this.rows().map((f) => f.id)));
+    const all = this.allSelected();
+    this.selectedIds.update((ids) => {
+      const next = new Set(ids);
+      for (const f of this.pager.items()) {
+        if (all) next.delete(f.id);
+        else next.add(f.id);
+      }
+      return next;
+    });
   }
 
   /** How many selected findings can move to the status. */

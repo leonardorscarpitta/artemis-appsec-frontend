@@ -87,7 +87,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (report of reports.value(); track report.id) {
+      @for (report of pager.items(); track report.id) {
         <tr>
           <td class="primary-cell">
             @if (report.status === 'ready') {
@@ -110,6 +110,7 @@
       }
     </tbody>
   </table>
+  <app-paginator [pager]="pager" />
 </div>
 }
 }

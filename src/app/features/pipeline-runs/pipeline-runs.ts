@@ -20,12 +20,13 @@ import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 import { RepoName } from '../../shared/repo-name';
+import { Paginator, paginate } from '../../shared/paginator';
 
 const STATUSES: RunStatus[] = ['success', 'failed', 'running', 'queued', 'cancelled'];
 
 @Component({
   selector: 'app-pipeline-runs',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories, RepoName],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories, RepoName, Paginator],
   templateUrl: './pipeline-runs.html',
   styleUrl: './pipeline-runs.scss',
 })
@@ -48,6 +49,11 @@ export class PipelineRuns {
     url: runsUrl(),
     params: runFilterParams({ repository: this.repository(), status: this.status(), branch: this.branch() }),
   }));
+
+  protected readonly pager = paginate(
+    () => this.runs.value() ?? [],
+    () => [this.repository(), this.status(), this.branch()],
+  );
 
   private readonly live = computed(() => (this.runs.value() ?? []).some((r) => r.status === 'running' || r.status === 'queued'));
 

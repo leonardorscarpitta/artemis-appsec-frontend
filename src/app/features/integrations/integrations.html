@@ -157,7 +157,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (key of keys.value(); track key.id) {
+        @for (key of keyPager.items(); track key.id) {
           <tr>
             <td class="primary-cell"><strong>{{ key.name }}</strong></td>
             <td [attr.data-label]="i18n.t('int.keys.type')">
@@ -191,6 +191,7 @@
         }
       </tbody>
     </table>
+    <app-paginator [pager]="keyPager" />
   } @else {
     <p class="muted empty">{{ i18n.t('int.keys.empty') }}</p>
   }

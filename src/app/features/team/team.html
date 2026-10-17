@@ -63,7 +63,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (member of members.value(); track member.id) {
+      @for (member of memberPager.items(); track member.id) {
         <tr>
           <td class="primary-cell">
             <div class="person">
@@ -109,6 +109,7 @@
       }
     </tbody>
   </table>
+  <app-paginator [pager]="memberPager" />
 </section>
 
 <section class="card table-card" aria-labelledby="pending-title">
@@ -129,7 +130,7 @@
   }
   @if (invitations.value().length) {
     <ul class="invites">
-      @for (inv of invitations.value(); track inv.id) {
+      @for (inv of invitationPager.items(); track inv.id) {
         <li>
           <div class="who">
             <strong>{{ inv.email }}</strong>
@@ -153,6 +154,7 @@
         </li>
       }
     </ul>
+    <app-paginator [pager]="invitationPager" />
   } @else {
     <p class="muted empty">{{ i18n.t('team.noPending') }}</p>
   }

@@ -253,7 +253,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (t of tokens.value(); track t.id) {
+              @for (t of tokenPager.items(); track t.id) {
                 <tr>
                   <td class="primary-cell">
                     <strong>{{ t.name }}</strong>
@@ -290,6 +290,7 @@
               }
             </tbody>
           </table>
+          <app-paginator [pager]="tokenPager" />
         </div>
       } @else {
         <p class="muted">{{ i18n.t('settings.tokens.empty') }}</p>
