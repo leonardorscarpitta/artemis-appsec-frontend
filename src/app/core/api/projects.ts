@@ -21,7 +21,7 @@ export interface ProjectSummary {
   schedule: ScanSchedule;
   lastScanAt: string | null;
   openFindings?: number;
-  /** `ssh` = private repository cloned with an Artemis-generated deploy key. */
+  /** `ssh` = cloned with an Artemis-generated deploy key (every repository since SSH-only). */
   access: RepositoryAccessType;
   /** Result of the last access check (SSH only); `pending` until one succeeds. */
   accessStatus?: AccessStatus | null;

@@ -70,7 +70,8 @@ export class Team {
   }
 
   protected isSelf(member: Member): boolean {
-    return member.email.toLowerCase() === this.auth.profile()?.email?.toLowerCase();
+    // E-mails are hidden from roles without the team permission; those roles cannot edit anyone anyway.
+    return !!member.email && member.email.toLowerCase() === this.auth.profile()?.email?.toLowerCase();
   }
 
 

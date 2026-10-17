@@ -105,7 +105,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repository: enter the repository’s SSH URL (for example git@github.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Private repositories"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
+            'Repository: enter the repository’s SSH URL (for example git@github.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: select the technology used by the repository — React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. Automatic detection will be available soon.',
@@ -213,7 +213,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'General tab: monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
-            'Deploy Key tab: for private repositories, the deploy key, setup steps, server identity and access test (see "Private repositories").',
+            'Deploy Key tab: the repository’s deploy key, setup steps, server identity and access test (see "Repository access (deploy keys)").',
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
@@ -222,9 +222,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
     {
       id: 'private-repositories',
-      title: 'Private repositories',
+      title: 'Repository access (deploy keys)',
       blocks: [
-        { kind: 'p', text: 'To scan a private repository, add it with its SSH URL (for example git@github.com:acme/app.git). Artemis generates a read-only SSH deploy key just for that repository and opens its Deploy Key tab. The first scan waits until access works.' },
+        { kind: 'p', text: 'Every repository — public or private — needs a deploy key: Artemis only scans repositories you have granted read access to, which also proves the repository is yours. Add the repository with its SSH URL (for example git@github.com:acme/app.git); Artemis generates a read-only SSH deploy key just for it and opens its Deploy Key tab. The first scan waits until access works.' },
         {
           kind: 'ol',
           items: [
@@ -378,7 +378,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
-        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone private repositories, with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Deploy Key tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
+        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone your repositories (each repository has its own), with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Deploy Key tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
         { kind: 'note', text: 'Keys marked "Public key only" were added before Artemis generated keys. Artemis has no private key for them, so they are never used to clone; generate a key in the repository’s Deploy Key tab instead.' },
       ],
     },
@@ -568,7 +568,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repositório: informe a URL SSH do repositório (por exemplo git@github.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Repositórios privados"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
+            'Repositório: informe a URL SSH do repositório (por exemplo git@github.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: selecione a tecnologia usada pelo repositório — React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. A detecção automática estará disponível em breve.',
@@ -676,7 +676,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Aba Geral: pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
-            'Aba Acesso: para repositórios privados, a deploy key, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Repositórios privados").',
+            'Aba Deploy Key: a deploy key do repositório, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Acesso aos repositórios (deploy keys)").',
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
@@ -685,9 +685,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
     {
       id: 'private-repositories',
-      title: 'Repositórios privados',
+      title: 'Acesso aos repositórios (deploy keys)',
       blocks: [
-        { kind: 'p', text: 'Para analisar um repositório privado, adicione-o com a URL SSH (por exemplo git@github.com:acme/app.git). O Artemis gera uma deploy key SSH somente leitura só para esse repositório e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
+        { kind: 'p', text: 'Todo repositório — público ou privado — precisa de uma deploy key: o Artemis só analisa repositórios aos quais você deu acesso de leitura, o que também comprova que o repositório é seu. Adicione o repositório com a URL SSH (por exemplo git@github.com:acme/app.git); o Artemis gera uma deploy key SSH somente leitura só para ele e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
         {
           kind: 'ol',
           items: [
@@ -841,7 +841,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
-        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar repositórios privados, com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Deploy Key de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
+        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar seus repositórios (cada repositório tem a sua), com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Deploy Key de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
         { kind: 'note', text: 'Chaves marcadas como "Só chave pública" foram adicionadas antes de o Artemis gerar chaves. O Artemis não tem a chave privada delas, então nunca são usadas para clonar; gere uma chave na aba Deploy Key do repositório.' },
       ],
     },
