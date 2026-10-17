@@ -114,6 +114,17 @@
     <h2 id="pending-title">{{ i18n.t('team.pending') }}</h2>
     <span class="muted count">{{ invitations.value().length }}</span>
   </div>
+  @if (link(); as shared) {
+    <div class="share" role="status">
+      <strong>{{ i18n.t('team.linkTitle').replace('{email}', shared.email) }}</strong>
+      <div class="share-row">
+        <input class="input mono" readonly [value]="shared.url" [attr.aria-label]="i18n.t('team.linkTitle').replace('{email}', shared.email)" (focus)="$any($event.target).select()" />
+        <button type="button" class="btn primary" (click)="copyLink(shared.url)">{{ copied() ? i18n.t('team.linkCopied') : i18n.t('team.linkCopy') }}</button>
+        <button type="button" class="btn ghost" (click)="link.set(null)">{{ i18n.t('team.linkDone') }}</button>
+      </div>
+      <p class="muted">{{ i18n.t('team.linkNote') }}</p>
+    </div>
+  }
   @if (invitations.value().length) {
     <ul class="invites">
       @for (inv of invitations.value(); track inv.id) {
@@ -130,7 +141,7 @@
           @if (canManage()) {
           <div class="inv-actions">
             <button type="button" class="btn" (click)="resend(inv)" [attr.aria-label]="i18n.t('team.resend') + ': ' + inv.email">
-              {{ resent() === inv.id ? i18n.t('team.resent') : i18n.t('team.resend') }}
+              {{ i18n.t('team.resend') }}
             </button>
             <button type="button" class="btn ghost danger-text" (click)="revoke(inv)" [attr.aria-label]="i18n.t('team.revoke') + ': ' + inv.email">
               {{ i18n.t('team.revoke') }}

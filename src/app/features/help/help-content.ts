@@ -47,12 +47,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Your organizations: name, address, your role and plan. Select one to open its dashboard.',
-            'Pending invitations: invitations sent to your account’s e-mail address, with the role offered and the expiry date. Select "Accept" to join (you go to its dashboard) or "Decline" to discard it.',
+            'Invitation links: to join an organization, open the invitation link the person who invited you shared with you (sign in or create an account first if asked). The link adds you with the role it offers and takes you to that organization’s dashboard; it works once and expires after 7 days.',
             'Create organization: enter a name and, if you like, edit the URL name (3–40 lowercase letters, numbers and hyphens, used in every link, such as /acme/dashboard). You become the owner and the organization starts on the Free plan. Each person can own up to 5 organizations; some URL names are reserved.',
           ],
         },
         { kind: 'p', text: 'To switch organization at any time, select the organization at the bottom of the sidebar and pick another one, or "All organizations · create one".' },
-        { kind: 'note', text: 'Artemis does not send invitation e-mails yet. Ask the person who invited you to let you know, then sign in (or register) with the invited address — the invitation appears right away. Invitations expire after 7 days.' },
+        { kind: 'note', text: 'Artemis does not send invitation e-mails yet, so invitations travel as one-time links. Only someone with the link can use it — that is what keeps someone else from joining just by registering with the invited e-mail address. If a link was lost, used or expired, ask for a new one.' },
         { kind: 'p', text: 'To leave an organization, open Settings → Danger zone and select "Leave this organization". The owner cannot leave; they must transfer ownership first (Settings → Danger zone → “Transfer ownership”) or delete the organization.' },
       ],
     },
@@ -388,7 +388,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'The Team page lists every member of the organization with their role, last activity and status. Owners and admins change a member\'s role by picking a new one in the Role column. Nobody can change their own role, and the owner role is never assigned there: the owner selects "Make owner" next to an active member to transfer ownership, becoming an admin.' },
         { kind: 'p', text: 'Owners and admins can change a member’s role at any time with the role picker in the member list, or remove the member with “Remove”. Only the owner manages admins: admins can change and remove analysts, developers and viewers, but cannot promote anyone to admin, change another admin’s role or remove an admin. There is always exactly one owner; to hand the organization over, the owner uses Settings → Danger zone → “Transfer ownership” and becomes an admin. Nobody can change their own role or remove themselves (use “Leave organization” in Settings).' },
-        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. An address that already belongs to a member or has a pending invitation is rejected. The invited person sees the invitation on the Organizations page after signing in or registering with that e-mail address (Artemis does not send invitation e-mails yet). Invitations expire after 7 days; "Resend" renews them and "Revoke" cancels them.' },
+        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. An address that already belongs to a member or has a pending invitation is rejected. Artemis then shows a one-time invitation link — copy it and send it to the person yourself (Artemis does not e-mail invitations yet). The link is shown only once, works once and expires after 7 days; "New link" creates a fresh link (the old one stops working) and "Revoke" cancels the invitation.' },
         {
           kind: 'table',
           head: ['Role', 'Intended for'],
@@ -510,12 +510,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Suas organizações: nome, endereço, seu papel e o plano. Selecione uma para abrir o painel dela.',
-            'Convites pendentes: convites enviados ao e-mail da sua conta, com o papel oferecido e a data de expiração. Selecione "Aceitar" para entrar (você vai para o painel dela) ou "Recusar" para descartá-lo.',
+            'Links de convite: para entrar em uma organização, abra o link de convite que a pessoa que convidou você compartilhou (entre ou crie uma conta antes, se for pedido). O link adiciona você com o papel oferecido e leva ao painel da organização; ele funciona uma vez e expira em 7 dias.',
             'Criar organização: informe um nome e, se quiser, edite o nome na URL (3 a 40 letras minúsculas, números e hifens, usado em todos os links, como /acme/dashboard). Você será o proprietário e a organização começa no plano Free. Cada pessoa pode ser proprietária de até 5 organizações; alguns nomes de URL são reservados.',
           ],
         },
         { kind: 'p', text: 'Para trocar de organização a qualquer momento, selecione a organização no rodapé da barra lateral e escolha outra, ou "Todas as organizações · criar uma".' },
-        { kind: 'note', text: 'O Artemis ainda não envia e-mails de convite. Peça a quem convidou que avise você e então entre (ou cadastre-se) com o e-mail convidado — o convite aparece na hora. Convites expiram em 7 dias.' },
+        { kind: 'note', text: 'O Artemis ainda não envia convites por e-mail, então os convites são links de uso único. Só quem tem o link pode usá-lo — é isso que impede outra pessoa de entrar apenas se cadastrando com o e-mail convidado. Se o link foi perdido, usado ou expirou, peça um novo.' },
         { kind: 'p', text: 'Para sair de uma organização, abra Configurações → Zona de perigo e selecione "Sair desta organização". O proprietário não pode sair; antes ele precisa transferir a propriedade (Configurações → Zona de perigo → “Transferir propriedade”) ou excluir a organização.' },
       ],
     },
@@ -851,7 +851,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'A página Equipe lista todos os membros da organização com papel, última atividade e status. Proprietários e administradores mudam o papel de um membro escolhendo um novo na coluna Papel. Ninguém pode mudar o próprio papel, e o papel de proprietário nunca é atribuído ali: o proprietário seleciona "Tornar proprietário" ao lado de um membro ativo para transferir a propriedade, passando a ser administrador.' },
         { kind: 'p', text: 'Proprietários e administradores podem mudar o papel de um membro a qualquer momento pelo seletor de papel na lista de membros, ou remover o membro com “Remover”. Só o proprietário gerencia administradores: administradores podem mudar e remover analistas, desenvolvedores e leitores, mas não podem promover ninguém a administrador, mudar o papel de outro administrador nem remover um administrador. Sempre há exatamente um proprietário; para passar a organização adiante, o proprietário usa Configurações → Zona de perigo → “Transferir propriedade” e passa a ser administrador. Ninguém pode mudar o próprio papel nem se remover (use “Sair da organização” em Configurações).' },
-        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Um endereço que já pertence a um membro ou já tem convite pendente é recusado. A pessoa convidada vê o convite na página Organizações depois de entrar ou se cadastrar com esse e-mail (o Artemis ainda não envia e-mails de convite). Convites expiram em 7 dias; "Reenviar" renova o prazo e "Revogar" cancela o convite.' },
+        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Um endereço que já pertence a um membro ou já tem convite pendente é recusado. Em seguida o Artemis mostra um link de convite de uso único — copie-o e envie você mesmo para a pessoa (o Artemis ainda não envia convites por e-mail). O link só aparece uma vez, funciona uma vez e expira em 7 dias; "Novo link" gera um link novo (o antigo deixa de funcionar) e "Revogar" cancela o convite.' },
         {
           kind: 'table',
           head: ['Papel', 'Indicado para'],

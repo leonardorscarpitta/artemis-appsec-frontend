@@ -51,7 +51,8 @@ export class Team {
   protected readonly permissions = PERMISSIONS;
 
   protected readonly inviting = signal(false);
-  protected readonly resent = signal<string | null>(null);
+  protected readonly link = signal<{ email: string; url: string } | null>(null);
+  protected readonly copied = signal(false);
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly inviteError = signal<string | null>(null);
@@ -118,6 +119,7 @@ export class Team {
     this.api.invite(String(data.get('email') ?? '').trim(), data.get('role') as Role).subscribe({
       next: (invitation) => {
         this.invitations.update((list) => [invitation, ...list]);
+        this.share(invitation);
         form.reset();
         this.inviting.set(false);
         this.busy.set(false);
@@ -134,11 +136,20 @@ export class Team {
     this.api.resendInvitation(invitation.id).subscribe({
       next: (updated) => {
         this.invitations.update((list) => list.map((i) => (i.id === updated.id ? updated : i)));
-        this.resent.set(updated.id);
-        setTimeout(() => this.resent.set(null), 2500);
+        this.share(updated);
       },
       error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
     });
+  }
+
+  /** Shows the one-time link of a new or renewed invitation; it cannot be displayed again later. */
+  private share(invitation: Invitation): void {
+    this.copied.set(false);
+    this.link.set(invitation.token ? { email: invitation.email, url: `${location.origin}/invite/${invitation.token}` } : null);
+  }
+
+  protected copyLink(url: string): void {
+    void navigator.clipboard?.writeText(url).then(() => this.copied.set(true));
   }
 
   protected revoke(invitation: Invitation): void {

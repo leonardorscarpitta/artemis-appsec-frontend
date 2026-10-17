@@ -98,6 +98,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
 | `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/invite/:token` | Accepts a one-time invitation link (`POST /me/invitations/accept` `{token}`), then opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
 | `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Deploy Key tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
@@ -155,6 +156,10 @@ Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Aut
 - `OrgContext.current()` holds the role and permission list returned by the API (`viewFindings`, `triage`, `pipelines`, `integrations`, `team`, `billing`). Gate actions with `org.can('<permission>')`; the API enforces the same matrix.
 - When a permission is missing, don't hide the feature: disable the controls (wrap forms in `<fieldset class="contents" [disabled]>`), and show `<app-role-notice permission="…" />` or a `title` with `org.reason('<permission>')` ("Your role (Viewer) can't …").
 - The shell re-creates its `<router-outlet>` when the slug changes, so pages reload their data after switching organization from the sidebar.
+
+## Invitations
+
+Invitations are one-time links (Artemis sends no e-mails yet, and e-mail verification is off, so matching by e-mail would let anyone who registers the invited address join). `POST /invitations` and `…/{id}/resend` return a `token` once; the Team page shows `${origin}/invite/<token>` with a Copy button and never again. Resending replaces the token, so older links stop working.
 
 ## Talking to the API
 

@@ -30,6 +30,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth-callback/auth-callback').then((m) => m.AuthCallback),
   },
   {
+    path: 'invite/:token',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/invite/invite').then((m) => m.Invite),
+  },
+  {
     path: 'organizations',
     canActivate: [authGuard],
     loadComponent: () => import('./features/organizations/organizations').then((m) => m.Organizations),
