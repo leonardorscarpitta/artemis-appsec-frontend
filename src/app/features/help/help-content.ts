@@ -105,7 +105,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repository: enter the repository’s SSH URL (for example git@github.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
+            'Repository: enter the repository’s SSH URL (for example git@git.example.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: select the technology used by the repository — React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. Automatic detection will be available soon.',
@@ -180,7 +180,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key, after first checking that the key still has access — if it was removed, the run stops right away, the repository shows “Access failed” and scans stay locked until “Test access” succeeds again (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
+            'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key, after first checking that the key still has access — if it was removed, the run stops right away, the repository shows “Authentication error” and scans stay locked until “Test access” succeeds again (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
@@ -224,12 +224,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'private-repositories',
       title: 'Repository access (deploy keys)',
       blocks: [
-        { kind: 'p', text: 'Every repository — public or private — needs a deploy key: Artemis only scans repositories you have granted read access to, which also proves the repository is yours. Add the repository with its SSH URL (for example git@github.com:acme/app.git); Artemis generates a read-only SSH deploy key just for it and opens its Deploy Key tab. The first scan waits until access works.' },
+        { kind: 'p', text: 'Every repository — public or private — needs a deploy key: Artemis only scans repositories you have granted read access to, which also proves the repository is yours. Add the repository with its SSH URL (for example git@git.example.com:acme/app.git); Artemis generates a read-only SSH deploy key just for it and opens its Deploy Key tab. The first scan waits until access works.' },
         {
           kind: 'ol',
           items: [
             'Copy the public key shown in the Deploy Key tab.',
-            'Add it to the repository as a deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Leave write access off.',
+            'Add it to the repository as a deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys; any other Git server with deploy keys (Gitea, Forgejo, self-hosted GitLab…): the repository’s deploy key settings. Leave write access off.',
             'Select "Test access". Artemis checks that it can read the branch; the result appears in a few seconds.',
             'When access is OK, select "Run scan" to start the first scan.',
           ],
@@ -568,7 +568,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'Repositório: informe a URL SSH do repositório (por exemplo git@github.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
+            'Repositório: informe a URL SSH do repositório (por exemplo git@git.example.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: selecione a tecnologia usada pelo repositório — React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. A detecção automática estará disponível em breve.',
@@ -643,7 +643,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório, depois de verificar que a chave ainda tem acesso — se ela foi removida, a execução para na hora, o repositório aparece como “Falha no acesso” e as análises ficam bloqueadas até o “Testar acesso” funcionar de novo (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
+            'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório, depois de verificar que a chave ainda tem acesso — se ela foi removida, a execução para na hora, o repositório aparece como “Erro de autenticação” e as análises ficam bloqueadas até o “Testar acesso” funcionar de novo (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
@@ -687,12 +687,12 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'private-repositories',
       title: 'Acesso aos repositórios (deploy keys)',
       blocks: [
-        { kind: 'p', text: 'Todo repositório — público ou privado — precisa de uma deploy key: o Artemis só analisa repositórios aos quais você deu acesso de leitura, o que também comprova que o repositório é seu. Adicione o repositório com a URL SSH (por exemplo git@github.com:acme/app.git); o Artemis gera uma deploy key SSH somente leitura só para ele e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
+        { kind: 'p', text: 'Todo repositório — público ou privado — precisa de uma deploy key: o Artemis só analisa repositórios aos quais você deu acesso de leitura, o que também comprova que o repositório é seu. Adicione o repositório com a URL SSH (por exemplo git@git.example.com:acme/app.git); o Artemis gera uma deploy key SSH somente leitura só para ele e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
         {
           kind: 'ol',
           items: [
             'Copie a chave pública exibida na aba Deploy Key.',
-            'Adicione-a ao repositório como deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys. Deixe o acesso de escrita desativado.',
+            'Adicione-a ao repositório como deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys; qualquer outro servidor Git com deploy keys (Gitea, Forgejo, GitLab próprio…): as configurações de deploy keys do repositório. Deixe o acesso de escrita desativado.',
             'Selecione "Testar acesso". O Artemis confere se consegue ler a branch; o resultado aparece em alguns segundos.',
             'Com o acesso OK, selecione "Executar análise" para iniciar a primeira análise.',
           ],
