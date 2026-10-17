@@ -2,6 +2,21 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+
+  // Chart fills: severity hues re-stepped so adjacent stacked marks stay distinct (checked for color blindness).
+  --chart-critical: #a01c16;
+  --chart-high: #cf5f1a;
+  --chart-medium: #d2b030;
+  --chart-low: #2e8b57;
+  --chart-neutral: #8a94a3;
+}
+
+:host-context([data-theme='dark']) {
+  --chart-critical: #e55d7e;
+  --chart-high: #ad4a00;
+  --chart-medium: #ab940f;
+  --chart-low: #0c8a5e;
+  --chart-neutral: #6b7889;
 }
 
 .page-header {
@@ -47,11 +62,82 @@
   }
 }
 
-.grid {
+.trends {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.trend-grid,
+.current-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   align-items: start;
+}
+
+.trend-grid {
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity 0.15s ease;
+  }
+
+  &.refreshing {
+    opacity: 0.55;
+  }
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+
+  &.wide {
+    grid-column: 1 / -1;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.chart-empty {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin: 0;
+
+  dt {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
 }
 
 .breakdown {
@@ -81,6 +167,16 @@
     height: 100%;
   }
 
+  .name {
+    color: var(--text);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+  }
+
   .count {
     text-align: right;
     font-weight: 600;
@@ -105,6 +201,13 @@
 
 .card-header {
   flex-wrap: wrap;
+}
+
+@media (max-width: 1199px) {
+  .trend-grid,
+  .current-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 899px) {

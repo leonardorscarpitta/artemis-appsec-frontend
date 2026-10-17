@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, WritableSignal, computed, effect, inject, linkedSignal, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   FINDING_KINDS,
   FindingKind,
@@ -56,11 +56,14 @@ export class Vulnerabilities {
   protected readonly findingRoute = findingRoute;
   protected readonly kinds = FINDING_KINDS;
 
+  // Initial filters may come from links (e.g. the dashboard charts): ?kind=&severity=&status=&repository=
+  private readonly linked = inject(ActivatedRoute).snapshot.queryParamMap;
+
   protected readonly query = signal('');
-  protected readonly kind = signal<FindingKind | ''>('');
-  protected readonly severity = signal<Severity | ''>('');
-  protected readonly status = signal<FindingStatus | ''>('');
-  protected readonly repository = signal('');
+  protected readonly kind = signal<FindingKind | ''>(this.allowed(this.linked.get('kind'), this.kinds));
+  protected readonly severity = signal<Severity | ''>(this.allowed(this.linked.get('severity'), this.severities));
+  protected readonly status = signal<FindingStatus | ''>(this.allowed(this.linked.get('status'), this.statuses));
+  protected readonly repository = signal(this.linked.get('repository') ?? '');
   protected readonly sort = signal<Sort>('cvssDesc');
 
   // Only sent to the API once typing pauses.
@@ -97,6 +100,10 @@ export class Vulnerabilities {
       const timer = setTimeout(() => this.searchTerm.set(term.trim()), 300);
       onCleanup(() => clearTimeout(timer));
     });
+  }
+
+  private allowed<T extends string>(value: string | null, options: readonly T[]): T | '' {
+    return options.includes(value as T) ? (value as T) : '';
   }
 
   protected severityLabel(severity: Severity): string {

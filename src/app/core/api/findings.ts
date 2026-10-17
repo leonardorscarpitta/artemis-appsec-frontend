@@ -84,6 +84,9 @@ export interface DashboardSummary {
   recent: FindingSummary[];
   /** Open findings past their remediation SLA. */
   overdueFindings: number;
+  byKind: { kind: FindingKind; count: number }[];
+  /** Top 5 repositories by open findings. */
+  topRepositories: { repository: string; total: number; critical: number; high: number; medium: number; low: number }[];
 }
 
 export const findingsUrl = () => apiUrl('/findings');
