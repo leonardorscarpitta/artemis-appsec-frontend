@@ -5,7 +5,7 @@ import { TranslationKey } from '../i18n';
 import { apiUrl } from './api';
 
 export type PlanId = 'free' | 'pro';
-export type Feature = 'aiTriage';
+export type Feature = 'aiTriage' | 'scheduledScans' | 'organizationRename';
 
 export interface Plan {
   id: PlanId;
