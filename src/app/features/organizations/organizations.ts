@@ -17,6 +17,7 @@ const CREATE_ERRORS: Record<string, TranslationKey> = {
   'slug-taken': 'orgs.error.slugTaken',
   'slug-reserved': 'orgs.error.slugReserved',
   'organization-limit': 'orgs.error.limit',
+  'free-organization-limit': 'orgs.error.freeLimit',
 };
 
 /** Organization picker: the user's organizations, invitations addressed to them, and creating a new one. */

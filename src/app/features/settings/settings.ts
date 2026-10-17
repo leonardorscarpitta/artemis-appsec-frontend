@@ -255,7 +255,11 @@ export class Settings {
       },
       error: (err) => {
         this.transferring.set(false);
-        this.transferError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+        this.transferError.set(
+          problemCode(err) === 'free-organization-limit'
+            ? this.i18n.t('settings.transferFreeLimit')
+            : (problemMessage(err) ?? this.i18n.t('api.saveError')),
+        );
       },
     });
   }
