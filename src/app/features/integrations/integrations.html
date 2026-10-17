@@ -91,6 +91,42 @@
         </li>
       }
     </ul>
+    @if (group.category === 'vulnData') {
+      @let s = sources();
+      <div class="card table-card sources" aria-labelledby="sources-title">
+        <div class="card-header">
+          <div>
+            <h3 id="sources-title">{{ s.title }}</h3>
+            <p class="muted sub">{{ s.intro }}</p>
+          </div>
+        </div>
+        <table class="table stack">
+          <thead>
+            <tr>
+              <th scope="col">{{ s.cols.source }}</th>
+              <th scope="col">{{ s.cols.provides }}</th>
+              <th scope="col">{{ s.cols.usedBy }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (src of s.sources; track src.name) {
+              <tr>
+                <td class="primary-cell">
+                  @if (src.url.startsWith('/')) {
+                    <a [routerLink]="src.url">{{ src.name }}</a>
+                  } @else {
+                    <a [href]="src.url" target="_blank" rel="noopener noreferrer">{{ src.name }}</a>
+                  }
+                </td>
+                <td [attr.data-label]="s.cols.provides">{{ src.provides }}</td>
+                <td class="muted" [attr.data-label]="s.cols.usedBy">{{ src.usedBy }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <p class="muted privacy">{{ s.privacy }}</p>
+      </div>
+    }
   </section>
   }
 }

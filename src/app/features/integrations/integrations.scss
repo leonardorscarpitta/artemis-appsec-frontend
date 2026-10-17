@@ -219,3 +219,27 @@
 .integration.unavailable h3 {
   opacity: 0.65;
 }
+
+.sources {
+  margin-top: 1rem;
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  td {
+    font-size: 0.85rem;
+    vertical-align: top;
+  }
+
+  .primary-cell a {
+    font-weight: 600;
+  }
+
+  .privacy {
+    margin: 0;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+}

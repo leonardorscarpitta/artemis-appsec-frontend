@@ -20,6 +20,7 @@ import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
 import { Unavailable } from '../../shared/unavailable';
 import { OrgLink } from '../../shared/org-link';
+import { VULN_DATA_SOURCES } from './vuln-data-sources';
 
 const CATEGORIES: IntegrationCategory[] = ['scm', 'ci', 'notifications', 'issues', 'vulnData'];
 
@@ -37,6 +38,8 @@ export class Integrations {
 
   protected readonly integrations = httpResource<Integration[]>(() => integrationsUrl(), { defaultValue: [] });
   protected readonly keys = httpResource<DeployKey[]>(() => deployKeysUrl(), { defaultValue: [] });
+
+  protected readonly sources = computed(() => VULN_DATA_SOURCES[this.i18n.lang()]);
 
   protected readonly editing = signal<IntegrationId | null>(null);
   protected readonly busy = signal(false);
