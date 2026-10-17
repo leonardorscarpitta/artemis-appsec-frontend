@@ -109,7 +109,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/policies` | Pipeline gates (minimum thresholds + required stages, enforced by `shared/pipeline-editor.ts` via `GET /policies`), remediation SLAs (findings carry `dueAt`/`overdue`), license policy, risk acceptances (create by finding reference or CVE; accepting from a finding asks for justification + expiry) |
 | `/team` | Members, invitations and the organization's roles-and-permissions matrix — editable by owners and admins (`GET /roles` → `editable` per role, `PUT /roles/{role}/permissions`; locked cells: owner column, `viewFindings`, `billing`, admin column for admins); after saving, `OrgContext.load(true)` refreshes `can()` |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
-| `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
+| `/billing` | Plans (Free: 25 scans/month; PRO: R$ 24,99/month, 300 scans/month + organization rename + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
 | `/help` | In-app user guide |
 
 ## Styling
@@ -157,6 +157,8 @@ Sign-in uses Keycloak as the OpenID Connect provider with the Artemis login them
 - `OrgContext.current()` holds the role and permission list returned by the API (`viewFindings`, `triage`, `pipelines`, `integrations`, `team`, `billing`). Gate actions with `org.can('<permission>')`; the API enforces the same matrix.
 - When a permission is missing, don't hide the feature: disable the controls (wrap forms in `<fieldset class="contents" [disabled]>`), and show `<app-role-notice permission="…" />` or a `title` with `org.reason('<permission>')` ("Your role (Viewer) can't …").
 - The shell re-creates its `<router-outlet>` when the slug changes, so pages reload their data after switching organization from the sidebar.
+- The slug is always derived from the organization name by the API (`core/org/slug.ts` mirrors it for the preview); there is no slug field to edit. Renaming (Settings → General) needs the PRO entitlement `organizationRename` (`403 plan-required` otherwise; the name field is locked on Free) and moves the page to the new `/<slug>/settings` via `OrgContext.rename()`.
+- Runs that end before any stage runs give their monthly scan back; the run detail shows a note when `quotaRefunded` is true.
 
 ## Invitations
 

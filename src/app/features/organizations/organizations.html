@@ -111,20 +111,9 @@
       </div>
       <div class="field">
         <label for="org-slug">{{ i18n.t('orgs.slug') }}</label>
-        <div class="slug">
-          <span class="mono muted" aria-hidden="true">artemisappsec.papopromines.com.br/</span>
-          <input
-            id="org-slug"
-            class="input mono"
-            required
-            minlength="3"
-            maxlength="40"
-            pattern="[a-z0-9](?:[a-z0-9\-]{1,38}[a-z0-9])"
-            aria-describedby="org-slug-hint"
-            [value]="slug()"
-            (input)="setSlug($any($event.target).value)"
-          />
-        </div>
+        <p class="slug">
+          <span class="mono muted domain" aria-hidden="true">artemisappsec.papopromines.com.br/</span><output id="org-slug" class="mono" aria-describedby="org-slug-hint">{{ slug() || '…' }}</output>
+        </p>
         <small id="org-slug-hint" class="muted">{{ i18n.t('orgs.slugHint') }}</small>
       </div>
       @if (createError(); as message) {

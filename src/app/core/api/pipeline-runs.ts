@@ -25,6 +25,8 @@ export interface RunView {
   failedByPolicy: boolean;
   /** Monorepo folders this run scans; empty for the whole repository. */
   folders: string[];
+  /** The run ended before scanning anything, so it did not use a monthly scan. */
+  quotaRefunded: boolean;
 }
 
 export interface StageRunView {

@@ -48,7 +48,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Your organizations: name, address, your role and plan. Select one to open its dashboard.',
             'Invitation links: to join an organization, open the invitation link the person who invited you shared with you (sign in or create an account first if asked). The link adds you with the role it offers and takes you to that organization’s dashboard; it works once and expires after 7 days.',
-            'Create organization: enter a name and, if you like, edit the URL name (3–40 lowercase letters, numbers and hyphens, used in every link, such as /acme/dashboard). You become the owner and the organization starts on the Free plan. Each person can own up to 5 organizations; some URL names are reserved.',
+            'Create organization: enter a name; the URL name is generated from it (lowercase, accents removed, spaces and symbols become hyphens — “Acme Corp” becomes /acme-corp — used in every link, such as /acme-corp/dashboard) and cannot be edited. The name needs at least 3 letters or numbers, and some URL names are reserved or already taken. You become the owner and the organization starts on the Free plan, where the name cannot be changed later. Each person can own up to 5 organizations.',
           ],
         },
         { kind: 'p', text: 'To switch organization at any time, select the organization at the bottom of the sidebar and pick another one, or "All organizations · create one".' },
@@ -197,7 +197,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['License', 'Trivy', 'Package and the license that conflicts with your policy.'],
           ],
         },
-        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against your plan’s monthly limit.' },
+        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against your plan’s monthly limit, unless it ends before any stage runs (for example the access check or the clone fails, or it is cancelled while queued): then the run page says it did not count and the scan is given back.' },
         { kind: 'note', text: 'Scans run entirely on Artemis’s own infrastructure with open-source tools (see Third-party notices). Your code is never sent to third-party scanning services.' },
       ],
     },
@@ -424,7 +424,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'General: organization name, URL slug, default language and time zone. Each member can still choose their own language in the top bar.',
+            'General: organization name, default language and time zone. The URL is always generated from the name and shown read-only. Renaming the organization is a PRO plan feature (on the Free plan the name is locked); renaming also changes the URL, so the page moves to the new address and old links stop working. Each member can still choose their own language in the top bar.',
             '(Not available yet) Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
             '(Not available yet) Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
             '(Not available yet) API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
@@ -446,11 +446,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'table',
           head: ['Plan', 'Price', 'Includes'],
           rows: [
-            ['Free', 'R$ 0', '90 scans per month. Scanning (secrets, SAST, dependencies, containers), DevSecOps pipeline and policies, dashboard, findings, reports, team, integrations and API tokens.'],
-            ['PRO', 'R$ 24,99 per month', '300 scans per month. Everything in Free plus AI triage of findings and AI-generated triage reports.'],
+            ['Free', 'R$ 0', '25 scans per month. Scanning (secrets, SAST, dependencies, containers), DevSecOps pipeline and policies, dashboard, findings, reports, team, integrations and API tokens.'],
+            ['PRO', 'R$ 24,99 per month', '300 scans per month. Everything in Free plus renaming the organization, AI triage of findings and AI-generated triage reports.'],
           ],
         },
-        { kind: 'p', text: 'Each pipeline run counts as one scan. The usage for the current month (UTC) appears at the bottom of the sidebar and on the Billing page; when the limit is reached, new runs (such as re-runs) are refused until the next month. Plans are also shown in the Pricing section of the home page.' },
+        { kind: 'p', text: 'Each pipeline run counts as one scan; runs that end before any stage runs (access check or clone failed, cancelled while queued, runner stopped) do not count. The usage for the current month (UTC) appears at the bottom of the sidebar and on the Billing page; when the limit is reached, new runs (such as re-runs) are refused until the next month. Plans are also shown in the Pricing section of the home page.' },
         { kind: 'note', text: 'Billing is not enabled yet: every organization is on the Free plan and the upgrade button is locked. Nothing is ever charged without your explicit agreement.' },
       ],
     },
@@ -511,7 +511,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Suas organizações: nome, endereço, seu papel e o plano. Selecione uma para abrir o painel dela.',
             'Links de convite: para entrar em uma organização, abra o link de convite que a pessoa que convidou você compartilhou (entre ou crie uma conta antes, se for pedido). O link adiciona você com o papel oferecido e leva ao painel da organização; ele funciona uma vez e expira em 7 dias.',
-            'Criar organização: informe um nome e, se quiser, edite o nome na URL (3 a 40 letras minúsculas, números e hifens, usado em todos os links, como /acme/dashboard). Você será o proprietário e a organização começa no plano Free. Cada pessoa pode ser proprietária de até 5 organizações; alguns nomes de URL são reservados.',
+            'Criar organização: informe um nome; o nome na URL é gerado a partir dele (minúsculas, sem acentos, espaços e símbolos viram hífens — “Acme Corp” vira /acme-corp — usado em todos os links, como /acme-corp/dashboard) e não pode ser editado. O nome precisa ter pelo menos 3 letras ou números, e alguns nomes de URL são reservados ou já estão em uso. Você será o proprietário e a organização começa no plano Free, no qual o nome não pode ser alterado depois. Cada pessoa pode ser proprietária de até 5 organizações.',
           ],
         },
         { kind: 'p', text: 'Para trocar de organização a qualquer momento, selecione a organização no rodapé da barra lateral e escolha outra, ou "Todas as organizações · criar uma".' },
@@ -660,7 +660,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Licença', 'Trivy', 'Pacote e a licença que conflita com a sua política.'],
           ],
         },
-        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal do seu plano.' },
+        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal do seu plano, a menos que termine antes de qualquer etapa rodar (por exemplo, se a verificação de acesso ou o clone falhar, ou se for cancelada ainda na fila): nesse caso a página da execução informa que ela não contou e a análise é devolvida.' },
         { kind: 'note', text: 'As análises rodam inteiramente na infraestrutura do Artemis com ferramentas de código aberto (veja Avisos de terceiros). Seu código nunca é enviado a serviços de análise de terceiros.' },
       ],
     },
@@ -887,7 +887,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Geral: nome da organização, identificador na URL, idioma padrão e fuso horário. Cada membro ainda pode escolher o próprio idioma na barra superior.',
+            'Geral: nome da organização, idioma padrão e fuso horário. A URL é sempre gerada a partir do nome e aparece somente para leitura. Renomear a organização é um recurso do plano PRO (no plano Free o nome fica bloqueado); renomear também muda a URL, então a página vai para o novo endereço e links antigos deixam de funcionar. Cada membro ainda pode escolher o próprio idioma na barra superior.',
             '(Ainda não disponível) Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
             '(Ainda não disponível) Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
             '(Ainda não disponível) Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
@@ -909,11 +909,11 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'table',
           head: ['Plano', 'Preço', 'Inclui'],
           rows: [
-            ['Free', 'R$ 0', '90 análises por mês. Varreduras (segredos, SAST, dependências, contêineres), pipeline DevSecOps e políticas, painel, achados, relatórios, equipe, integrações e tokens de API.'],
-            ['PRO', 'R$ 24,99 por mês', '300 análises por mês. Tudo do Free mais triagem de achados com IA e relatórios de triagem gerados por IA.'],
+            ['Free', 'R$ 0', '25 análises por mês. Varreduras (segredos, SAST, dependências, contêineres), pipeline DevSecOps e políticas, painel, achados, relatórios, equipe, integrações e tokens de API.'],
+            ['PRO', 'R$ 24,99 por mês', '300 análises por mês. Tudo do Free mais renomear a organização, triagem de achados com IA e relatórios de triagem gerados por IA.'],
           ],
         },
-        { kind: 'p', text: 'Cada execução de pipeline conta como uma análise. O uso do mês atual (UTC) aparece no rodapé da barra lateral e na página de Assinatura; ao atingir o limite, novas execuções (como reexecuções) são recusadas até o mês seguinte. Os planos também aparecem na seção Preços da página inicial.' },
+        { kind: 'p', text: 'Cada execução de pipeline conta como uma análise; execuções que terminam antes de qualquer etapa rodar (verificação de acesso ou clone com falha, cancelada na fila, runner interrompido) não contam. O uso do mês atual (UTC) aparece no rodapé da barra lateral e na página de Assinatura; ao atingir o limite, novas execuções (como reexecuções) são recusadas até o mês seguinte. Os planos também aparecem na seção Preços da página inicial.' },
         { kind: 'note', text: 'A cobrança ainda não está habilitada: todas as organizações estão no plano Free e o botão de assinatura está bloqueado. Nada é cobrado sem a sua concordância expressa.' },
       ],
     },

@@ -194,8 +194,9 @@ export class OrganizationApi {
     return this.http.delete<void>(apiUrl('/organization'));
   }
 
-  createOrganization(name: string, slug: string): Observable<OrganizationSummary> {
-    return this.http.post<OrganizationSummary>(apiUrl('/organizations'), { name, slug });
+  /** The slug is derived from the name by the API. */
+  createOrganization(name: string): Observable<OrganizationSummary> {
+    return this.http.post<OrganizationSummary>(apiUrl('/organizations'), { name });
   }
 
   /** Joins the organization of an invitation link; the token works once. */

@@ -31,6 +31,9 @@
   @if (error()) {
     <p class="notice error" role="alert">{{ error() }}</p>
   }
+  @if (run.quotaRefunded) {
+    <p class="notice muted">{{ i18n.t('runs.quotaRefunded') }}</p>
+  }
 
   <section class="card" [attr.aria-label]="i18n.t('runs.details')">
     <dl class="meta">

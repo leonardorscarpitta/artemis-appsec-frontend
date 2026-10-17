@@ -35,19 +35,29 @@
       <div class="grid-2">
         <div class="field">
           <label for="org-name">{{ i18n.t('settings.orgName') }}</label>
-          <input id="org-name" class="input" required maxlength="120" [value]="f.general.name" (input)="patchGeneral({ name: value($event) })" />
+          <input
+            id="org-name"
+            class="input"
+            required
+            maxlength="120"
+            [readOnly]="!canRename()"
+            [attr.aria-describedby]="canRename() ? null : 'rename-lock'"
+            [value]="f.general.name"
+            (input)="patchGeneral({ name: value($event) })"
+          />
+          @if (!canRename()) {
+            <span id="rename-lock" class="plan-lock">
+              <span class="tag">
+                <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" /></svg>
+                {{ i18n.t('nav.plan.pro') }}
+              </span>
+              <span class="hint">{{ i18n.t('settings.renamePro') }}</span>
+            </span>
+          }
         </div>
         <div class="field">
           <label for="org-slug">{{ i18n.t('settings.slug') }}</label>
-          <input
-            id="org-slug"
-            class="input mono"
-            required
-            maxlength="40"
-            aria-describedby="slug-hint"
-            [value]="f.general.slug"
-            (input)="patchGeneral({ slug: value($event) })"
-          />
+          <output id="org-slug" class="input mono readonly" aria-describedby="slug-hint">/{{ slugPreview() }}</output>
           <span id="slug-hint" class="hint">{{ i18n.t('settings.slugHint') }}</span>
         </div>
         <div class="field">
