@@ -76,7 +76,14 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
                 @if (repo.folders.length) {
                   <span class="tag" [title]="folderSummary(repo.folders)">{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
                 } @else {
-                  <span class="tag">{{ repo.stack }}</span>
+                  @if (repo.stackSource === 'pending') {
+                    <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
+                  } @else {
+                    <span class="tag">{{ repo.stack }}</span>
+                    @if (repo.stackSource === 'detected') {
+                      <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
+                    }
+                  }
                 }
               </td>
               <td [attr.data-label]="i18n.t('col.schedule')">{{ i18n.t(scheduleLabels[repo.schedule]) }}</td>
@@ -125,6 +132,12 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     .tag.bad {
       color: var(--sev-critical);
       background: var(--sev-critical-bg);
+    }
+
+    .tag.pending,
+    .tag.auto {
+      color: var(--primary);
+      background: var(--primary-soft);
     }
 
     .tag.ok {

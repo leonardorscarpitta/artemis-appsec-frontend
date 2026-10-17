@@ -71,6 +71,13 @@
           }
         </ul>
       } @else {
+        <label class="stack-option auto" [class.detected]="stack() === 'auto'">
+          <input type="radio" name="stack" [checked]="stack() === 'auto'" (change)="stack.set('auto')" />
+          <span>
+            <strong>{{ i18n.t('ob.detect.auto') }}</strong>
+            <span class="muted">{{ i18n.t('ob.detect.autoDesc') }}</span>
+          </span>
+        </label>
         <fieldset>
           <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
           <div class="stacks">
@@ -81,9 +88,6 @@
               </label>
             }
           </div>
-          @if (showErrors() && !stack()) {
-            <span class="error-text" role="alert">{{ i18n.t('ob.detect.required') }}</span>
-          }
         </fieldset>
       }
       @if (submitError(); as error) {

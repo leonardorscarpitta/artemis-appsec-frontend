@@ -189,3 +189,14 @@ hr {
   background: var(--sev-medium);
   vertical-align: middle;
 }
+
+.tag.pending,
+.tag.auto {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.stack-field {
+  max-width: 360px;
+  margin-bottom: 1.25rem;
+}
