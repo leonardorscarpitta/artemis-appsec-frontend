@@ -46,11 +46,25 @@ Everything runs in Docker — nothing needs to be installed on your machine besi
 docker compose up -d
 ```
 
-The app is served at http://localhost:4200 with live reload. The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080, Keycloak at https://auth.artemisappsec.localhost:9443 and Mailpit at http://localhost:8025 for verification e-mails); see the backend README. Development logins are in the backend's `keycloak/secrets/dev-credentials.txt`, or register a new account from the home page. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Keycloak. A development build check:
+The app is served at http://localhost:4200 with live reload (published on `127.0.0.1` only; dependencies are installed with `npm ci` from the lockfile on start). The dev container is limited to 1 GB of RAM (`mem_limit`, Node heap 768 MB). It expects the backend stack running (API at http://localhost:8080, Keycloak at https://auth.artemisappsec.localhost:9443 and Mailpit at http://localhost:8025 for verification e-mails); see the backend README. Development logins are in the backend's `keycloak/secrets/dev-credentials.txt`, or register a new account from the home page. The first time, open https://auth.artemisappsec.localhost:9443 and accept the local certificate (or trust Caddy's root CA), otherwise sign-in cannot reach Keycloak. A development build check:
 
 ```sh
 docker compose exec frontend npx ng build --configuration development
 ```
+
+### Production image
+
+`Dockerfile` builds the production bundle and serves it with `nginx-unprivileged` (non-root, port 8080, `nginx/default.conf`): SPA fallback to `index.html`, hashed assets cached as immutable, `index.html` revalidated. Every response carries the headers in `nginx/security-headers.conf`:
+
+- `Content-Security-Policy`: `default-src 'self'`; scripts from the app only plus the sha256 of each inline `<script>` in the built `index.html` (the theme bootstrap) — computed during `docker build`, so changing that script needs no manual update; `connect-src`/`form-action` allow the identity provider; `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`. Styles need `'unsafe-inline'` (Angular component styles); critical-CSS inlining is turned off in the production build because its `onload` handler would be blocked.
+- `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, geolocation off) and `Strict-Transport-Security` (effective once the TLS proxy in front serves HTTPS).
+
+```sh
+docker build -t artemisappsec-web .
+docker run --rm -p 127.0.0.1:8081:8080 artemisappsec-web   # then: curl -sI http://127.0.0.1:8081/
+```
+
+The production build calls the API at `/api/v1` on the same origin, so the reverse proxy in front must route `/api/` to the backend. If the identity provider moves, update `connect-src`/`form-action` in `nginx/security-headers.conf` and `environment.ts`.
 
 ## Project structure
 
@@ -83,16 +97,17 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
-| `/organizations` | Organization picker: the user's organizations, invitations to their verified e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/invite/:token` | Accepts a one-time invitation link (`POST /me/invitations/accept` `{token}`), then opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
-| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline tabs) |
+| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Deploy Key tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
 | `/pipelines`, `/pipelines/:id` | Pipeline runs and run detail (stages, logs) |
 | `/reports`, `/reports/:id` | Reports list and printable report view |
-| `/onboarding` | 5-step flow: SSH key → repository → settings → pipeline → stack detection |
-| `/integrations` | Integrations and SSH deploy keys |
-| `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
-| `/team` | Members, invitations, roles and permissions, ownership transfer |
+| `/onboarding` | 4-step flow: repository (SSH URL, branch, monorepo folders) → settings → pipeline → stack (“Detect automatically” by default = `stack: null`; the API detects it on the first successful access check); then the repository's Deploy Key tab. The General tab shows the stack with “Auto-detected” / “Detecting stack…” and lets the user change it (`settings.stack`, stored as a manual choice) |
+| `/integrations` | Integrations and the list of SSH deploy keys (generated per repository; revoke only — no pasting) |
+| `/policies` | Pipeline gates (minimum thresholds + required stages, enforced by `shared/pipeline-editor.ts` via `GET /policies`), remediation SLAs (findings carry `dueAt`/`overdue`), license policy, risk acceptances (create by finding reference or CVE; accepting from a finding asks for justification + expiry) |
+| `/team` | Members, invitations and the organization's roles-and-permissions matrix — editable by owners and admins (`GET /roles` → `editable` per role, `PUT /roles/{role}/permissions`; locked cells: owner column, `viewFindings`, `billing`, admin column for admins); after saving, `OrgContext.load(true)` refreshes `can()` |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
 | `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
 | `/help` | In-app user guide |
@@ -104,7 +119,7 @@ Enterprise-style light and dark themes. Design tokens are CSS variables in `src/
 - **Brand:** `--primary`, `--primary-soft`, `--primary-contrast`
 - **Sidebar:** `--nav-bg`, `--nav-text`, `--nav-hover`
 - **Severity:** `--sev-{critical,high,medium,low}` (text) and `--sev-*-bg` (tag background)
-- **Fonts:** IBM Plex Sans / IBM Plex Mono
+- **Fonts:** IBM Plex Sans / IBM Plex Mono, self-hosted from the `@fontsource` packages (latin + latin-ext, listed in `angular.json` styles) — the browser never contacts Google or any CDN
 - **Scrollbars:** `--scrollbar-thumb`, `--scrollbar-thumb-hover`, `--scrollbar-track` (thin, rounded; standard `scrollbar-color` with a WebKit fallback; the sidebar overrides them for its dark background)
 
 Global primitives: `.card` (`.card-header`, `.table-card`), `.btn` (`.primary`, `.ghost`), `.input`, `.field`, `.tag`, `.segmented`, `.switch`, `.table` (`.num`, and `.stack` with `data-label` for stacked rows on phones).
@@ -120,7 +135,7 @@ Stages are grouped in three phases. Each stage has a tool (from the self-hosted 
 | Phase | Stage → tools |
 | --- | --- |
 | Source | Secret scanning → Gitleaks · SAST → Semgrep CE (Artemis rules) · SCA → Trivy / Grype · License → Trivy |
-| Build | Dockerfile audit → Hadolint / Trivy · Container image scan → Trivy (**not available yet**) · SBOM → Syft |
+| Build | Dockerfile audit → Hadolint / Trivy · Container image scan → Trivy (published image from the repository's `containerImage` setting; pulled, never built) · SBOM → Syft |
 | Pre-deploy | Infrastructure as code → Trivy · DAST → OWASP ZAP (**not available yet**) |
 
 The catalog comes from the API (`GET /pipeline/stages`, field `available`); `core/pipeline.ts` holds the same defaults as a fallback. Unavailable stages are shown locked in the pipeline editor and are never enabled by presets. Presets (`Essential`, `Recommended`, `Complete`) toggle stages in bulk; any manual change shows as `Custom`. Stage descriptions and "why it matters" texts live in `i18n.ts` under `stage.<id>.*`. The "Pipeline as code" YAML is a preview for running the same runner in your own CI.
@@ -128,12 +143,12 @@ The catalog comes from the API (`GET /pipeline/stages`, field `available`); `cor
 ### Scans
 
 - `shared/run-scan-button.ts` calls `POST /repositories/{name}/scans` and opens the new run; a 409 (monthly limit) is shown inline. It is used on the Repositories list and repository settings.
-- Onboarding accepts public `https://` URLs (scanned now) and SSH URLs (accepted, scanned once private-repository support lands).
+- Onboarding accepts **SSH URLs only** (public repositories too — the deploy key proves the user controls the repository). The API generates a read-only ed25519 deploy key and does not queue a scan; Run scan stays disabled until access is verified; `features/repo-settings/repo-access.ts` (Deploy Key tab) shows the public key with per-provider steps (GitHub / GitLab / Bitbucket / other), the server host key (pinned or recorded on first use), **Test access** (`POST /repositories/{name}/access/checks`, polls `GET …/access` every 2 s while queued/running) and **Rotate key** (`POST …/access/key`). `ProjectSummary.access` (`public`/`ssh`) and `accessStatus` (`pending`/`verified`/`failed`) drive the list tags. The private key is never sent to the browser.
 - Findings have a `kind` (`vulnerability`, `secret`, `code`, `config`, `license`). Only vulnerabilities carry CVE/CVSS/package; the others carry `ruleId` and `location`. Detail URLs are `/<org>/vulnerabilities/<CVE>` (all occurrences of a CVE) or `/<org>/vulnerabilities/<finding id>` for other kinds.
 
 ## Authentication
 
-Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Authorization Code + PKCE, public client `artemisappsec-web`). `Auth.register()` opens Keycloak's sign-up form (`prompt=create`; e-mail verification and Terms acceptance happen there). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only. On a 401 the local session is cleared and the user signs in again. The user badge (`shared/user-badge.ts`) links to the Keycloak account console (`<authority>/account`). "Sign out" is RP-initiated logout (`signoutRedirect`, back to `/`), ending the Keycloak session too.
+Sign-in uses Keycloak as the OpenID Connect provider with the Artemis login theme (backend `keycloak/themes/artemis`): `/login` forwards straight to it (the page stays only as a fallback when the identity provider is unreachable) and passes `ui_locales` with the app language. Realm `artemisappsec`, Authorization Code + PKCE, public client `artemisappsec-web`). `Auth.register()` opens Keycloak's sign-up form (`prompt=create`; Terms acceptance happens there; e-mail verification is off). Every route under the app shell is protected by `authGuard`; the access token is kept in `localStorage` (shared by all tabs, so the public home page can show the signed-in user) and sent as a Bearer token to the API only — `apiPath()` (`core/api/api.ts`) matches the API by parsed origin and whole path prefix before any interceptor adds the token or headers. The stored session is removed as soon as the access token expires, on a 401 and before the sign-out redirect, so no stale access or refresh token stays in the browser; the scope never includes `offline_access`. The user badge (`shared/user-badge.ts`) links to the Keycloak account console (`<authority>/account`). "Sign out" is RP-initiated logout (`signoutRedirect`, back to `/`), ending the Keycloak session too.
 
 ## Organizations and permissions
 
@@ -141,6 +156,10 @@ Sign-in uses Keycloak as the OpenID Connect provider (realm `artemisappsec`, Aut
 - `OrgContext.current()` holds the role and permission list returned by the API (`viewFindings`, `triage`, `pipelines`, `integrations`, `team`, `billing`). Gate actions with `org.can('<permission>')`; the API enforces the same matrix.
 - When a permission is missing, don't hide the feature: disable the controls (wrap forms in `<fieldset class="contents" [disabled]>`), and show `<app-role-notice permission="…" />` or a `title` with `org.reason('<permission>')` ("Your role (Viewer) can't …").
 - The shell re-creates its `<router-outlet>` when the slug changes, so pages reload their data after switching organization from the sidebar.
+
+## Invitations
+
+Invitations are one-time links (Artemis sends no e-mails yet, and e-mail verification is off, so matching by e-mail would let anyone who registers the invited address join). `POST /invitations` and `…/{id}/resend` return a `token` once; the Team page shows `${origin}/invite/<token>` with a Copy button and never again. Resending replaces the token, so older links stop working.
 
 ## Talking to the API
 

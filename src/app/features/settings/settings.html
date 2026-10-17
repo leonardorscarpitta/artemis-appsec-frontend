@@ -73,6 +73,8 @@
     }
 
     @case ('auth') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.authentication') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.auth.desc') }}</p>
       <div class="grid-2">
         <div class="field">
@@ -130,9 +132,12 @@
           (click)="patchAuth({ enforceSso: !f.authentication.enforceSso })"
         ></button>
       </div>
+      </fieldset>
     }
 
     @case ('notifications') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.notifications') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.notif.desc') }}</p>
       <div class="table-wrap">
         <table class="table notif">
@@ -163,14 +168,14 @@
           </tbody>
         </table>
       </div>
+      </fieldset>
     }
 
     @case ('tokens') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.apiTokens') }}</p>
       <div class="section-head">
         <p class="muted">{{ i18n.t('settings.tokens.desc') }}</p>
-        @if (!creatingToken() && !newToken() && canManageTokens()) {
-          <button type="button" class="btn primary" (click)="creatingToken.set(true)">{{ i18n.t('settings.tokens.create') }}</button>
-        }
+        <button type="button" class="btn primary" disabled [title]="i18n.t('unavailable.apiTokens')">{{ i18n.t('settings.tokens.create') }}</button>
       </div>
 
       @if (tokenError(); as message) {
@@ -282,6 +287,8 @@
     }
 
     @case ('retention') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.retention') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.retention.desc') }}</p>
       <div class="grid-3">
         @for (item of retention; track item.key) {
@@ -295,10 +302,38 @@
           </div>
         }
       </div>
+      </fieldset>
     }
 
     @case ('danger') {
       <p class="muted">{{ i18n.t('settings.danger.desc') }}</p>
+      @if (isOwner()) {
+        <div class="danger-box">
+          <div>
+            <h2>{{ i18n.t('settings.transfer.title') }}</h2>
+            <p class="muted">{{ i18n.t('settings.transfer.desc') }}</p>
+          </div>
+          @if (candidates().length) {
+            <div class="field">
+              <label for="new-owner">{{ i18n.t('settings.transfer.label') }}</label>
+              <select id="new-owner" class="input" [value]="newOwner()" (change)="newOwner.set($any($event.target).value)">
+                <option value="">{{ i18n.t('settings.transfer.pick') }}</option>
+                @for (m of candidates(); track m.id) {
+                  <option [value]="m.id">{{ m.name }} · {{ m.email }}</option>
+                }
+              </select>
+            </div>
+            <button type="button" class="btn danger" [disabled]="!newOwner() || transferring()" (click)="transferOwnership()">
+              {{ i18n.t('settings.transfer.button') }}
+            </button>
+          } @else {
+            <p class="muted">{{ i18n.t('settings.transfer.none') }}</p>
+          }
+          @if (transferError(); as message) {
+            <p class="error" role="alert">{{ message }}</p>
+          }
+        </div>
+      }
       @if (!isOwner()) {
         <div class="danger-box">
           <div>

@@ -646,3 +646,48 @@ h3 {
     color: var(--text-muted);
   }
 }
+
+.about {
+  border-top: 1px solid var(--border);
+
+  > summary {
+    padding: 1.25rem 0;
+    list-style: none;
+    background: var(--surface);
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover strong {
+      color: var(--primary);
+    }
+  }
+
+  &[open] .about-toggle {
+    transform: rotate(180deg);
+  }
+}
+
+.about-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  > span:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .muted {
+    font-size: 0.875rem;
+  }
+}
+
+.about-toggle {
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}

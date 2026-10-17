@@ -41,6 +41,10 @@ export interface FindingSummary {
   tool: string;
   detectedAt: string;
   statusChangedAt: string;
+  /** Remediation deadline from the organization's SLA for this severity (null without an SLA). */
+  dueAt: string | null;
+  /** Still open or triaged after its due date. */
+  overdue: boolean;
 }
 
 export interface FindingEvent {
@@ -78,6 +82,8 @@ export interface DashboardSummary {
   repositories: number;
   bySeverity: { severity: Severity; count: number }[];
   recent: FindingSummary[];
+  /** Open findings past their remediation SLA. */
+  overdueFindings: number;
 }
 
 export const findingsUrl = () => apiUrl('/findings');
@@ -116,7 +122,13 @@ export function findingRoute(f: Pick<FindingSummary, 'cve' | 'id'>): string {
 export class FindingsApi {
   private readonly http = inject(HttpClient);
 
-  changeStatus(id: string, status: FindingStatus, note?: string): Observable<FindingDetails> {
-    return this.http.post<FindingDetails>(`${findingUrl(id)}/status`, { status, note: note ?? null });
+  /** Every finding of the organization as CSV (same filters as the list). */
+  exportCsv(filters: Record<string, string> = {}): Observable<Blob> {
+    return this.http.get(`${findingsUrl()}/export`, { params: filters, responseType: 'blob' });
+  }
+
+  /** Accepting a risk needs a justification (note, 10+ characters) and an expiry date (yyyy-MM-dd). */
+  changeStatus(id: string, status: FindingStatus, note?: string, expiresAt?: string): Observable<FindingDetails> {
+    return this.http.post<FindingDetails>(`${findingUrl(id)}/status`, { status, note: note ?? null, expiresAt: expiresAt ?? null });
   }
 }

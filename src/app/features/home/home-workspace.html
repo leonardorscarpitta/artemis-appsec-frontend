@@ -19,8 +19,8 @@
       @if (orgs.length) {
         <ul class="orgs">
           @for (o of orgs; track o.slug) {
-            <li>
-              <a class="card org" [routerLink]="['/', o.slug, 'dashboard']">
+            <li class="card org">
+              <a class="org-main" [routerLink]="['/', o.slug, 'dashboard']">
                 <span class="org-avatar" aria-hidden="true">{{ o.name.slice(0, 2).toUpperCase() }}</span>
                 <span class="org-text">
                   <strong>{{ o.name }}</strong>
@@ -31,8 +31,23 @@
                   <span class="tag">{{ planLabel(o.plan) }}</span>
                 </span>
               </a>
+              <nav class="org-links" [attr.aria-label]="o.name">
+                <a [routerLink]="['/', o.slug, 'dashboard']">{{ i18n.t('nav.dashboard') }}</a>
+                <a [routerLink]="['/', o.slug, 'vulnerabilities']">{{ i18n.t('nav.vulnerabilities') }}</a>
+                <a [routerLink]="['/', o.slug, 'repositories']">{{ i18n.t('nav.repositories') }}</a>
+                <a [routerLink]="['/', o.slug, 'pipelines']">{{ i18n.t('nav.pipelines') }}</a>
+              </nav>
             </li>
           }
+          <li>
+            <a class="card create" routerLink="/organizations">
+              <span class="plus" aria-hidden="true">+</span>
+              <span>
+                <strong>{{ i18n.t('orgs.create') }}</strong>
+                <span class="muted">{{ i18n.t('home.ws.createDesc') }}</span>
+              </span>
+            </a>
+          </li>
         </ul>
       } @else {
         <div class="card empty">

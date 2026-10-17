@@ -23,6 +23,8 @@ export interface RunView {
   newFindings: number;
   totalFindings: number;
   failedByPolicy: boolean;
+  /** Monorepo folders this run scans; empty for the whole repository. */
+  folders: string[];
 }
 
 export interface StageRunView {

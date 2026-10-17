@@ -1,6 +1,7 @@
-import { Service, computed, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 import { User, UserManager, WebStorageStateStore } from 'oidc-client-ts';
 import { environment } from '../../../environments/environment';
+import { I18n } from '../i18n';
 
 interface LoginState {
   returnUrl: string | null;
@@ -16,6 +17,7 @@ export interface Profile {
 /** OpenID Connect session with Keycloak (Authorization Code + PKCE; tokens in localStorage so every tab shares the session). */
 @Service()
 export class Auth {
+  private readonly i18n = inject(I18n);
   private readonly manager = new UserManager({
     authority: environment.auth.authority,
     client_id: environment.auth.clientId,
@@ -56,13 +58,18 @@ export class Auth {
   });
 
   constructor() {
-    this.manager.events.addAccessTokenExpired(() => this.user.set(null));
+    // Expired sessions are removed from storage too, so no stale access or refresh token is left behind.
+    this.manager.events.addAccessTokenExpired(() => void this.clearSession());
   }
 
   /** Restores a session saved in this browser tab. */
   async init(): Promise<void> {
     const user = await this.manager.getUser();
-    this.user.set(user && !user.expired ? user : null);
+    if (user?.expired) {
+      await this.clearSession();
+      return;
+    }
+    this.user.set(user);
   }
 
   accessToken(): string | null {
@@ -70,12 +77,21 @@ export class Auth {
   }
 
   login(returnUrl: string | null = null): Promise<void> {
-    return this.manager.signinRedirect({ state: { returnUrl } satisfies LoginState });
+    return this.manager.signinRedirect({ state: { returnUrl } satisfies LoginState, extraQueryParams: this.uiLocales() });
+  }
+
+  /** The sign-in pages (Artemis Keycloak theme) open in the language selected in the app. */
+  private uiLocales(): Record<string, string> {
+    return { ui_locales: this.i18n.lang() === 'pt-BR' ? 'pt-BR' : 'en' };
   }
 
   /** Opens the identity provider's sign-up form; the new user returns signed in. */
   register(returnUrl: string | null = null): Promise<void> {
-    return this.manager.signinRedirect({ prompt: 'create', state: { returnUrl } satisfies LoginState });
+    return this.manager.signinRedirect({
+      prompt: 'create',
+      state: { returnUrl } satisfies LoginState,
+      extraQueryParams: this.uiLocales(),
+    });
   }
 
   /** Completes the redirect from the identity provider and returns where the user was heading, if anywhere. */
@@ -87,11 +103,13 @@ export class Auth {
 
   /** Signs out of Artemis and of the identity provider, which then returns to the home page. */
   async logout(): Promise<void> {
+    const idToken = this.user()?.id_token;
+    // Local tokens go first: the redirect leaves the app and must not leave a usable session behind.
+    await this.clearSession();
     try {
-      await this.manager.signoutRedirect();
+      await this.manager.signoutRedirect({ id_token_hint: idToken });
     } catch (error) {
       console.error('Could not reach the identity provider to sign out', error);
-      await this.clearSession();
     }
   }
 

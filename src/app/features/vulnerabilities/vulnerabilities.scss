@@ -98,3 +98,16 @@
 .where {
   overflow-wrap: anywhere;
 }
+
+.due {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+
+  &.overdue {
+    font-weight: 600;
+    color: var(--sev-critical);
+  }
+}

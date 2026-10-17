@@ -1,0 +1,105 @@
+@if (repository().access !== 'ssh') {
+  <div class="public">
+    <h2>{{ i18n.t('access.publicTitle') }}</h2>
+    <p class="muted">{{ i18n.t('access.publicDesc') }}</p>
+  </div>
+} @else if (access.value(); as a) {
+  <div class="status-row">
+    <h2>{{ i18n.t('access.title') }}</h2>
+    @switch (repository().accessStatus) {
+      @case ('verified') {
+        <span class="badge ok">{{ i18n.t('access.status.verified') }}</span>
+      }
+      @case ('failed') {
+        <span class="badge failed">{{ i18n.t('access.status.failed') }}</span>
+      }
+      @default {
+        <span class="badge pending">{{ i18n.t('access.status.pending') }}</span>
+      }
+    }
+  </div>
+  <p class="muted">{{ i18n.t('access.desc') }}</p>
+
+  @if (a.deployKey; as key) {
+    <div class="field">
+      <label for="deploy-public-key">{{ i18n.t('access.publicKey') }}</label>
+      <textarea id="deploy-public-key" class="input mono key" readonly rows="3" [value]="key.publicKey"></textarea>
+      <div class="key-meta">
+        <span class="mono">{{ key.fingerprint }}</span>
+        <span class="muted">· {{ i18n.t('access.created') }} {{ key.createdAt | date: 'yyyy-MM-dd' }}</span>
+        <span class="muted">· {{ i18n.t('access.lastUsed') }} {{ (key.lastUsedAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</span>
+      </div>
+      <button type="button" class="btn copy" (click)="copy(key.publicKey)">
+        {{ copied() ? i18n.t('access.copied') : i18n.t('access.copy') }}
+      </button>
+    </div>
+
+    <h3>{{ i18n.t('access.howTo') }}</h3>
+    <ol class="steps">
+      @for (step of steps(); track step) {
+        <li>{{ i18n.t(step) }}</li>
+      }
+    </ol>
+    <p class="info-notice" role="note">{{ i18n.t('access.readOnly') }}</p>
+  } @else {
+    <p class="info-notice" role="note">{{ i18n.t('access.noKey') }}</p>
+  }
+
+  <h3>{{ i18n.t('access.hostKey') }}</h3>
+  @if (a.hostKeyPinned) {
+    <p>{{ i18n.t('access.hostPinned').replace('{host}', a.host ?? '') }}</p>
+  } @else if (a.hostKeyFingerprint) {
+    <p>
+      {{ i18n.t('access.hostRecorded').replace('{host}', a.host ?? '') }}
+      <span class="mono">{{ a.hostKeyFingerprint }}</span>
+    </p>
+  } @else {
+    <p class="muted">{{ i18n.t('access.hostUnknown').replace('{host}', a.host ?? '') }}</p>
+  }
+
+  @if (check(); as c) {
+    <div class="check" [class.ok]="c.status === 'ok'" [class.failed]="c.status === 'failed'" aria-live="polite">
+      @switch (c.status) {
+        @case ('ok') {
+          <strong>{{ i18n.t('access.check.ok') }}</strong>
+        }
+        @case ('failed') {
+          <strong>{{ i18n.t('access.check.failed') }}</strong>
+        }
+        @default {
+          <strong>{{ i18n.t('access.check.running') }}</strong>
+        }
+      }
+      @if (c.message) {
+        <span>{{ c.message }}</span>
+      }
+      <span class="muted mono">{{ c.finishedAt ?? c.requestedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+    </div>
+  }
+
+  <div class="actions">
+    @if (org.can('pipelines')) {
+      <button type="button" class="btn primary" [disabled]="busy() || checking() || !a.deployKey" (click)="testAccess()">
+        {{ checking() ? i18n.t('access.testing') : i18n.t('access.test') }}
+      </button>
+    }
+    @if (org.can('integrations')) {
+      <button type="button" class="btn" [disabled]="busy() || checking()" (click)="rotate()">
+        {{ a.deployKey ? i18n.t('access.rotate') : i18n.t('access.generate') }}
+      </button>
+    }
+    @if (check()?.status === 'ok' && !repository().lastScanAt) {
+      <app-run-scan-button [repository]="repository().name" [primary]="true" />
+    }
+  </div>
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+  <app-role-notice permission="pipelines" />
+  <app-role-notice permission="integrations" />
+} @else if (access.error()) {
+  <p class="error" role="alert">{{ i18n.t('api.errorDesc') }}</p>
+  <button type="button" class="btn" (click)="access.reload()">{{ i18n.t('api.retry') }}</button>
+} @else {
+  <p class="muted">{{ i18n.t('api.loading') }}</p>
+}

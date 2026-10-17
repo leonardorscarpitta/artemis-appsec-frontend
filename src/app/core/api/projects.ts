@@ -15,10 +15,49 @@ export interface ProjectSummary {
   name: string;
   url: string;
   branch: string;
-  stack: Stack;
+  /** Null while automatic detection has not run yet (`stackSource: 'pending'`). */
+  stack: Stack | null;
+  /** `detected` = set from the repository files; `manual` = chosen by a user (never overridden). */
+  stackSource: StackSource;
+  /** Monorepo folders scanned on their own stack; empty scans the whole repository. */
+  folders: ProjectFolder[];
   schedule: ScanSchedule;
   lastScanAt: string | null;
   openFindings?: number;
+  /** `ssh` = cloned with an Artemis-generated deploy key (every repository since SSH-only). */
+  access: RepositoryAccessType;
+  /** Result of the last access check (SSH only); `pending` until one succeeds. */
+  accessStatus?: AccessStatus | null;
+}
+
+export type RepositoryAccessType = 'public' | 'ssh';
+export type StackSource = 'pending' | 'detected' | 'manual';
+export type AccessStatus = 'pending' | 'verified' | 'failed';
+export type AccessCheckStatus = 'queued' | 'running' | 'ok' | 'failed';
+
+export interface ManagedDeployKey {
+  id: string;
+  publicKey: string;
+  fingerprint: string;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface AccessCheck {
+  id: string;
+  status: AccessCheckStatus;
+  message: string | null;
+  requestedAt: string;
+  finishedAt: string | null;
+}
+
+export interface RepositoryAccess {
+  type: RepositoryAccessType;
+  deployKey?: ManagedDeployKey | null;
+  host?: string;
+  hostKeyFingerprint?: string | null;
+  hostKeyPinned?: boolean;
+  lastCheck?: AccessCheck | null;
 }
 
 export interface ProjectSettings {
@@ -26,6 +65,17 @@ export interface ProjectSettings {
   automaticActions: AutomaticAction[];
   dockerfileMode: DockerfileMode;
   customDockerfile: string | null;
+  folders: ProjectFolder[];
+  /** Published image scanned by the image stage, e.g. ghcr.io/acme/app:1.4; null skips that stage. */
+  containerImage: string | null;
+  /** Stack of a non-monorepo repository; changing it makes it a manual choice. */
+  stack?: Stack | null;
+}
+
+/** `stack` is null only while the user has not picked one in the form. */
+export interface ProjectFolder {
+  path: string;
+  stack: Stack | null;
 }
 
 export interface ProjectDetails {
@@ -37,7 +87,8 @@ export interface ProjectDetails {
 export interface CreateProject {
   url: string;
   branch: string;
-  stack: Stack;
+  /** Null = detect automatically after the first successful access check. */
+  stack: Stack | null;
   settings: ProjectSettings;
   pipeline: StageUpdate[];
 }
@@ -49,10 +100,13 @@ export const DEFAULT_SETTINGS: ProjectSettings = {
   automaticActions: ['issue', 'email'],
   dockerfileMode: 'recommended',
   customDockerfile: null,
+  folders: [],
+  containerImage: null,
 };
 
 export const repositoriesUrl = () => apiUrl('/repositories');
 export const repositoryUrl = (name: string) => apiUrl(`/repositories/${encodeURIComponent(name)}`);
+export const repositoryAccessUrl = (name: string) => `${repositoryUrl(name)}/access`;
 export const stageCatalogUrl = () => apiUrl('/pipeline/stages');
 
 @Service()
@@ -68,8 +122,21 @@ export class ProjectsApi {
   }
 
   /** Queues a scan of the repository's default branch; 409 when the monthly scan limit is reached. */
-  runScan(name: string): Observable<RunDetails> {
-    return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, null);
+  runScan(name: string, folders?: string[]): Observable<RunDetails> {
+    return this.http.post<RunDetails>(`${repositoryUrl(name)}/scans`, folders ? { folders } : null);
+  }
+
+  rotateKey(name: string): Observable<RepositoryAccess> {
+    return this.http.post<RepositoryAccess>(`${repositoryUrl(name)}/access/key`, null);
+  }
+
+  checkAccess(name: string): Observable<RepositoryAccess> {
+    return this.http.post<RepositoryAccess>(`${repositoryUrl(name)}/access/checks`, null);
+  }
+
+  /** Removes the repository with its findings, runs and reports. */
+  remove(name: string): Observable<void> {
+    return this.http.delete<void>(repositoryUrl(name));
   }
 
   updatePipeline(name: string, stages: PipelineStage[]): Observable<ProjectDetails> {

@@ -9,14 +9,20 @@
       class="btn primary"
       aria-controls="new-report"
       [attr.aria-expanded]="formOpen()"
-      [disabled]="!org.can('triage')"
-      [title]="org.can('triage') ? '' : org.reason('triage')"
+      disabled
+      [title]="i18n.t('unavailable.reports')"
       (click)="toggleForm()"
     >
       {{ i18n.t('reports.generate') }}
     </button>
   </div>
 </header>
+
+@if (orgSummary.noRepositories()) {
+<app-no-repositories />
+} @else {
+
+<p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.reports') }}</p>
 
 @if (formOpen()) {
   <form id="new-report" class="card form" (submit)="$event.preventDefault(); generate()">
@@ -105,4 +111,5 @@
     </tbody>
   </table>
 </div>
+}
 }

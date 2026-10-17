@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   RunStatus,
@@ -16,17 +16,20 @@ import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 
 const STATUSES: RunStatus[] = ['success', 'failed', 'running', 'queued', 'cancelled'];
 
 @Component({
   selector: 'app-pipeline-runs',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories],
   templateUrl: './pipeline-runs.html',
   styleUrl: './pipeline-runs.scss',
 })
 export class PipelineRuns {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
 
   protected readonly statuses = STATUSES;
@@ -44,6 +47,20 @@ export class PipelineRuns {
     url: runsUrl(),
     params: runFilterParams({ repository: this.repository(), status: this.status(), branch: this.branch() }),
   }));
+
+  private readonly live = computed(() => (this.runs.value() ?? []).some((r) => r.status === 'running' || r.status === 'queued'));
+
+  constructor() {
+    // Keeps statuses current while any listed run is still in progress.
+    effect((onCleanup) => {
+      if (!this.live()) return;
+      const timer = setInterval(() => {
+        this.runs.reload();
+        this.summary.reload();
+      }, 4000);
+      onCleanup(() => clearInterval(timer));
+    });
+  }
 
   protected readonly hasFilters = computed(() => !!(this.repository() || this.status() || this.branch()));
 

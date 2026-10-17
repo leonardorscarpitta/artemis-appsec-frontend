@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { AutomaticAction, DockerfileMode, ProjectSettings, ScanSchedule } from '../core/api/projects';
 import { I18n, TranslationKey } from '../core/i18n';
 import { OrgLink } from './org-link';
+import { Unavailable } from './unavailable';
 
 @Component({
   selector: 'app-scan-settings',
-  imports: [RouterLink, OrgLink],
+  imports: [RouterLink, OrgLink, Unavailable],
   templateUrl: './scan-settings.html',
   styleUrl: './scan-settings.scss',
 })
@@ -42,6 +43,11 @@ export class ScanSettings {
 
   protected setCustomDockerfile(event: Event): void {
     this.patch({ customDockerfile: (event.target as HTMLTextAreaElement).value });
+  }
+
+  protected setContainerImage(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim();
+    this.patch({ containerImage: value || null });
   }
 
   private patch(change: Partial<ProjectSettings>): void {

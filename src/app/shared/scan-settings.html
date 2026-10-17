@@ -1,14 +1,14 @@
 <div class="field narrow">
-  <label for="interval">{{ i18n.t('ob.settings.interval') }}</label>
-  <select id="interval" class="input" (change)="setSchedule($event)">
+  <label for="interval">{{ i18n.t('ob.settings.interval') }} <app-unavailable [hint]="'unavailable.schedule'" /></label>
+  <select id="interval" class="input" disabled [title]="i18n.t('unavailable.schedule')" (change)="setSchedule($event)">
     @for (opt of schedules; track opt.value) {
       <option [value]="opt.value" [selected]="opt.value === settings().schedule">{{ i18n.t(opt.label) }}</option>
     }
   </select>
 </div>
 
-<fieldset>
-  <legend>{{ i18n.t('ob.settings.actions') }}</legend>
+<fieldset disabled>
+  <legend>{{ i18n.t('ob.settings.actions') }} <app-unavailable [hint]="'unavailable.actions'" /></legend>
   @for (action of actions; track action.value) {
     <label class="check">
       <input
@@ -21,8 +21,8 @@
   }
 </fieldset>
 
-<fieldset>
-  <legend>{{ i18n.t('ob.settings.dockerfile') }}</legend>
+<fieldset disabled>
+  <legend>{{ i18n.t('ob.settings.dockerfile') }} <app-unavailable [hint]="'unavailable.dockerfile'" /></legend>
   <div class="options">
     <label class="option" [class.selected]="settings().dockerfileMode === 'recommended'">
       <input type="radio" name="dockerfile" [checked]="settings().dockerfileMode === 'recommended'" (change)="setDockerfileMode('recommended')" />
@@ -49,6 +49,22 @@
     </div>
   }
 </fieldset>
+
+<div class="field">
+  <label for="container-image">{{ i18n.t('ob.settings.image') }}</label>
+  <input
+    id="container-image"
+    class="input mono"
+    type="text"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="ghcr.io/acme/app:1.4"
+    [value]="settings().containerImage ?? ''"
+    (input)="setContainerImage($event)"
+    aria-describedby="container-image-hint"
+  />
+  <span id="container-image-hint" class="hint">{{ i18n.t('ob.settings.imageHint') }}</span>
+</div>
 
 <div class="toggle-row locked">
   <div>

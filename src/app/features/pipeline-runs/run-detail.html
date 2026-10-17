@@ -22,6 +22,12 @@
   </header>
 
   <p class="notice" aria-live="polite">{{ message() }}</p>
+  @if (accessLost()) {
+    <p class="notice error access-lost" role="alert">
+      {{ i18n.t('runs.accessLost') }}
+      <a [routerLink]="['/repositories', run.repository] | orgLink" [queryParams]="{ tab: 'access' }">{{ i18n.t('runs.openDeployKey') }}</a>
+    </p>
+  }
   @if (error()) {
     <p class="notice error" role="alert">{{ error() }}</p>
   }
@@ -36,6 +42,12 @@
         <dt>{{ i18n.t('runs.filter.branch') }}</dt>
         <dd class="mono">{{ run.branch }}</dd>
       </div>
+      @if (run.folders.length) {
+        <div>
+          <dt>{{ i18n.t('runs.folders') }}</dt>
+          <dd class="mono">{{ run.folders.join(', ') }}</dd>
+        </div>
+      }
       <div class="wide">
         <dt>{{ i18n.t('runs.col.commit') }}</dt>
         <dd><span class="mono sha">{{ run.commit }}</span><span class="muted">{{ run.message }}</span></dd>
@@ -66,19 +78,46 @@
 
   <h2 class="section-title">{{ i18n.t('runs.stages') }}</h2>
 
+  @if (live()) {
+    <section class="card live-progress" aria-live="polite" [attr.aria-label]="i18n.t('runs.progress')">
+      <span class="spinner" aria-hidden="true"></span>
+      <div class="live-text">
+        @if (checkingAccess()) {
+          <strong>{{ i18n.t('runs.checkingAccess') }}</strong>
+          <span class="muted">{{ i18n.t('runs.checkingAccessDesc') }}</span>
+        } @else if (currentStage(); as current) {
+          <strong>
+            {{ i18n.t('runs.step').replace('{n}', '' + progress().step).replace('{total}', '' + progress().total) }}
+            — {{ stageName(current.id) }}
+          </strong>
+          <span class="muted">{{ i18n.t('runs.runningWith').replace('{tool}', current.tool) }}</span>
+        } @else {
+          <strong>{{ i18n.t('runs.waiting') }}</strong>
+          <span class="muted">{{ i18n.t('runs.waitingDesc') }}</span>
+        }
+        <div class="bar" role="progressbar" [attr.aria-valuenow]="progress().done" aria-valuemin="0" [attr.aria-valuemax]="progress().total">
+          <span [style.width.%]="progress().percent"></span>
+        </div>
+      </div>
+    </section>
+  }
+
   <ol class="timeline">
     @for (group of phases(); track group.phase; let i = $index) {
       <li class="phase" [attr.aria-labelledby]="'phase-' + group.phase">
         <h3 [id]="'phase-' + group.phase"><span class="step">{{ i + 1 }}</span>{{ phaseName(group.phase) }}</h3>
         <ul class="stages">
           @for (stage of group.stages; track stage.id) {
-            <li [class]="'stage ' + stage.status">
+            <li [class]="'stage ' + displayStatus(stage.id, stage.status)" [attr.aria-current]="currentStage()?.id === stage.id ? 'step' : null">
               <div class="row">
                 <div class="info">
+                  @if (currentStage()?.id === stage.id) {
+                    <span class="spinner small" aria-hidden="true"></span>
+                  }
                   <strong>{{ stageName(stage.id) }}</strong>
                   <span class="muted tool">{{ stage.tool }}</span>
                 </div>
-                <app-run-status [stage]="stage.status" />
+                <app-run-status [stage]="displayStatus(stage.id, stage.status)" />
                 <span class="mono muted time">{{ duration(stage.durationSeconds) }}</span>
                 <span class="findings">
                   @if (stage.findings) {

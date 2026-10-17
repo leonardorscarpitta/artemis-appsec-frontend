@@ -2,7 +2,7 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
-import { DEFAULT_SETTINGS, ProjectsApi, stageCatalogUrl, toStageUpdate } from '../../core/api/projects';
+import { DEFAULT_SETTINGS, ProjectFolder, ProjectsApi, stageCatalogUrl, toStageUpdate } from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { Stack } from '../../core/domain';
 import { PipelineStage, defaultPipeline } from '../../core/pipeline';
@@ -10,13 +10,14 @@ import { PipelineEditor } from '../../shared/pipeline-editor';
 import { ScanSettings } from '../../shared/scan-settings';
 import { OrgContext } from '../../core/org/org-context';
 import { RoleNotice } from '../../shared/role-notice';
+import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
-// Public HTTPS URLs (no embedded credentials) are scanned today; SSH URLs are kept for private repositories later.
-const REPO_URL = /^(https:\/\/[\w.-]+(:\d+)?\/[\w./-]+|git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
+// SSH URLs only: every repository is cloned with its own Artemis deploy key.
+const REPO_URL = /^(git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({
   selector: 'app-onboarding',
-  imports: [ScanSettings, PipelineEditor, RoleNotice],
+  imports: [ScanSettings, PipelineEditor, RoleNotice, MonorepoFolders],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.scss',
 })
@@ -26,7 +27,7 @@ export class Onboarding {
   private readonly api = inject(ProjectsApi);
   protected readonly org = inject(OrgContext);
 
-  protected readonly steps: TranslationKey[] = ['ob.step1', 'ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
+  protected readonly steps: TranslationKey[] = ['ob.step2', 'ob.step3', 'ob.step4', 'ob.step5'];
   protected readonly step = signal(0);
   protected readonly isLast = computed(() => this.step() === this.steps.length - 1);
 
@@ -35,17 +36,18 @@ export class Onboarding {
   protected readonly settings = signal(DEFAULT_SETTINGS);
   private readonly catalog = httpResource<PipelineStage[]>(() => stageCatalogUrl());
   protected readonly pipeline = linkedSignal(() => this.catalog.value() ?? defaultPipeline());
-  protected readonly stacks: Stack[] = ['React', 'Angular', 'Java + Spring'];
-  protected readonly stack = signal<Stack | null>(null);
+  protected readonly stacks: Stack[] = STACKS;
+  /** 'auto' lets Artemis detect the stack from the repository files after the first successful access check. */
+  protected readonly stack = signal<Stack | 'auto'>('auto');
 
-  protected readonly isSsh = computed(() => /^(git@|ssh:\/\/)/.test(this.url().trim()));
   protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
+  protected readonly monorepo = computed(() => this.settings().folders.length > 0);
   protected readonly showErrors = signal(false);
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);
 
   protected next(): void {
-    if (this.step() === 1 && (!this.urlValid() || !this.branch().trim())) {
+    if (this.step() === 0 && (!this.urlValid() || !this.branch().trim() || !foldersValid(this.settings().folders))) {
       this.showErrors.set(true);
       return;
     }
@@ -61,16 +63,18 @@ export class Onboarding {
     this.step.update((s) => Math.max(0, s - 1));
   }
 
+  protected setFolders(folders: ProjectFolder[]): void {
+    this.settings.update((s) => ({ ...s, folders }));
+  }
+
   protected input(target: EventTarget | null): string {
     return (target as HTMLInputElement).value;
   }
 
   private submit(): void {
-    const stack = this.stack();
-    if (!stack) {
-      this.showErrors.set(true);
-      return;
-    }
+    const folders = this.settings().folders.map((f) => ({ ...f, path: normalizeFolder(f.path) }));
+    const chosen = this.stack();
+    const stack = folders[0]?.stack ?? (chosen === 'auto' ? null : chosen);
     this.submitting.set(true);
     this.submitError.set(null);
     this.api
@@ -78,11 +82,14 @@ export class Onboarding {
         url: this.url().trim(),
         branch: this.branch().trim(),
         stack,
-        settings: this.settings(),
+        settings: { ...this.settings(), folders },
         pipeline: this.pipeline().map(toStageUpdate),
       })
       .subscribe({
-        next: (created) => this.router.navigate([this.org.url('/repositories'), created.project.name]),
+        next: (created) =>
+          this.router.navigate([this.org.url('/repositories'), created.project.name], {
+            queryParams: created.project.access === 'ssh' ? { tab: 'access' } : {},
+          }),
         error: (err) => {
           this.submitting.set(false);
           this.submitError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));

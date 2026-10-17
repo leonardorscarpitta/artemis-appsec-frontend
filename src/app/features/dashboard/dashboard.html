@@ -4,16 +4,27 @@
     <p>{{ i18n.t('dash.subtitle') }}</p>
   </div>
   <div class="page-actions">
-    <button type="button" class="btn">{{ i18n.t('dash.export') }}</button>
+    <button type="button" class="btn" [disabled]="exporting()" (click)="exportCsv()">
+      {{ exporting() ? i18n.t('dash.exporting') : i18n.t('dash.export') }}
+    </button>
     <a class="btn primary" [routerLink]="'/repositories' | orgLink">{{ i18n.t('dash.newScan') }}</a>
   </div>
 </header>
+
+@if (exportError(); as message) {
+  <p class="error" role="alert">{{ message }}</p>
+}
 
 @if (summary.value(); as s) {
 <section class="stats" aria-label="Summary">
   <div class="card stat">
     <span class="label">{{ i18n.t('dash.openFindings') }}</span>
     <span class="value">{{ s.openFindings }}</span>
+    @if (s.overdueFindings) {
+      <a class="overdue" [routerLink]="'/vulnerabilities' | orgLink">{{ i18n.t('dash.overdue').replace('{n}', '' + s.overdueFindings) }}</a>
+    } @else {
+      <span class="sub muted">{{ i18n.t('dash.noOverdue') }}</span>
+    }
   </div>
   <div class="card stat critical">
     <span class="label">{{ i18n.t('dash.critical') }}</span>

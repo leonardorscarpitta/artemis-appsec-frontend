@@ -11,12 +11,15 @@ import {
   RetentionPeriod,
   SessionTimeout,
   TokenScope,
+  Member,
   apiTokensUrl,
+  membersUrl,
   organizationSettingsUrl,
 } from '../../core/api/organization';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
+import { Unavailable } from '../../shared/unavailable';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
 
@@ -27,7 +30,7 @@ const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'p
 
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState, RoleNotice],
+  imports: [DatePipe, RequestState, RoleNotice, Unavailable],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -39,6 +42,12 @@ export class Settings {
   protected readonly canEdit = computed(() => this.org.can('team'));
   protected readonly canManageTokens = computed(() => this.org.can('integrations'));
   protected readonly isOwner = computed(() => this.org.current()?.role === 'owner');
+  // Only the owner can hand the organization over; candidates are the other active members.
+  private readonly members = httpResource<Member[]>(() => (this.isOwner() ? membersUrl() : undefined), { defaultValue: [] });
+  protected readonly candidates = computed(() => this.members.value().filter((m) => m.active && m.role !== 'owner'));
+  protected readonly newOwner = signal('');
+  protected readonly transferring = signal(false);
+  protected readonly transferError = signal<string | null>(null);
   protected readonly leaving = signal(false);
   protected readonly leaveError = signal<string | null>(null);
 
@@ -213,6 +222,24 @@ export class Settings {
         void this.router.navigateByUrl('/organizations').then(() => slug && this.org.remove(slug));
       },
       error: (err) => this.deleteMessage.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
+  }
+
+  protected transferOwnership(): void {
+    const member = this.candidates().find((m) => m.id === this.newOwner());
+    if (!member || !confirm(this.i18n.t('team.transferConfirm').replace('{name}', member.name))) return;
+    this.transferring.set(true);
+    this.transferError.set(null);
+    this.api.transferOwnership(member.id).subscribe({
+      next: () => {
+        this.transferring.set(false);
+        this.newOwner.set('');
+        void this.org.load(true);
+      },
+      error: (err) => {
+        this.transferring.set(false);
+        this.transferError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
     });
   }
 

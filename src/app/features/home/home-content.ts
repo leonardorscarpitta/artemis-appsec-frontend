@@ -26,7 +26,7 @@ export const HOME: Record<Lang, HomeContent> = {
       previewLabel: 'Preview of the Artemis security dashboard',
     },
     facts: [
-      { label: 'Supported stacks', value: 'React · Angular · Java + Spring' },
+      { label: 'Supported stacks', value: 'React · Angular · Java + Spring · Python' },
       { label: 'Vulnerability data', value: 'NIST NVD' },
       { label: 'Pipeline stages', value: '9 across 3 phases' },
       { label: 'Sign-in', value: 'OpenID Connect' },
@@ -35,8 +35,8 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'From repository to report in four steps',
       lead: 'No agents to install. Artemis only needs read access to your code.',
       steps: [
-        { title: 'Connect an SSH key', text: 'Add a read-only deploy key so Artemis can clone the repository.' },
-        { title: 'Choose a repository', text: 'Point to the SSH URL and branch. The stack is detected automatically.' },
+        { title: 'Choose a repository', text: 'Paste its SSH URL, pick the branch and its stack — or several folders for a monorepo — then add the read-only deploy key Artemis generates.' },
+        { title: 'Grant read-only access', text: 'Every repository, public or private, gets a read-only deploy key from Artemis: add it to the repository and Artemis can clone it.' },
         { title: 'Configure the pipeline', text: 'Pick the security stages, tools and fail thresholds, or start from a preset.' },
         { title: 'Monitor and respond', text: 'Scans run on your schedule; new CVEs open issues, notify maintainers or block merges.' },
       ],
@@ -72,11 +72,11 @@ export const HOME: Record<Lang, HomeContent> = {
     faq: {
       title: 'Frequently asked questions',
       items: [
-        { q: 'Which technologies are supported?', a: 'React and Angular front ends and Java + Spring back ends. Artemis detects the stack automatically when you connect a repository.' },
-        { q: 'What access does Artemis need to my code?', a: 'A read-only SSH deploy key for each repository. You never share a private key with Artemis.' },
+        { q: 'Which technologies are supported?', a: 'React and Angular front ends, and Java + Spring or Python (Flask, FastAPI, Django) back ends. Artemis detects the stack automatically when you connect a repository.' },
+        { q: 'What access does Artemis need to my code?', a: 'A read-only SSH deploy key that Artemis generates for each repository, public or private — adding it also proves the repository is yours; you add the public key to the repository and can revoke it at any time. You never share your passwords or personal keys.' },
         { q: 'How do I get started?', a: 'Create an account with your e-mail address and confirm it from the message we send. Then create an organization — you become its owner, on the Free plan — or accept an invitation to join an existing one.' },
         { q: 'How does my team work together?', a: 'Invite colleagues by e-mail and give each one a role — owner, admin, security analyst, developer or viewer. Every person can belong to several organizations, and each organization’s data is kept separate.' },
-        { q: 'How do users sign in?', a: 'With an Artemis account (OpenID Connect, with e-mail verification, a strong password policy and optional two-factor authentication). Artemis itself never sees or stores your password.' },
+        { q: 'How do users sign in?', a: 'With an Artemis account (OpenID Connect, with a strong password policy and optional two-factor authentication). Artemis itself never sees or stores your password.' },
         { q: 'Where does vulnerability data come from?', a: 'Findings are matched to CVE records and CVSS scores from the NIST National Vulnerability Database.' },
         { q: 'Can the AI triage be turned off?', a: 'Yes. AI triage is optional and can be enabled or disabled per repository.' },
       ],
@@ -108,7 +108,7 @@ export const HOME: Record<Lang, HomeContent> = {
       previewLabel: 'Prévia do painel de segurança do Artemis',
     },
     facts: [
-      { label: 'Stacks suportadas', value: 'React · Angular · Java + Spring' },
+      { label: 'Stacks suportadas', value: 'React · Angular · Java + Spring · Python' },
       { label: 'Dados de vulnerabilidades', value: 'NIST NVD' },
       { label: 'Etapas de pipeline', value: '9 em 3 fases' },
       { label: 'Login', value: 'OpenID Connect' },
@@ -117,8 +117,8 @@ export const HOME: Record<Lang, HomeContent> = {
       title: 'Do repositório ao relatório em quatro passos',
       lead: 'Nenhum agente para instalar. O Artemis só precisa de acesso de leitura ao seu código.',
       steps: [
-        { title: 'Conecte uma chave SSH', text: 'Adicione uma deploy key somente leitura para o Artemis clonar o repositório.' },
-        { title: 'Escolha um repositório', text: 'Informe a URL SSH e a branch. A stack é detectada automaticamente.' },
+        { title: 'Escolha um repositório', text: 'Cole a URL SSH, escolha a branch e a stack — ou várias pastas em um monorepo — e adicione a deploy key somente leitura que o Artemis gera.' },
+        { title: 'Libere acesso de leitura', text: 'Todo repositório, público ou privado, recebe uma deploy key somente leitura do Artemis: adicione-a ao repositório e o Artemis passa a cloná-lo.' },
         { title: 'Configure o pipeline', text: 'Escolha etapas de segurança, ferramentas e critérios de falha, ou comece por um modelo.' },
         { title: 'Monitore e responda', text: 'As análises rodam no seu agendamento; novas CVEs abrem issues, notificam mantenedores ou bloqueiam merges.' },
       ],
@@ -154,11 +154,11 @@ export const HOME: Record<Lang, HomeContent> = {
     faq: {
       title: 'Perguntas frequentes',
       items: [
-        { q: 'Quais tecnologias são suportadas?', a: 'Front-ends React e Angular e back-ends Java + Spring. O Artemis detecta a stack automaticamente ao conectar um repositório.' },
-        { q: 'Que acesso o Artemis precisa ao meu código?', a: 'Uma deploy key SSH somente leitura por repositório. Você nunca compartilha uma chave privada com o Artemis.' },
+        { q: 'Quais tecnologias são suportadas?', a: 'Front-ends React e Angular, e back-ends Java + Spring ou Python (Flask, FastAPI, Django). O Artemis detecta a stack automaticamente ao conectar um repositório.' },
+        { q: 'Que acesso o Artemis precisa ao meu código?', a: 'Uma deploy key SSH somente leitura que o Artemis gera para cada repositório, público ou privado — adicioná-la também comprova que o repositório é seu; você adiciona a chave pública ao repositório e pode revogá-la quando quiser. Você nunca compartilha suas senhas ou chaves pessoais.' },
         { q: 'Como começo?', a: 'Crie uma conta com seu e-mail e confirme-o pela mensagem que enviamos. Depois crie uma organização — você será o proprietário, no plano Free — ou aceite um convite para entrar em uma existente.' },
         { q: 'Como minha equipe trabalha junto?', a: 'Convide colegas por e-mail e dê a cada um um papel — proprietário, administrador, analista de segurança, desenvolvedor ou leitor. Cada pessoa pode participar de várias organizações, e os dados de cada organização ficam separados.' },
-        { q: 'Como os usuários entram?', a: 'Com uma conta Artemis (OpenID Connect, com verificação de e-mail, política de senhas forte e verificação em duas etapas opcional). O próprio Artemis nunca vê nem armazena sua senha.' },
+        { q: 'Como os usuários entram?', a: 'Com uma conta Artemis (OpenID Connect, com política de senhas forte e verificação em duas etapas opcional). O próprio Artemis nunca vê nem armazena sua senha.' },
         { q: 'De onde vêm os dados de vulnerabilidades?', a: 'Os achados são associados a registros CVE e pontuações CVSS da National Vulnerability Database do NIST.' },
         { q: 'A triagem com IA pode ser desativada?', a: 'Sim. A triagem com IA é opcional e pode ser ativada ou desativada por repositório.' },
       ],

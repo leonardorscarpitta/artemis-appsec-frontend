@@ -8,11 +8,34 @@
 } @else if (repo(); as repo) {
   <header class="page-header">
     <div>
-      <h1>{{ repo.name }} <span class="tag">{{ repo.stack }}</span></h1>
-      <p class="mono">{{ repo.url }}</p>
+      <h1>
+        {{ repo.name }}
+        @if (repo.folders.length) {
+          <span class="tag">{{ i18n.t('mono.tag') }}</span>
+        } @else {
+          @if (repo.stackSource === 'pending') {
+            <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
+          } @else {
+            <span class="tag">{{ repo.stack }}</span>
+            @if (repo.stackSource === 'detected') {
+              <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
+            }
+          }
+        }
+      </h1>
+      <p class="mono">
+        {{ repo.url }}
+      </p>
+      @if (repo.folders.length) {
+        <p class="folder-tags" [attr.aria-label]="i18n.t('mono.folders')">
+          @for (f of repo.folders; track f.path) {
+            <span class="tag"><span class="mono">{{ f.path }}</span> · {{ f.stack }}</span>
+          }
+        </p>
+      }
     </div>
     <div class="page-actions">
-      <app-run-scan-button [repository]="repo.name" [primary]="true" />
+      <app-run-scan-button [repository]="repo.name" [primary]="true" [folders]="folderPaths()" [stacks]="folderStacks()" [ready]="repo.accessStatus === 'verified'" />
     </div>
   </header>
 
@@ -23,14 +46,45 @@
     <button type="button" role="tab" id="tab-pipeline" aria-controls="panel" [attr.aria-selected]="tab() === 'pipeline'" (click)="tab.set('pipeline')">
       {{ i18n.t('rs.tab.pipeline') }}
     </button>
+    <button type="button" role="tab" id="tab-access" aria-controls="panel" [attr.aria-selected]="tab() === 'access'" (click)="tab.set('access')">
+      {{ i18n.t('rs.tab.access') }}
+      @if (repo.access === 'ssh' && repo.accessStatus !== 'verified') {
+        <span class="dot" aria-hidden="true"></span>
+      }
+    </button>
   </div>
 
+  @if (tab() === 'access') {
+  <section class="card" id="panel" role="tabpanel" aria-labelledby="tab-access">
+    <app-repo-access [repository]="repo" (changed)="details.reload()" />
+  </section>
+  } @else {
   <app-role-notice permission="pipelines" />
 
   <section class="card" id="panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()">
     <fieldset class="contents" [disabled]="!canEdit()">
     @switch (tab()) {
       @case ('general') {
+        @if (!settings().folders.length) {
+          <div class="field stack-field">
+            <label for="repo-stack">{{ i18n.t('rs.stack') }}</label>
+            <select id="repo-stack" class="input" (change)="setStack($event)">
+              @if (!settings().stack) {
+                <option value="" selected>{{ i18n.t('rs.stackPick') }}</option>
+              }
+              @for (s of stacks; track s) {
+                <option [value]="s" [selected]="s === settings().stack">{{ s }}</option>
+              }
+            </select>
+            @if (repo.stackSource === 'detected') {
+              <span class="hint">{{ i18n.t('rs.stackDetectedHint') }}</span>
+            } @else if (repo.stackSource === 'pending') {
+              <span class="hint">{{ i18n.t('rs.stackPendingHint') }}</span>
+            }
+          </div>
+        }
+        <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
+        <hr />
         <app-scan-settings [(settings)]="settings" />
       }
       @case ('pipeline') {
@@ -39,8 +93,28 @@
     }
     </fieldset>
   </section>
+  }
 
-  @if (canEdit()) {
+  @if (tab() === 'general' && canEdit()) {
+    <section class="danger-box" aria-labelledby="remove-title">
+      <div>
+        <h2 id="remove-title">{{ i18n.t('rs.remove.title') }}</h2>
+        <p class="muted">{{ i18n.t('rs.remove.desc') }}</p>
+      </div>
+      <div class="field">
+        <label for="confirm-repo">{{ i18n.t('rs.remove.confirm') }}: <strong class="mono">{{ repo.name }}</strong></label>
+        <input id="confirm-repo" class="input mono" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
+      </div>
+      <button type="button" class="btn danger" [disabled]="removing() || confirmName() !== repo.name" (click)="remove()">
+        {{ i18n.t('rs.remove.button') }}
+      </button>
+      @if (removeError(); as message) {
+        <p class="error" role="alert">{{ message }}</p>
+      }
+    </section>
+  }
+
+  @if (canEdit() && tab() !== 'access') {
   <footer class="save-bar">
     <span class="muted hint" aria-live="polite">
       @if (saveError(); as error) {

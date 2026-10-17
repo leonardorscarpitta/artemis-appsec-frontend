@@ -18,6 +18,8 @@ import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';
+import { OrgSummary } from '../../core/org/org-summary';
+import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
@@ -31,12 +33,20 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })
 export class Vulnerabilities {
+  protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
+
+  /** "Overdue" or "Due in N days" from the remediation SLA. */
+  protected dueLabel(dueAt: string, overdue: boolean): string {
+    if (overdue) return this.i18n.t('vuln.overdue');
+    const days = Math.max(0, Math.ceil((new Date(dueAt).getTime() - Date.now()) / 86_400_000));
+    return this.i18n.t('vuln.dueIn').replace('{n}', String(days));
+  }
 
   protected readonly severities: Severity[] = ['critical', 'high', 'medium', 'low'];
   protected readonly statuses = Object.keys(STATUS_KEYS) as FindingStatus[];

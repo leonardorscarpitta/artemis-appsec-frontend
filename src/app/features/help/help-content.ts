@@ -20,8 +20,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'Artemis is an application security testing platform. It connects to your Git repositories, runs a configurable DevSecOps pipeline on them and reports vulnerabilities scored with CVSS, using the NIST National Vulnerability Database as the source.' },
         { kind: 'p', text: 'The home page presents the product, how it works and answers to common questions. Select "Get started" to create an account or "Sign in" if you already have one. This guide is also available without signing in, from "Documentation" on the home page. The Privacy Policy and Terms of Use are linked in the footer of the home and sign-in pages: Artemis never sells or shares information about you or your organization.' },
-        { kind: 'p', text: 'To create an account, select "Get started" on the home page or "Create an account" on the sign-in screen. The sign-up form (provided by Keycloak, the Artemis identity service) asks for your name, e-mail and a password of at least 12 characters, and asks you to accept the Terms of Use and Privacy Policy. Artemis then sends a link to confirm your e-mail address; open it to finish. Afterwards you create an organization or join one you were invited to (see "Organizations and invitations").' },
-        { kind: 'p', text: 'To sign in, select "Sign in" and enter your username or e-mail and password; you return to the page you were trying to open. If you forgot your password, use "Forgot password?" on the sign-in page. Authentication uses OpenID Connect; Artemis itself never sees or stores your password. Several failed attempts temporarily lock the account to protect it.' },
+        { kind: 'p', text: 'To create an account, select "Get started" on the home page or "Create an account" on the sign-in screen. The sign-up form (provided by Keycloak, the Artemis identity service) asks for your name, e-mail and a password of at least 12 characters, and asks you to accept the Terms of Use and Privacy Policy. Afterwards you create an organization or join one you were invited to (see "Organizations and invitations").' },
+        { kind: 'p', text: 'The sign-in, sign-up and password-reset pages are run by Artemis’s identity service (Keycloak) with the Artemis look; they open in the language selected in the app. To sign in, select "Sign in" and enter your username or e-mail and password; you return to the page you were trying to open. If you forgot your password, use "Forgot password?" on the sign-in page. Authentication uses OpenID Connect; Artemis itself never sees or stores your password. Several failed attempts temporarily lock the account to protect it.' },
         { kind: 'p', text: 'Your name appears in the top bar while you are signed in, next to your role in the current organization; select your name to open your account page at the identity service (profile, password, two-factor authentication, signed-in devices and account deletion). The session is shared by all tabs of the browser, and the home page shows you as signed in with a "Go to dashboard" button, plus a "Your workspace" section listing your organizations and pending invitations. If the session expires you are asked to sign in again. "Sign out" ends both your Artemis session and your session at the identity service.' },
         { kind: 'p', text: 'The interface is organized as follows:' },
         {
@@ -47,13 +47,13 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Your organizations: name, address, your role and plan. Select one to open its dashboard.',
-            'Pending invitations: invitations sent to your verified e-mail address, with the role offered and the expiry date. Select "Accept" to join (you go to its dashboard) or "Decline" to discard it.',
+            'Invitation links: to join an organization, open the invitation link the person who invited you shared with you (sign in or create an account first if asked). The link adds you with the role it offers and takes you to that organization’s dashboard; it works once and expires after 7 days.',
             'Create organization: enter a name and, if you like, edit the URL name (3–40 lowercase letters, numbers and hyphens, used in every link, such as /acme/dashboard). You become the owner and the organization starts on the Free plan. Each person can own up to 5 organizations; some URL names are reserved.',
           ],
         },
         { kind: 'p', text: 'To switch organization at any time, select the organization at the bottom of the sidebar and pick another one, or "All organizations · create one".' },
-        { kind: 'note', text: 'Artemis does not send invitation e-mails yet. Ask the person who invited you to let you know, then sign in (or register) with the invited address — the invitation appears once that address is verified. Invitations expire after 7 days.' },
-        { kind: 'p', text: 'To leave an organization, open Settings → Danger zone and select "Leave this organization". The owner cannot leave; they must transfer ownership first (Team page) or delete the organization.' },
+        { kind: 'note', text: 'Artemis does not send invitation e-mails yet, so invitations travel as one-time links. Only someone with the link can use it — that is what keeps someone else from joining just by registering with the invited e-mail address. If a link was lost, used or expired, ask for a new one.' },
+        { kind: 'p', text: 'To leave an organization, open Settings → Danger zone and select "Leave this organization". The owner cannot leave; they must transfer ownership first (Settings → Danger zone → “Transfer ownership”) or delete the organization.' },
       ],
     },
     {
@@ -61,6 +61,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Dashboard',
       blocks: [
         { kind: 'p', text: 'The dashboard summarizes the security posture of every monitored repository.' },
+        { kind: 'p', text: '"Export CSV" downloads every finding of the organization (all statuses) as a spreadsheet-ready CSV file with reference, type, severity, CVSS, status, repository, package or file, stage, tool and dates. Values that start with =, +, -, @ get a leading apostrophe so spreadsheet apps never run them as formulas.' },
         {
           kind: 'ul',
           items: [
@@ -100,15 +101,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'new-project',
       title: 'Connecting a new project',
       blocks: [
-        { kind: 'p', text: 'Select "New project" in the sidebar and complete the five steps:' },
+        { kind: 'p', text: 'Select "New project" in the sidebar and complete the four steps:' },
         {
           kind: 'ol',
           items: [
-            'SSH key: paste the public part of an ed25519 or RSA key, or let Artemis generate one. Add it to your repository as a read-only deploy key. Never paste a private key.',
-            'Repository: enter the public HTTPS URL (for example https://github.com/acme/project.git) and the branch to analyze. SSH URLs for private repositories are accepted but not scanned yet.',
+            'Repository: enter the repository’s SSH URL (for example git@git.example.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
-            'Stack: select the technology used by the repository — React, Angular or Java + Spring. Automatic detection will be available soon.',
+            'Stack: “Detect automatically” (recommended) lets Artemis read the repository’s manifest files (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) after the first successful “Test access” — nothing is executed — and set the stack, or the folders of a monorepo. Or select it yourself: React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. While detection is pending the repository shows “Detecting stack…”; once detected it shows “Auto-detected”.',
           ],
         },
         { kind: 'p', text: 'Select "Start monitoring" to finish. Every option chosen here can be changed later in the repository settings.' },
@@ -121,9 +121,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
-            'Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
-            'Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
+            '(Not available yet) Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
+            '(Not available yet) Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
+            '(Not available yet) Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
             'AI triage: automatic review of findings to flag likely false positives and generate reports. It will be part of the PRO plan and is not available yet — the option is shown locked and links to Billing.',
           ],
         },
@@ -143,7 +143,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Source', 'Dependency scanning (SCA)', 'Matches third-party libraries against known CVEs.', 'Trivy or Grype'],
             ['Source', 'License compliance', 'Flags dependencies with licenses not allowed by your policy.', 'Trivy'],
             ['Build', 'Dockerfile audit', 'Checks the Dockerfile for insecure instructions.', 'Hadolint or Trivy'],
-            ['Build', 'Container image scan', 'Scans the built image for vulnerable OS packages. Not available yet.', 'Trivy'],
+            ['Build', 'Container image scan', 'Scans a published image (set under General settings, e.g. ghcr.io/acme/app:1.4) for vulnerable OS packages and libraries. Artemis pulls it from a public registry and never builds or runs it.', 'Trivy'],
             ['Build', 'SBOM generation', 'Produces a software bill of materials for each scan.', 'Syft'],
             ['Pre-deploy', 'Infrastructure as code', 'Checks Terraform, Kubernetes and Compose files for misconfigurations.', 'Trivy'],
             ['Pre-deploy', 'Dynamic analysis (DAST)', 'Tests a running instance of the application. Not available yet.', 'OWASP ZAP'],
@@ -165,7 +165,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['Essential', 'Secret scanning, SAST, SCA'],
             ['Recommended', 'Essential + Dockerfile audit, SBOM'],
-            ['Complete', 'Every available stage'],
+            ['Complete', 'Every available stage, including the container image scan'],
           ],
         },
         { kind: 'p', text: 'Any manual change shows the preset as "Custom". The summary shows how many stages are enabled and an estimated duration. Under "Pipeline as code" you can view and copy the equivalent configuration for GitHub Actions or GitLab CI.' },
@@ -176,13 +176,13 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'How scanning works',
       blocks: [
-        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Connecting a new repository also queues its first scan. The new pipeline run opens so you can follow each stage.' },
+        { kind: 'p', text: 'Select "Run scan" on the Repositories page or in a repository’s settings to queue a scan. Run scan is available once the repository shows “Authenticated”, that is, after its deploy key was added and “Test access” succeeded in the Deploy Key tab. The new pipeline run opens so you can follow each stage.' },
         {
           kind: 'ol',
           items: [
-            'The scanner clones the latest commit of the chosen branch (public HTTPS repositories only, for now) into an isolated, temporary workspace.',
-            'Each enabled stage runs its tool. Stages that are not available yet (container image scan, DAST) are skipped.',
-            'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). The run fails if any stage fails.',
+            'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key, after first checking that the key still has access — if it was removed, the run stops right away, the repository shows “Authentication error” and scans stay locked until “Test access” succeeds again (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
+            'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
+            'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
           ],
         },
@@ -206,15 +206,47 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Managing repositories',
       blocks: [
         { kind: 'p', text: 'The Repositories page lists every connected project with its stack, schedule, number of findings and last scan. "Run scan" starts a scan of a repository right away.' },
+        { kind: 'note', text: 'While an organization has no repositories, Vulnerabilities, Repositories, Pipeline runs and Reports show a short explanation instead of empty tables: with a role that can manage pipelines you get a "Connect a repository" button; otherwise ask an owner, admin or security analyst of the organization to connect one.' },
         { kind: 'p', text: 'Select "Settings" on a repository to change its configuration at any time:' },
         {
           kind: 'ul',
           items: [
-            'General tab: scan schedule, automatic actions, build environment and AI triage.',
+            'General tab: the stack (change it if the automatic detection got it wrong — your choice is never overwritten afterwards), monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
+            'Deploy Key tab: the repository’s deploy key, setup steps, server identity and access test (see "Repository access (deploy keys)").',
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
+        { kind: 'p', text: 'To stop monitoring a repository, open its General tab and use "Remove repository": type the repository name to confirm. Its findings, pipeline runs, reports, deploy keys and risk acceptances are deleted permanently; the repository itself is not touched. Removing requires a role that can manage pipelines.' },
+      ],
+    },
+    {
+      id: 'private-repositories',
+      title: 'Repository access (deploy keys)',
+      blocks: [
+        { kind: 'p', text: 'Every repository — public or private — needs a deploy key: Artemis only scans repositories you have granted read access to, which also proves the repository is yours. Add the repository with its SSH URL (for example git@git.example.com:acme/app.git); Artemis generates a read-only SSH deploy key just for it and opens its Deploy Key tab. The first scan waits until access works.' },
+        {
+          kind: 'ol',
+          items: [
+            'Copy the public key shown in the Deploy Key tab.',
+            'Add it to the repository as a deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys; any other Git server with deploy keys (Gitea, Forgejo, self-hosted GitLab…): the repository’s deploy key settings. Leave write access off.',
+            'Select "Test access". Artemis checks that it can read the branch; the result appears in a few seconds.',
+            'When access is OK, select "Run scan" to start the first scan.',
+          ],
+        },
+        { kind: 'p', text: 'Server identity: Artemis only connects to a Git server whose host key it trusts. GitHub, GitLab and Bitbucket are verified against the keys they publish. For other servers the key is recorded the first time you test access and shown with its fingerprint — check that it matches your server; later connections must present the same key.' },
+        { kind: 'p', text: '"Rotate key" generates a new key and deletes the old one immediately: add the new public key to the repository and remove the old one. Removing the repository deletes its key too.' },
+        {
+          kind: 'table',
+          head: ['Test result', 'What to do'],
+          rows: [
+            ['Permission denied', 'The public key is not on the repository yet, or was added to another repository. Add it as a deploy key and test again.'],
+            ['Repository or branch not found', 'Check the SSH URL and the branch name in the repository settings.'],
+            ['Host key mismatch', 'The server presented a different key than the one recorded. If you changed servers on purpose, contact support; otherwise do not continue.'],
+            ['Timeout or unreachable', 'The server must be reachable from the internet on its SSH port.'],
+          ],
+        },
+        { kind: 'note', text: 'The private key never leaves Artemis: it is encrypted on our servers, is never shown or sent to you, and is only handed to the isolated scanner while it clones. Your code is deleted after every scan.' },
       ],
     },
     // --- vulnerabilities ---
@@ -243,7 +275,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'References (NVD, package registry, CWE) and a timeline of what happened to the finding.',
           ],
         },
-        { kind: 'p', text: 'Use "Change status" to mark the finding as triaged, as a false positive, to accept the risk or to reopen it. The change applies to every affected repository, is saved immediately and is recorded in the timeline. A finding that is a false positive, accepted or fixed can only be reopened. "Fixed" is set automatically when a scan no longer detects the issue.' },
+        { kind: 'p', text: 'Use "Change status" to mark the finding as triaged, as a false positive, to accept the risk or to reopen it. The change applies to every affected repository, is saved immediately and is recorded in the timeline. A finding that is a false positive, accepted or fixed can only be reopened. "Fixed" is set automatically when a scan no longer detects the issue. Accepting a risk asks for a justification and an expiry date and creates a risk acceptance (see Policies); the status card also shows the remediation due date from the SLA.' },
         { kind: 'note', text: 'Accept a risk only when the vulnerable code is not reachable or a compensating control is in place, and record the reason with your team.' },
       ],
     },
@@ -278,6 +310,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Skipped', 'The stage did not run because an earlier stage failed or the run was cancelled.'],
           ],
         },
+        { kind: 'p', text: 'While a run is queued or running, its page updates by itself: a progress panel shows which step is running (for example "Step 3 of 7 — Dependency scanning"), the current stage is highlighted with a spinner and finished stages fill in as they complete. The Pipeline runs list also refreshes while any run is in progress.' },
         { kind: 'p', text: 'Select "View log" on a stage to read the tool output; logs of failed stages open automatically. Select the number of findings to go to Vulnerabilities. Use "Re-run" to start the pipeline again or "Cancel run" to stop a queued or running pipeline.' },
         { kind: 'p', text: '"Re-run" creates a new run of the same commit, triggered manually by you, using the repository\'s current pipeline settings — so it includes any stage you enabled or disabled since the original run — and opens it. Cancelling marks the stages that had not finished as skipped. Only queued or running pipelines can be cancelled.' },
       ],
@@ -297,7 +330,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Compliance', 'Findings mapped to the OWASP Top 10 categories, useful for audits.'],
           ],
         },
-        { kind: 'p', text: 'To request a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period (the last complete week, month or quarter), then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready". AI triage reports are not available yet.' },
+        { kind: 'p', text: '(Not available yet) To request a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period (the last complete week, month or quarter), then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready". AI triage reports are not available yet.' },
         { kind: 'p', text: 'A report contains:' },
         {
           kind: 'ul',
@@ -316,14 +349,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'policies',
       title: 'Policies',
       blocks: [
-        { kind: 'p', text: 'Policies are organization-wide rules applied to every repository. Only administrators should change them.' },
+        { kind: 'p', text: 'Policies are organization-wide rules that Artemis enforces on every repository. Roles that manage pipelines (owner, admin, security analyst) edit them; roles that triage findings manage risk acceptances.' },
         {
           kind: 'ul',
           items: [
-            'Pipeline gates: the default fail threshold of each pipeline stage. Mark a stage as "Required" to prevent repositories from disabling it.',
-            'Remediation SLA: the maximum number of days (1 to 365) to fix a finding of each severity. Reports measure SLA compliance against these values.',
-            'License policy: licenses that are allowed or denied. Type an SPDX license identifier (for example MPL-2.0) and select "Add"; use the X on a license to remove it. A license cannot be both allowed and denied. Licenses not listed are reported for review.',
-            'Risk acceptances: findings accepted as known risks, with a justification and an expiry date. They do not fail pipelines until they expire (at most one year). Select "Revoke" to remove one immediately.',
+            'Pipeline gates: the minimum fail threshold of each stage. A repository may choose a stricter threshold but not a looser one — looser options are disabled in the pipeline editor, and runs always use the stricter of the two. Mark a stage as “Required” to run it in every repository: it shows “Required by the organization policy” and cannot be turned off. Stages that are not available yet cannot be required.',
+            'Remediation SLA: the maximum number of days (1 to 365) to fix a finding of each severity, counted from its first detection. Open and triaged findings show “Due in N days” or “Overdue” in Vulnerabilities, the finding page shows the date, and the dashboard counts the findings past their SLA.',
+            'License policy: licenses that are allowed or denied (SPDX identifiers such as MPL-2.0, case-insensitive). The License compliance stage drops allowed licenses, reports denied ones as high severity and any other restrictive license as medium, for review; the stage fails according to its gate. A license cannot be both allowed and denied.',
+            'Risk acceptances: findings accepted as known risks, with a justification (at least 10 characters) and an expiry date (at most one year). Accept a risk from a finding (“Accept risk”) or here with “Accept a risk”, using the finding reference (F-1101) or a CVE, which accepts every open finding of that CVE in the repository. Accepted findings never fail pipelines. When the date passes the finding is reopened automatically; “Revoke” reopens it right away, and reopening an accepted finding removes its acceptance.',
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards your edits and reloads the saved policies.' },
@@ -335,7 +368,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrations',
       blocks: [
-        { kind: 'p', text: 'The Integrations page connects Artemis to the tools your team already uses. Integrations are grouped by category: source control, CI/CD, notifications, issue tracking and vulnerability data.' },
+        { kind: 'p', text: 'The Integrations page connects Artemis to the tools your team already uses. Integrations are grouped by category: source control, CI/CD, notifications, issue tracking and vulnerability data. Only NIST NVD works today; the other integrations are shown with “Not available yet” until they are released.' },
         {
           kind: 'ul',
           items: [
@@ -345,8 +378,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
-        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis uses to clone repositories, with its fingerprint, repository and last use. Select "Add key" to register a new public key for a repository, or "Revoke" to remove a key you no longer need. Also remove the key from the repository on your Git provider.' },
-        { kind: 'note', text: 'Paste only the public key (the contents of the .pub file). Artemis accepts ed25519, ECDSA and RSA keys of at least 2048 bits, computes the SHA256 fingerprint itself and rejects private keys and keys already registered for the same repository.' },
+        { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone your repositories (each repository has its own), with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Deploy Key tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
+        { kind: 'note', text: 'Keys marked "Public key only" were added before Artemis generated keys. Artemis has no private key for them, so they are never used to clone; generate a key in the repository’s Deploy Key tab instead.' },
       ],
     },
     {
@@ -354,7 +387,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Team and roles',
       blocks: [
         { kind: 'p', text: 'The Team page lists every member of the organization with their role, last activity and status. Owners and admins change a member\'s role by picking a new one in the Role column. Nobody can change their own role, and the owner role is never assigned there: the owner selects "Make owner" next to an active member to transfer ownership, becoming an admin.' },
-        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. An address that already belongs to a member or has a pending invitation is rejected. The invited person sees the invitation on the Organizations page after signing in or registering with that e-mail address (Artemis does not send invitation e-mails yet). Invitations expire after 7 days; "Resend" renews them and "Revoke" cancels them.' },
+        { kind: 'p', text: 'Owners and admins can change a member’s role at any time with the role picker in the member list, or remove the member with “Remove”. Only the owner manages admins: admins can change and remove analysts, developers and viewers, but cannot promote anyone to admin, change another admin’s role or remove an admin. There is always exactly one owner; to hand the organization over, the owner uses Settings → Danger zone → “Transfer ownership” and becomes an admin. Nobody can change their own role or remove themselves (use “Leave organization” in Settings).' },
+        { kind: 'p', text: 'To add someone, select "Invite member", enter their e-mail and choose a role. An address that already belongs to a member or has a pending invitation is rejected. Artemis then shows a one-time invitation link — copy it and send it to the person yourself (Artemis does not e-mail invitations yet). The link is shown only once, works once and expires after 7 days; "New link" creates a fresh link (the old one stops working) and "Revoke" cancels the invitation.' },
         {
           kind: 'table',
           head: ['Role', 'Intended for'],
@@ -366,15 +400,15 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Viewer', 'Read-only access to findings and reports.'],
           ],
         },
-        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do. Artemis enforces it on every request:' },
+        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do in this organization, and Artemis enforces it on every request. Owners and admins can change it: click a cell to switch between ✓ (allowed) and – (not allowed), then select "Save permissions"; the change applies to everyone with that role on their next action. Admins can change analysts, developers and viewers, but only the owner changes admin permissions. Some cells are locked: the owner always has every permission, every role can view findings, and billing (plan, ownership, deleting the organization) stays with the owner. New organizations start with these defaults:' },
         {
           kind: 'table',
           head: ['Permission', 'What it allows', 'Roles'],
           rows: [
             ['View findings and reports', 'See every page of the organization', 'All roles'],
             ['Triage findings', 'Change finding status, manage risk acceptances, generate reports', 'Owner, Admin, Security analyst, Developer'],
-            ['Configure pipelines', 'Add repositories, run and cancel scans, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
-            ['Manage integrations', 'Integrations, deploy keys and API tokens', 'Owner, Admin'],
+            ['Configure pipelines', 'Add repositories, run and cancel scans, test repository access, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
+            ['Manage integrations', 'Integrations, generating, rotating and revoking deploy keys, API tokens', 'Owner, Admin'],
             ['Manage team', 'Invitations, roles and organization settings', 'Owner, Admin'],
             ['Manage billing', 'Change the plan, transfer ownership, delete the organization', 'Owner'],
           ],
@@ -391,10 +425,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'General: organization name, URL slug, default language and time zone. Each member can still choose their own language in the top bar.',
-            'Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
-            'Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
-            'API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
-            'Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
+            '(Not available yet) Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
+            '(Not available yet) Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
+            '(Not available yet) API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
+            '(Not available yet) Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
             'Danger zone: members other than the owner can leave the organization. The owner can delete it by typing its name exactly — this permanently deletes all its repositories, findings, pipeline runs, reports, policies, integrations, tokens and memberships, and cannot be undone.',
           ],
         },
@@ -449,8 +483,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       blocks: [
         { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações. Ele se conecta aos seus repositórios Git, executa neles um pipeline DevSecOps configurável e reporta vulnerabilidades pontuadas com CVSS, usando a National Vulnerability Database do NIST como fonte.' },
         { kind: 'p', text: 'A página inicial apresenta o produto, como ele funciona e respostas a dúvidas comuns. Selecione "Começar" para criar uma conta ou "Entrar" se você já tiver uma. Este guia também está disponível sem login, em "Documentação" na página inicial. A Política de Privacidade e os Termos de Uso estão no rodapé da página inicial e da tela de login: o Artemis nunca vende nem compartilha informações sobre você ou sua organização.' },
-        { kind: 'p', text: 'Para criar uma conta, selecione "Começar" na página inicial ou "Criar uma conta" na tela de login. O formulário de cadastro (fornecido pelo Keycloak, o serviço de identidade do Artemis) pede nome, e-mail e uma senha de pelo menos 12 caracteres, e pede que você aceite os Termos de Uso e a Política de Privacidade. Em seguida o Artemis envia um link para confirmar seu e-mail; abra-o para concluir. Depois você cria uma organização ou entra em uma para a qual foi convidado (veja "Organizações e convites").' },
-        { kind: 'p', text: 'Para entrar, selecione "Entrar" e informe seu usuário ou e-mail e a senha; você voltará para a página que tentava abrir. Se esqueceu a senha, use "Esqueceu sua senha?" na página de login. A autenticação usa OpenID Connect; o próprio Artemis nunca vê nem armazena sua senha. Várias tentativas erradas bloqueiam a conta temporariamente para protegê-la.' },
+        { kind: 'p', text: 'Para criar uma conta, selecione "Começar" na página inicial ou "Criar uma conta" na tela de login. O formulário de cadastro (fornecido pelo Keycloak, o serviço de identidade do Artemis) pede nome, e-mail e uma senha de pelo menos 12 caracteres, e pede que você aceite os Termos de Uso e a Política de Privacidade. Depois você cria uma organização ou entra em uma para a qual foi convidado (veja "Organizações e convites").' },
+        { kind: 'p', text: 'As páginas de login, cadastro e redefinição de senha são executadas pelo serviço de identidade do Artemis (Keycloak) com o visual do Artemis; elas abrem no idioma selecionado no app. Para entrar, selecione "Entrar" e informe seu usuário ou e-mail e a senha; você voltará para a página que tentava abrir. Se esqueceu a senha, use "Esqueceu sua senha?" na página de login. A autenticação usa OpenID Connect; o próprio Artemis nunca vê nem armazena sua senha. Várias tentativas erradas bloqueiam a conta temporariamente para protegê-la.' },
         { kind: 'p', text: 'Seu nome aparece na barra superior enquanto você estiver conectado, ao lado do seu papel na organização atual; selecione o nome para abrir sua conta no serviço de identidade (perfil, senha, verificação em duas etapas, dispositivos conectados e exclusão da conta). A sessão é compartilhada por todas as abas do navegador, e a página inicial mostra você conectado com o botão "Ir para o painel", além da seção "Seu espaço de trabalho" com as suas organizações e convites pendentes. Se a sessão expirar, será pedido um novo login. "Sair" encerra a sua sessão no Artemis e no serviço de identidade.' },
         { kind: 'p', text: 'A interface está organizada assim:' },
         {
@@ -476,13 +510,13 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Suas organizações: nome, endereço, seu papel e o plano. Selecione uma para abrir o painel dela.',
-            'Convites pendentes: convites enviados ao seu e-mail verificado, com o papel oferecido e a data de expiração. Selecione "Aceitar" para entrar (você vai para o painel dela) ou "Recusar" para descartá-lo.',
+            'Links de convite: para entrar em uma organização, abra o link de convite que a pessoa que convidou você compartilhou (entre ou crie uma conta antes, se for pedido). O link adiciona você com o papel oferecido e leva ao painel da organização; ele funciona uma vez e expira em 7 dias.',
             'Criar organização: informe um nome e, se quiser, edite o nome na URL (3 a 40 letras minúsculas, números e hifens, usado em todos os links, como /acme/dashboard). Você será o proprietário e a organização começa no plano Free. Cada pessoa pode ser proprietária de até 5 organizações; alguns nomes de URL são reservados.',
           ],
         },
         { kind: 'p', text: 'Para trocar de organização a qualquer momento, selecione a organização no rodapé da barra lateral e escolha outra, ou "Todas as organizações · criar uma".' },
-        { kind: 'note', text: 'O Artemis ainda não envia e-mails de convite. Peça a quem convidou que avise você e então entre (ou cadastre-se) com o e-mail convidado — o convite aparece assim que esse endereço estiver verificado. Convites expiram em 7 dias.' },
-        { kind: 'p', text: 'Para sair de uma organização, abra Configurações → Zona de perigo e selecione "Sair desta organização". O proprietário não pode sair; antes ele precisa transferir a propriedade (página Equipe) ou excluir a organização.' },
+        { kind: 'note', text: 'O Artemis ainda não envia convites por e-mail, então os convites são links de uso único. Só quem tem o link pode usá-lo — é isso que impede outra pessoa de entrar apenas se cadastrando com o e-mail convidado. Se o link foi perdido, usado ou expirou, peça um novo.' },
+        { kind: 'p', text: 'Para sair de uma organização, abra Configurações → Zona de perigo e selecione "Sair desta organização". O proprietário não pode sair; antes ele precisa transferir a propriedade (Configurações → Zona de perigo → “Transferir propriedade”) ou excluir a organização.' },
       ],
     },
     {
@@ -490,6 +524,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Painel',
       blocks: [
         { kind: 'p', text: 'O painel resume a postura de segurança de todos os repositórios monitorados.' },
+        { kind: 'p', text: '"Exportar CSV" baixa todos os achados da organização (todos os status) em um arquivo CSV pronto para planilhas, com referência, tipo, severidade, CVSS, status, repositório, pacote ou arquivo, etapa, ferramenta e datas. Valores que começam com =, +, -, @ recebem um apóstrofo no início para que as planilhas nunca os executem como fórmulas.' },
         {
           kind: 'ul',
           items: [
@@ -529,15 +564,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'new-project',
       title: 'Conectando um novo projeto',
       blocks: [
-        { kind: 'p', text: 'Selecione "Novo projeto" na barra lateral e conclua os cinco passos:' },
+        { kind: 'p', text: 'Selecione "Novo projeto" na barra lateral e conclua os quatro passos:' },
         {
           kind: 'ol',
           items: [
-            'Chave SSH: cole a parte pública de uma chave ed25519 ou RSA, ou deixe o Artemis gerar uma. Adicione-a ao repositório como deploy key somente leitura. Nunca cole uma chave privada.',
-            'Repositório: informe a URL HTTPS pública (por exemplo https://github.com/acme/projeto.git) e a branch a ser analisada. URLs SSH de repositórios privados são aceitas, mas ainda não são analisadas.',
+            'Repositório: informe a URL SSH do repositório (por exemplo git@git.example.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
-            'Stack: selecione a tecnologia usada pelo repositório — React, Angular ou Java + Spring. A detecção automática estará disponível em breve.',
+            'Stack: “Detectar automaticamente” (recomendado) faz o Artemis ler os arquivos de manifesto do repositório (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) depois do primeiro “Testar acesso” bem-sucedido — nada é executado — e definir a stack, ou as pastas de um monorepo. Ou selecione você mesmo: React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. Enquanto a detecção está pendente o repositório mostra “Detectando stack…”; depois, “Detectada automaticamente”.',
           ],
         },
         { kind: 'p', text: 'Selecione "Iniciar monitoramento" para concluir. Todas as opções escolhidas aqui podem ser alteradas depois nas configurações do repositório.' },
@@ -550,9 +584,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
-            'Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
-            'Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
+            '(Ainda não disponível) Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
+            '(Ainda não disponível) Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
+            '(Ainda não disponível) Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
             'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Fará parte do plano PRO e ainda não está disponível — a opção aparece bloqueada e leva à página de Assinatura.',
           ],
         },
@@ -572,7 +606,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Código-fonte', 'Análise de dependências (SCA)', 'Compara bibliotecas de terceiros com CVEs conhecidas.', 'Trivy ou Grype'],
             ['Código-fonte', 'Conformidade de licenças', 'Sinaliza dependências com licenças não permitidas pela sua política.', 'Trivy'],
             ['Build', 'Auditoria do Dockerfile', 'Verifica o Dockerfile em busca de instruções inseguras.', 'Hadolint ou Trivy'],
-            ['Build', 'Varredura da imagem de contêiner', 'Analisa a imagem gerada em busca de pacotes do SO vulneráveis. Ainda não disponível.', 'Trivy'],
+            ['Build', 'Varredura da imagem de contêiner', 'Analisa uma imagem publicada (definida nas configurações gerais, por exemplo ghcr.io/acme/app:1.4) em busca de pacotes do SO e bibliotecas vulneráveis. O Artemis a baixa de um registry público e nunca a constrói nem a executa.', 'Trivy'],
             ['Build', 'Geração de SBOM', 'Gera uma lista de materiais de software a cada análise.', 'Syft'],
             ['Pré-deploy', 'Infraestrutura como código', 'Verifica arquivos Terraform, Kubernetes e Compose em busca de erros de configuração.', 'Trivy'],
             ['Pré-deploy', 'Análise dinâmica (DAST)', 'Testa uma instância da aplicação em execução. Ainda não disponível.', 'OWASP ZAP'],
@@ -594,7 +628,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           rows: [
             ['Essencial', 'Varredura de segredos, SAST, SCA'],
             ['Recomendado', 'Essencial + auditoria do Dockerfile, SBOM'],
-            ['Completo', 'Todas as etapas disponíveis'],
+            ['Completo', 'Todas as etapas disponíveis, incluindo a varredura de imagem de contêiner'],
           ],
         },
         { kind: 'p', text: 'Qualquer alteração manual mostra o modelo como "Personalizado". O resumo mostra quantas etapas estão ativas e uma duração estimada. Em "Pipeline como código" você pode ver e copiar a configuração equivalente para GitHub Actions ou GitLab CI.' },
@@ -605,13 +639,13 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'scanning',
       title: 'Como funcionam as análises',
       blocks: [
-        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. Conectar um novo repositório também enfileira a primeira análise. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
+        { kind: 'p', text: 'Selecione "Executar análise" na página Repositórios ou nas configurações de um repositório para enfileirar uma análise. “Executar análise” fica disponível quando o repositório aparece como “Autenticado”, ou seja, depois que a deploy key foi adicionada e o “Testar acesso” deu certo na aba Deploy Key. A nova execução de pipeline é aberta para você acompanhar cada etapa.' },
         {
           kind: 'ol',
           items: [
-            'O scanner clona o último commit da branch escolhida (por enquanto, apenas repositórios públicos via HTTPS) em um espaço de trabalho isolado e temporário.',
-            'Cada etapa ativa executa sua ferramenta. Etapas ainda não disponíveis (varredura de imagem, DAST) são puladas.',
-            'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). A execução falha se alguma etapa falhar.',
+            'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório, depois de verificar que a chave ainda tem acesso — se ela foi removida, a execução para na hora, o repositório aparece como “Erro de autenticação” e as análises ficam bloqueadas até o “Testar acesso” funcionar de novo (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
+            'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
+            'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
           ],
         },
@@ -635,15 +669,47 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Gerenciando repositórios',
       blocks: [
         { kind: 'p', text: 'A página Repositórios lista todos os projetos conectados com stack, agendamento, quantidade de achados e última análise. "Executar análise" inicia uma análise do repositório na hora.' },
+        { kind: 'note', text: 'Enquanto uma organização não tiver repositórios, Vulnerabilidades, Repositórios, Execuções de pipeline e Relatórios mostram uma breve explicação em vez de tabelas vazias: com um papel que pode gerenciar pipelines, aparece o botão "Conectar um repositório"; caso contrário, peça a um proprietário, administrador ou analista de segurança da organização para conectar um.' },
         { kind: 'p', text: 'Selecione "Configurações" em um repositório para alterar sua configuração a qualquer momento:' },
         {
           kind: 'ul',
           items: [
-            'Aba Geral: agendamento, ações automáticas, ambiente de build e triagem com IA.',
+            'Aba Geral: a stack (altere se a detecção automática errou — sua escolha nunca é sobrescrita depois), pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
+            'Aba Deploy Key: a deploy key do repositório, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Acesso aos repositórios (deploy keys)").',
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
+        { kind: 'p', text: 'Para parar de monitorar um repositório, abra a aba Geral e use "Remover repositório": digite o nome do repositório para confirmar. Os achados, execuções de pipeline, relatórios, deploy keys e aceites de risco dele são apagados definitivamente; o repositório em si não é alterado. Remover exige um papel que possa gerenciar pipelines.' },
+      ],
+    },
+    {
+      id: 'private-repositories',
+      title: 'Acesso aos repositórios (deploy keys)',
+      blocks: [
+        { kind: 'p', text: 'Todo repositório — público ou privado — precisa de uma deploy key: o Artemis só analisa repositórios aos quais você deu acesso de leitura, o que também comprova que o repositório é seu. Adicione o repositório com a URL SSH (por exemplo git@git.example.com:acme/app.git); o Artemis gera uma deploy key SSH somente leitura só para ele e abre a aba Deploy Key. A primeira análise espera até o acesso funcionar.' },
+        {
+          kind: 'ol',
+          items: [
+            'Copie a chave pública exibida na aba Deploy Key.',
+            'Adicione-a ao repositório como deploy key — GitHub: Settings → Deploy keys; GitLab: Settings → Repository → Deploy keys; Bitbucket: Repository settings → Access keys; qualquer outro servidor Git com deploy keys (Gitea, Forgejo, GitLab próprio…): as configurações de deploy keys do repositório. Deixe o acesso de escrita desativado.',
+            'Selecione "Testar acesso". O Artemis confere se consegue ler a branch; o resultado aparece em alguns segundos.',
+            'Com o acesso OK, selecione "Executar análise" para iniciar a primeira análise.',
+          ],
+        },
+        { kind: 'p', text: 'Identidade do servidor: o Artemis só se conecta a um servidor Git cuja chave de host ele confia. GitHub, GitLab e Bitbucket são verificados com as chaves que eles publicam. Para outros servidores, a chave é registrada na primeira vez que você testa o acesso e exibida com a impressão digital — confira se ela corresponde ao seu servidor; as conexões seguintes precisam apresentar a mesma chave.' },
+        { kind: 'p', text: '"Trocar chave" gera uma nova chave e apaga a antiga na hora: adicione a nova chave pública ao repositório e remova a antiga. Remover o repositório também apaga a chave dele.' },
+        {
+          kind: 'table',
+          head: ['Resultado do teste', 'O que fazer'],
+          rows: [
+            ['Permissão negada', 'A chave pública ainda não está no repositório ou foi adicionada a outro repositório. Adicione-a como deploy key e teste de novo.'],
+            ['Repositório ou branch não encontrado', 'Confira a URL SSH e o nome da branch nas configurações do repositório.'],
+            ['Chave de host diferente', 'O servidor apresentou uma chave diferente da registrada. Se você trocou de servidor de propósito, fale com o suporte; caso contrário, não continue.'],
+            ['Tempo esgotado ou inacessível', 'O servidor precisa estar acessível pela internet na porta SSH.'],
+          ],
+        },
+        { kind: 'note', text: 'A chave privada nunca sai do Artemis: ela fica criptografada nos nossos servidores, nunca é exibida nem enviada a você e só é entregue ao scanner isolado durante o clone. Seu código é apagado após cada análise.' },
       ],
     },
     // --- vulnerabilities ---
@@ -672,7 +738,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Referências (NVD, registro do pacote, CWE) e uma linha do tempo do que aconteceu com o achado.',
           ],
         },
-        { kind: 'p', text: 'Use "Alterar status" para marcar o achado como triado, como falso positivo, aceitar o risco ou reabri-lo. A alteração vale para todos os repositórios afetados, é salva imediatamente e registrada na linha do tempo. Um achado marcado como falso positivo, com risco aceito ou corrigido só pode ser reaberto. "Corrigido" é definido automaticamente quando uma análise não detecta mais o problema.' },
+        { kind: 'p', text: 'Use "Alterar status" para marcar o achado como triado, como falso positivo, aceitar o risco ou reabri-lo. A alteração vale para todos os repositórios afetados, é salva imediatamente e registrada na linha do tempo. Um achado marcado como falso positivo, com risco aceito ou corrigido só pode ser reaberto. "Corrigido" é definido automaticamente quando uma análise não detecta mais o problema. Aceitar um risco pede uma justificativa e uma data de expiração e cria uma aceitação de risco (veja Políticas); o quadro de status também mostra o prazo de correção definido pelo SLA.' },
         { kind: 'note', text: 'Aceite um risco apenas quando o código vulnerável não for alcançável ou houver um controle compensatório, e registre o motivo com a sua equipe.' },
       ],
     },
@@ -707,6 +773,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Ignorada', 'A etapa não foi executada porque uma etapa anterior falhou ou a execução foi cancelada.'],
           ],
         },
+        { kind: 'p', text: 'Enquanto uma execução está na fila ou em andamento, a página dela se atualiza sozinha: um painel de progresso mostra qual etapa está rodando (por exemplo "Etapa 3 de 7 — Análise de dependências"), a etapa atual fica destacada com um indicador animado e as etapas concluídas são preenchidas conforme terminam. A lista de execuções de pipeline também se atualiza enquanto houver alguma em andamento.' },
         { kind: 'p', text: 'Selecione "Ver log" em uma etapa para ler a saída da ferramenta; os logs de etapas com falha abrem automaticamente. Selecione a quantidade de achados para ir até Vulnerabilidades. Use "Executar novamente" para iniciar o pipeline de novo ou "Cancelar execução" para interromper um pipeline na fila ou em execução.' },
         { kind: 'p', text: '"Executar novamente" cria uma nova execução do mesmo commit, disparada manualmente por você, usando as configurações atuais de pipeline do repositório — ou seja, inclui as etapas que você ativou ou desativou desde a execução original — e a abre. Cancelar marca como ignoradas as etapas que ainda não tinham terminado. Apenas pipelines na fila ou em execução podem ser cancelados.' },
       ],
@@ -726,7 +793,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Conformidade', 'Achados mapeados para as categorias do OWASP Top 10, útil para auditorias.'],
           ],
         },
-        { kind: 'p', text: 'Para solicitar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período (a última semana, mês ou trimestre completo), e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto". Relatórios de triagem com IA ainda não estão disponíveis.' },
+        { kind: 'p', text: '(Ainda não disponível) Para solicitar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período (a última semana, mês ou trimestre completo), e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto". Relatórios de triagem com IA ainda não estão disponíveis.' },
         { kind: 'p', text: 'Um relatório contém:' },
         {
           kind: 'ul',
@@ -745,14 +812,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'policies',
       title: 'Políticas',
       blocks: [
-        { kind: 'p', text: 'Políticas são regras da organização aplicadas a todos os repositórios. Apenas administradores devem alterá-las.' },
+        { kind: 'p', text: 'Políticas são regras da organização que o Artemis aplica a todos os repositórios. Os papéis que gerenciam pipelines (proprietário, administrador, analista de segurança) as editam; os papéis que fazem triagem gerenciam as aceitações de risco.' },
         {
           kind: 'ul',
           items: [
-            'Critérios do pipeline: o critério de falha padrão de cada etapa. Marque uma etapa como "Obrigatória" para impedir que os repositórios a desativem.',
-            'SLA de correção: o número máximo de dias (de 1 a 365) para corrigir um achado de cada severidade. Os relatórios medem o cumprimento do SLA com base nesses valores.',
-            'Política de licenças: licenças permitidas ou proibidas. Digite o identificador SPDX da licença (por exemplo MPL-2.0) e selecione "Adicionar"; use o X de uma licença para removê-la. Uma licença não pode ser permitida e proibida ao mesmo tempo. Licenças não listadas são reportadas para revisão.',
-            'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa e data de expiração. Eles não falham pipelines até expirarem (no máximo um ano). Selecione "Revogar" para remover uma aceitação imediatamente.',
+            'Critérios do pipeline: o critério de falha mínimo de cada etapa. Um repositório pode escolher um critério mais rígido, mas não mais permissivo — as opções mais permissivas ficam desativadas no editor de pipeline, e as execuções sempre usam o mais rígido dos dois. Marque uma etapa como “Obrigatória” para rodá-la em todos os repositórios: ela mostra “Obrigatória pela política da organização” e não pode ser desligada. Etapas ainda não disponíveis não podem ser obrigatórias.',
+            'SLA de correção: o número máximo de dias (de 1 a 365) para corrigir um achado de cada severidade, contado a partir da primeira detecção. Achados abertos e triados mostram “Vence em N dias” ou “Atrasado” em Vulnerabilidades, a página do achado mostra a data e o painel conta os achados fora do prazo.',
+            'Política de licenças: licenças permitidas ou proibidas (identificadores SPDX como MPL-2.0, sem diferenciar maiúsculas). A etapa de Conformidade de licenças ignora as permitidas, reporta as proibidas com severidade alta e qualquer outra licença restritiva como média, para revisão; a etapa falha conforme o seu critério. Uma licença não pode ser permitida e proibida ao mesmo tempo.',
+            'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa (pelo menos 10 caracteres) e data de expiração (no máximo um ano). Aceite um risco a partir do achado (“Aceitar risco”) ou aqui com “Aceitar um risco”, usando a referência do achado (F-1101) ou uma CVE, que aceita todos os achados abertos dessa CVE no repositório. Achados aceitos nunca falham pipelines. Quando a data passa, o achado é reaberto automaticamente; “Revogar” o reabre na hora, e reabrir um achado aceito remove a sua aceitação.',
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" descarta suas edições e recarrega as políticas salvas.' },
@@ -764,7 +831,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrações',
       blocks: [
-        { kind: 'p', text: 'A página Integrações conecta o Artemis às ferramentas que sua equipe já usa. As integrações são agrupadas por categoria: controle de versão, CI/CD, notificações, gestão de issues e dados de vulnerabilidades.' },
+        { kind: 'p', text: 'A página Integrações conecta o Artemis às ferramentas que sua equipe já usa. As integrações são agrupadas por categoria: controle de versão, CI/CD, notificações, gestão de issues e dados de vulnerabilidades. Hoje só o NIST NVD funciona; as demais integrações aparecem como “Ainda não disponível” até serem lançadas.' },
         {
           kind: 'ul',
           items: [
@@ -774,8 +841,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
-        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis usa para clonar repositórios, com impressão digital, repositório e último uso. Selecione "Adicionar chave" para registrar uma nova chave pública para um repositório, ou "Revogar" para remover uma chave que não é mais necessária. Remova a chave também do repositório no seu provedor Git.' },
-        { kind: 'note', text: 'Cole apenas a chave pública (o conteúdo do arquivo .pub). O Artemis aceita chaves ed25519, ECDSA e RSA de pelo menos 2048 bits, calcula a impressão digital SHA256 e rejeita chaves privadas e chaves já cadastradas para o mesmo repositório.' },
+        { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar seus repositórios (cada repositório tem a sua), com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Deploy Key de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
+        { kind: 'note', text: 'Chaves marcadas como "Só chave pública" foram adicionadas antes de o Artemis gerar chaves. O Artemis não tem a chave privada delas, então nunca são usadas para clonar; gere uma chave na aba Deploy Key do repositório.' },
       ],
     },
     {
@@ -783,7 +850,8 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Equipe e papéis',
       blocks: [
         { kind: 'p', text: 'A página Equipe lista todos os membros da organização com papel, última atividade e status. Proprietários e administradores mudam o papel de um membro escolhendo um novo na coluna Papel. Ninguém pode mudar o próprio papel, e o papel de proprietário nunca é atribuído ali: o proprietário seleciona "Tornar proprietário" ao lado de um membro ativo para transferir a propriedade, passando a ser administrador.' },
-        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Um endereço que já pertence a um membro ou já tem convite pendente é recusado. A pessoa convidada vê o convite na página Organizações depois de entrar ou se cadastrar com esse e-mail (o Artemis ainda não envia e-mails de convite). Convites expiram em 7 dias; "Reenviar" renova o prazo e "Revogar" cancela o convite.' },
+        { kind: 'p', text: 'Proprietários e administradores podem mudar o papel de um membro a qualquer momento pelo seletor de papel na lista de membros, ou remover o membro com “Remover”. Só o proprietário gerencia administradores: administradores podem mudar e remover analistas, desenvolvedores e leitores, mas não podem promover ninguém a administrador, mudar o papel de outro administrador nem remover um administrador. Sempre há exatamente um proprietário; para passar a organização adiante, o proprietário usa Configurações → Zona de perigo → “Transferir propriedade” e passa a ser administrador. Ninguém pode mudar o próprio papel nem se remover (use “Sair da organização” em Configurações).' },
+        { kind: 'p', text: 'Para adicionar alguém, selecione "Convidar membro", informe o e-mail e escolha um papel. Um endereço que já pertence a um membro ou já tem convite pendente é recusado. Em seguida o Artemis mostra um link de convite de uso único — copie-o e envie você mesmo para a pessoa (o Artemis ainda não envia convites por e-mail). O link só aparece uma vez, funciona uma vez e expira em 7 dias; "Novo link" gera um link novo (o antigo deixa de funcionar) e "Revogar" cancela o convite.' },
         {
           kind: 'table',
           head: ['Papel', 'Indicado para'],
@@ -795,15 +863,15 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Leitor', 'Acesso somente leitura a achados e relatórios.'],
           ],
         },
-        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer. O Artemis aplica essas regras em todas as requisições:' },
+        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer nesta organização, e o Artemis aplica essas regras em todas as requisições. Proprietários e administradores podem alterá-la: clique em uma célula para alternar entre ✓ (permitido) e – (não permitido) e selecione "Salvar permissões"; a mudança vale para todos com aquele papel na próxima ação. Administradores podem alterar analistas, desenvolvedores e leitores, mas só o proprietário altera as permissões de administrador. Algumas células são fixas: o proprietário sempre tem todas as permissões, todo papel pode ver os achados e a assinatura (plano, propriedade, exclusão da organização) fica com o proprietário. Organizações novas começam com estes padrões:' },
         {
           kind: 'table',
           head: ['Permissão', 'O que permite', 'Papéis'],
           rows: [
             ['Ver achados e relatórios', 'Ver todas as páginas da organização', 'Todos os papéis'],
             ['Triar achados', 'Mudar o status de achados, gerenciar aceites de risco, gerar relatórios', 'Proprietário, Administrador, Analista de segurança, Desenvolvedor'],
-            ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
-            ['Gerenciar integrações', 'Integrações, deploy keys e tokens de API', 'Proprietário, Administrador'],
+            ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, testar o acesso a repositórios, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
+            ['Gerenciar integrações', 'Integrações, gerar, trocar e revogar deploy keys, tokens de API', 'Proprietário, Administrador'],
             ['Gerenciar equipe', 'Convites, papéis e configurações da organização', 'Proprietário, Administrador'],
             ['Gerenciar cobrança', 'Mudar o plano, transferir a propriedade, excluir a organização', 'Proprietário'],
           ],
@@ -820,10 +888,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Geral: nome da organização, identificador na URL, idioma padrão e fuso horário. Cada membro ainda pode escolher o próprio idioma na barra superior.',
-            'Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
-            'Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
-            'Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
-            'Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
+            '(Ainda não disponível) Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
+            '(Ainda não disponível) Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
+            '(Ainda não disponível) Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
+            '(Ainda não disponível) Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
             'Zona de perigo: membros que não são o proprietário podem sair da organização. O proprietário pode excluí-la digitando o nome exato — isso apaga permanentemente todos os repositórios, achados, execuções de pipeline, relatórios, políticas, integrações, tokens e vínculos de membros, sem possibilidade de desfazer.',
           ],
         },

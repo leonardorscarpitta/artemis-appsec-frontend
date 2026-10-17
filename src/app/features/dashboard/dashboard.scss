@@ -143,3 +143,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.error {
+  margin: 0 0 1rem;
+  color: var(--sev-critical);
+}
+
+.stat .overdue {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sev-critical);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.stat .sub {
+  font-size: 0.8rem;
+}

@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, afterNextRender, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Auth } from '../../core/auth/auth';
@@ -29,6 +29,12 @@ export class Login {
   protected readonly failed = signal(false);
   protected readonly authority = environment.auth.authority;
   protected readonly localCertificate = environment.auth.localCertificate;
+
+  constructor() {
+    // The sign-in form itself is Keycloak's page with the Artemis theme; this page only remains as the fallback
+    // (identity provider unreachable, retry, create an account).
+    afterNextRender(() => void this.signIn());
+  }
 
   protected async signIn(): Promise<void> {
     this.redirecting.set(true);

@@ -42,7 +42,7 @@
             </td>
             <td [attr.data-label]="i18n.t('policies.required')">
               <label class="check">
-                <input type="checkbox" [checked]="gate.required" (change)="toggleRequired(gate.stage)" />
+                <input type="checkbox" [checked]="gate.required" [disabled]="!available(gate.stage)" [title]="available(gate.stage) ? '' : i18n.t('pipe.unavailable')" (change)="toggleRequired(gate.stage)" />
                 <span class="sr-only">{{ i18n.t('policies.required') }}: {{ stageName(gate.stage) }}</span>
               </label>
             </td>
@@ -119,12 +119,49 @@
         <h2 id="exceptions-title">{{ i18n.t('policies.exceptions.title') }}</h2>
         <p class="muted desc">{{ i18n.t('policies.exceptions.desc') }}</p>
       </div>
+      @if (canTriage() && !accepting()) {
+        <button type="button" class="btn" (click)="accepting.set(true)">{{ i18n.t('policies.exceptions.add') }}</button>
+      }
     </div>
+    @if (accepting()) {
+      <form #acceptForm class="accept-form" (submit)="$event.preventDefault(); acceptRisk(acceptForm)" novalidate>
+        <div class="field">
+          <label for="accept-finding">{{ i18n.t('policies.exceptions.finding') }}</label>
+          <input id="accept-finding" name="finding" class="input mono" type="text" maxlength="64" required placeholder="F-1101 · CVE-2024-12345" />
+        </div>
+        <div class="field">
+          <label for="accept-repository">{{ i18n.t('col.repository') }}</label>
+          <select id="accept-repository" name="repository" class="input" required>
+            @for (r of repositories.value(); track r.id) {
+              <option [value]="r.name">{{ r.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="field wide">
+          <label for="accept-justification">{{ i18n.t('policies.exceptions.justification') }}</label>
+          <textarea id="accept-justification" name="justification" class="input" rows="2" minlength="10" maxlength="1000" required></textarea>
+        </div>
+        <div class="field">
+          <label for="accept-expires">{{ i18n.t('policies.exceptions.expires') }}</label>
+          <input id="accept-expires" name="expiresAt" class="input" type="date" required [min]="tomorrow" [max]="maxExpiry" />
+        </div>
+        <div class="form-actions">
+          @if (acceptError(); as message) {
+            <span class="error" role="alert">{{ message }}</span>
+          }
+          <button type="button" class="btn ghost" (click)="accepting.set(false); acceptError.set(null)">{{ i18n.t('rs.cancel') }}</button>
+          <button type="submit" class="btn primary">{{ i18n.t('policies.exceptions.submit') }}</button>
+        </div>
+      </form>
+    }
+    @if (listError(); as message) {
+      <p class="error list-error" role="alert">{{ message }}</p>
+    }
     @if (acceptances.value()?.length) {
       <table class="table stack exceptions">
         <thead>
           <tr>
-            <th scope="col">{{ i18n.t('col.cve') }}</th>
+            <th scope="col">{{ i18n.t('policies.exceptions.finding') }}</th>
             <th scope="col">{{ i18n.t('col.repository') }}</th>
             <th scope="col">{{ i18n.t('policies.exceptions.justification') }}</th>
             <th scope="col">{{ i18n.t('policies.exceptions.approvedBy') }}</th>
@@ -136,14 +173,22 @@
           @for (e of acceptances.value(); track e.id) {
             <tr>
               <td class="primary-cell">
-                <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + e.cve" target="_blank" rel="noopener">{{ e.cve }}</a>
+                @if (e.findingId) {
+                  <a class="mono" [routerLink]="['/vulnerabilities', e.findingId] | orgLink">{{ e.reference }}</a>
+                  @if (e.cve) {
+                    <span class="mono muted"> · {{ e.cve }}</span>
+                  }
+                  <div class="muted finding-title">{{ e.title }}</div>
+                } @else {
+                  <span class="mono">{{ e.cve }}</span>
+                }
               </td>
               <td [attr.data-label]="i18n.t('col.repository')">{{ e.repository }}</td>
               <td class="justification" [attr.data-label]="i18n.t('policies.exceptions.justification')">{{ e.justification }}</td>
               <td [attr.data-label]="i18n.t('policies.exceptions.approvedBy')">{{ e.approvedBy }}</td>
-              <td class="mono" [attr.data-label]="i18n.t('policies.exceptions.expires')">{{ e.expiresAt }}</td>
+              <td class="mono" [class.expired]="e.expired" [attr.data-label]="i18n.t('policies.exceptions.expires')">{{ e.expiresAt }}</td>
               <td class="num" data-label="">
-                <button type="button" class="btn revoke" [disabled]="!canTriage()" [title]="canTriage() ? '' : org.reason('triage')" [attr.aria-label]="i18n.t('policies.exceptions.revoke') + ' ' + e.cve" (click)="revoke(e)">
+                <button type="button" class="btn revoke" [disabled]="!canTriage()" [title]="canTriage() ? '' : org.reason('triage')" [attr.aria-label]="i18n.t('policies.exceptions.revoke') + ' ' + (e.reference ?? e.cve)" (click)="revoke(e)">
                   {{ i18n.t('policies.exceptions.revoke') }}
                 </button>
               </td>

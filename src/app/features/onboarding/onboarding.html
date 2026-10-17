@@ -20,16 +20,6 @@
 <section class="card panel">
   @switch (step()) {
     @case (0) {
-      <h2>{{ i18n.t('ob.ssh.title') }}</h2>
-      <p class="muted">{{ i18n.t('ob.ssh.desc') }}</p>
-      <div class="field">
-        <label for="ssh">{{ i18n.t('ob.ssh.label') }}</label>
-        <textarea id="ssh" class="input" aria-describedby="ssh-hint" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... dev@acme"></textarea>
-        <span id="ssh-hint" class="hint">{{ i18n.t('ob.ssh.hint') }}</span>
-      </div>
-      <button type="button" class="btn">{{ i18n.t('ob.ssh.generate') }}</button>
-    }
-    @case (1) {
       <h2>{{ i18n.t('ob.repo.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.repo.desc') }}</p>
       <div class="grid-2">
@@ -39,7 +29,7 @@
             id="repo"
             class="input mono"
             type="text"
-            placeholder="https://github.com/acme/project.git"
+            placeholder="git@git.example.com:acme/project.git"
             required
             [value]="url()"
             (input)="url.set(input($event.target))"
@@ -48,46 +38,58 @@
           />
           @if (showErrors() && !urlValid()) {
             <span id="repo-error" class="error-text">{{ i18n.t('ob.repo.invalid') }}</span>
-          } @else if (isSsh()) {
-            <span class="hint warn">{{ i18n.t('ob.repo.sshLater') }}</span>
           } @else {
-            <span class="hint">{{ i18n.t('ob.repo.publicHint') }}</span>
+            <span class="hint">{{ i18n.t('ob.repo.sshHint') }}</span>
           }
         </div>
         <div class="field">
           <label for="branch">{{ i18n.t('ob.repo.branch') }}</label>
           <input id="branch" class="input mono" type="text" required [value]="branch()" (input)="branch.set(input($event.target))" />
         </div>
+        <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
       </div>
     }
-    @case (2) {
+    @case (1) {
       <h2>{{ i18n.t('ob.settings.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.settings.desc') }}</p>
 
       <app-scan-settings [(settings)]="settings" />
     }
-    @case (3) {
+    @case (2) {
       <h2>{{ i18n.t('ob.pipeline.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.pipeline.desc') }}</p>
       <app-pipeline-editor [(stages)]="pipeline" />
     }
-    @case (4) {
+    @case (3) {
       <h2>{{ i18n.t('ob.detect.title') }}</h2>
       <p class="muted">{{ i18n.t('ob.detect.desc') }}</p>
-      <fieldset>
-        <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
-        <div class="stacks">
-          @for (s of stacks; track s) {
-            <label class="stack-option" [class.detected]="s === stack()">
-              <input type="radio" name="stack" [checked]="s === stack()" (change)="stack.set(s)" />
-              <strong>{{ s }}</strong>
-            </label>
+      @if (monorepo()) {
+        <p>{{ i18n.t('ob.detect.monorepo') }}</p>
+        <ul class="folder-list">
+          @for (f of settings().folders; track f.path) {
+            <li><span class="mono">{{ f.path }}</span> <span class="tag">{{ f.stack }}</span></li>
           }
-        </div>
-        @if (showErrors() && !stack()) {
-          <span class="error-text" role="alert">{{ i18n.t('ob.detect.required') }}</span>
-        }
-      </fieldset>
+        </ul>
+      } @else {
+        <label class="stack-option auto" [class.detected]="stack() === 'auto'">
+          <input type="radio" name="stack" [checked]="stack() === 'auto'" (change)="stack.set('auto')" />
+          <span>
+            <strong>{{ i18n.t('ob.detect.auto') }}</strong>
+            <span class="muted">{{ i18n.t('ob.detect.autoDesc') }}</span>
+          </span>
+        </label>
+        <fieldset>
+          <legend class="sub">{{ i18n.t('ob.detect.supported') }}</legend>
+          <div class="stacks">
+            @for (s of stacks; track s) {
+              <label class="stack-option" [class.detected]="s === stack()">
+                <input type="radio" name="stack" [checked]="s === stack()" (change)="stack.set(s)" />
+                <strong>{{ s }}</strong>
+              </label>
+            }
+          </div>
+        </fieldset>
+      }
       @if (submitError(); as error) {
         <p class="error-text" role="alert">{{ error }}</p>
       }

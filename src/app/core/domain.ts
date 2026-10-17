@@ -2,7 +2,13 @@ import type { TranslationKey } from './i18n';
 
 export type Severity = 'critical' | 'high' | 'medium' | 'low';
 export type FindingStatus = 'open' | 'triaged' | 'falsePositive' | 'accepted' | 'fixed';
-export type Stack = 'React' | 'Angular' | 'Java + Spring';
+export type Stack =
+  | 'React'
+  | 'Angular'
+  | 'Java + Spring'
+  | 'Python + Flask'
+  | 'Python + FastAPI'
+  | 'Python + Django';
 
 export const STATUS_KEYS: Record<FindingStatus, TranslationKey> = {
   open: 'status.open',

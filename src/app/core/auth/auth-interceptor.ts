@@ -2,12 +2,12 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { apiPath } from '../api/api';
 import { Auth } from './auth';
 
 /** Sends the access token to the Artemis API and restarts the login when it is rejected. */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith(environment.apiUrl)) return next(req);
+  if (apiPath(req.url) === null) return next(req);
   const auth = inject(Auth);
   const router = inject(Router);
   const token = auth.accessToken();

@@ -1,5 +1,8 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import { Component, computed, effect, inject, model, signal } from '@angular/core';
+import { Policies, StageGate, policiesUrl } from '../core/api/policies';
 import { I18n } from '../core/i18n';
+import { OrgContext } from '../core/org/org-context';
 import {
   CiProvider,
   FAIL_THRESHOLDS,
@@ -23,6 +26,33 @@ export class PipelineEditor {
   protected readonly i18n = inject(I18n);
 
   readonly stages = model.required<PipelineStage[]>();
+  private readonly org = inject(OrgContext);
+
+  // The organization policy: required stages stay on and thresholds cannot be looser than its minimum.
+  private readonly policy = httpResource<Policies>(() => (this.org.slug() ? policiesUrl() : undefined));
+  private readonly gates = computed(
+    () => new Map<StageId, StageGate>((this.policy.value()?.stages ?? []).map((g) => [g.stage, g])),
+  );
+
+  constructor() {
+    effect(() => {
+      const gates = this.gates();
+      if (!gates.size) return;
+      const current = this.stages();
+      const normalized = enforce(current, gates);
+      if (normalized.some((s, i) => s !== current[i])) this.stages.set(normalized);
+    });
+  }
+
+  protected required(stage: PipelineStage): boolean {
+    return stage.available !== false && !!this.gates().get(stage.id)?.required;
+  }
+
+  /** Thresholds looser than the organization minimum cannot be picked. */
+  protected tooLoose(stage: PipelineStage, threshold: FailThreshold): boolean {
+    const minimum = this.gates().get(stage.id)?.failOn;
+    return !!minimum && FAIL_THRESHOLDS.indexOf(threshold) < FAIL_THRESHOLDS.indexOf(minimum);
+  }
 
   protected readonly phases = PHASES;
   protected readonly thresholds = FAIL_THRESHOLDS;
@@ -64,7 +94,7 @@ export class PipelineEditor {
   }
 
   protected setPreset(preset: Preset): void {
-    this.stages.update((stages) => applyPreset(stages, preset));
+    this.stages.update((stages) => enforce(applyPreset(stages, preset), this.gates()));
   }
 
   protected patch(id: StageId, change: Partial<PipelineStage>): void {
@@ -88,4 +118,16 @@ export class PipelineEditor {
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 2000);
   }
+}
+
+/** Applies the organization's stage gates to a pipeline (unchanged stages keep their identity). */
+function enforce(stages: PipelineStage[], gates: Map<StageId, StageGate>): PipelineStage[] {
+  return stages.map((stage) => {
+    const gate = gates.get(stage.id);
+    if (!gate || stage.available === false) return stage;
+    const enabled = stage.enabled || gate.required;
+    const looser =
+      !!gate.failOn && !!stage.failOn && FAIL_THRESHOLDS.indexOf(stage.failOn) < FAIL_THRESHOLDS.indexOf(gate.failOn);
+    return enabled === stage.enabled && !looser ? stage : { ...stage, enabled, failOn: looser ? gate.failOn : stage.failOn };
+  });
 }

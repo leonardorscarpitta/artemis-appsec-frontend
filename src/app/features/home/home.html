@@ -1,14 +1,16 @@
 <header class="site-header">
   <div class="container bar">
     <a routerLink="/" class="brand"><app-logo /></a>
-    <nav class="sections" [attr.aria-label]="c().nav.menu">
-      <a routerLink="/" fragment="product">{{ c().nav.product }}</a>
-      <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
-      <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
-      <a routerLink="/" fragment="pricing">{{ c().nav.pricing }}</a>
-      <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
-      <a routerLink="/docs">{{ c().footer.docs }}</a>
-    </nav>
+    @if (!auth.isAuthenticated()) {
+      <nav class="sections" [attr.aria-label]="c().nav.menu">
+        <a routerLink="/" fragment="product">{{ c().nav.product }}</a>
+        <a routerLink="/" fragment="how">{{ c().nav.how }}</a>
+        <a routerLink="/" fragment="pipeline">{{ c().nav.pipeline }}</a>
+        <a routerLink="/" fragment="pricing">{{ c().nav.pricing }}</a>
+        <a routerLink="/" fragment="faq">{{ c().nav.faq }}</a>
+        <a routerLink="/docs">{{ c().footer.docs }}</a>
+      </nav>
+    }
     <div class="actions">
       <app-lang-switch />
       <app-theme-toggle />
@@ -26,7 +28,25 @@
 <main>
   @if (auth.isAuthenticated()) {
     <app-home-workspace />
+    <!-- Signed-in users come here for their workspace: the product presentation stays available, collapsed. -->
+    <details class="about" #about>
+      <summary>
+        <span class="container about-summary">
+          <span>
+            <strong>{{ i18n.t('home.about.title') }}</strong>
+            <span class="muted">{{ i18n.t('home.about.desc') }}</span>
+          </span>
+          <span class="about-toggle" aria-hidden="true">▾</span>
+        </span>
+      </summary>
+      <ng-container [ngTemplateOutlet]="presentation" />
+    </details>
+  } @else {
+    <ng-container [ngTemplateOutlet]="presentation" />
   }
+</main>
+
+<ng-template #presentation>
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
@@ -209,7 +229,7 @@
       }
     </div>
   </section>
-</main>
+</ng-template>
 
 <footer class="site-footer">
   <div class="container footer-grid">

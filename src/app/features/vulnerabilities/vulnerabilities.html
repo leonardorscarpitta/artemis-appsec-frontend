@@ -5,6 +5,10 @@
   </div>
 </header>
 
+@if (orgSummary.noRepositories()) {
+<app-no-repositories />
+} @else {
+
 <section class="card filters" [attr.aria-label]="i18n.t('vuln.filters')">
   <div class="field search">
     <label for="vuln-search">{{ i18n.t('vuln.search') }}</label>
@@ -96,7 +100,12 @@
             <td class="mono where" [attr.data-label]="i18n.t('col.where')">{{ packageLabel(f) }}</td>
             <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>
             <td [attr.data-label]="i18n.t('col.severity')"><app-severity-badge [cvss]="f.cvss" [level]="f.severity" /></td>
-            <td [attr.data-label]="i18n.t('col.status')"><app-status-label [status]="f.status" /></td>
+            <td [attr.data-label]="i18n.t('col.status')">
+              <app-status-label [status]="f.status" />
+              @if (f.dueAt && (f.status === 'open' || f.status === 'triaged')) {
+                <span class="due" [class.overdue]="f.overdue" [title]="i18n.t('vuln.dueOn') + ' ' + (f.dueAt | date: 'yyyy-MM-dd')">{{ dueLabel(f.dueAt, f.overdue) }}</span>
+              }
+            </td>
             <td class="muted" [attr.data-label]="i18n.t('col.detected')">{{ f.detectedAt | date: 'yyyy-MM-dd' }}</td>
           </tr>
         }
@@ -115,4 +124,5 @@
 </section>
 } @else {
   <app-request-state [resource]="results" />
+}
 }
