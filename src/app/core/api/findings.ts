@@ -91,6 +91,11 @@ export interface DashboardSummary {
   topRepositories: { repository: string; total: number; critical: number; high: number; medium: number; low: number }[];
 }
 
+export interface BulkStatusResult {
+  updated: number;
+  skipped: number;
+}
+
 export const findingsUrl = () => apiUrl('/findings');
 export const findingUrl = (id: string) => apiUrl(`/findings/${encodeURIComponent(id)}`);
 export const dashboardUrl = () => apiUrl('/dashboard/summary');
@@ -133,6 +138,11 @@ export class FindingsApi {
   }
 
   /** Accepting a risk needs a justification (note, 10+ characters) and an expiry date (yyyy-MM-dd). */
+  /** Same change for several findings; those that can't take it are skipped. */
+  changeStatuses(ids: string[], status: FindingStatus, note?: string, expiresAt?: string): Observable<BulkStatusResult> {
+    return this.http.post<BulkStatusResult>(`${findingsUrl()}/status`, { ids, status, note: note ?? null, expiresAt: expiresAt ?? null });
+  }
+
   changeStatus(id: string, status: FindingStatus, note?: string, expiresAt?: string): Observable<FindingDetails> {
     return this.http.post<FindingDetails>(`${findingUrl(id)}/status`, { status, note: note ?? null, expiresAt: expiresAt ?? null });
   }
