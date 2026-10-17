@@ -1,0 +1,59 @@
+@let o = org();
+<article class="card org">
+  <a class="org-main" [routerLink]="['/', o.slug, 'dashboard']">
+    <span class="org-avatar" aria-hidden="true">{{ o.name.slice(0, 2).toUpperCase() }}</span>
+    <span class="org-text">
+      <strong>{{ o.name }}</strong>
+      <span class="mono muted">/{{ o.slug }}</span>
+    </span>
+    <span class="tags">
+      <span class="tag">{{ roleLabel(o.role) }}</span>
+      <span class="tag" [class.pro]="o.plan === 'pro'">{{ planLabel(o.plan) }}</span>
+    </span>
+  </a>
+
+  @if (summary.value(); as s) {
+    <dl class="stats">
+      <div>
+        <dt>{{ i18n.t('home.ws.openFindings') }}</dt>
+        <dd>{{ s.openFindings }}</dd>
+      </div>
+      <div [class.alert]="s.criticalFindings > 0">
+        <dt>{{ i18n.t('home.ws.critical') }}</dt>
+        <dd>{{ s.criticalFindings }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('nav.repositories') }}</dt>
+        <dd>{{ s.repositories }}</dd>
+      </div>
+    </dl>
+    <div class="meta">
+      @if (usage(); as u) {
+        <div class="usage" [attr.aria-label]="i18n.t('home.ws.scansUsed')">
+          <span class="muted">{{ i18n.t('home.ws.scansUsed') }}</span>
+          <span class="usage-value">{{ u.scansThisMonth }} / {{ u.scanLimit }}</span>
+          <span class="meter" aria-hidden="true"><span [style.width.%]="usagePercent()" [class.full]="usagePercent() >= 90"></span></span>
+        </div>
+      }
+      <span class="muted last-scan">
+        {{ i18n.t('home.ws.lastScan') }}:
+        @if (s.lastScanAt) {
+          {{ s.lastScanAt | date: 'yyyy-MM-dd HH:mm' }}
+        } @else {
+          {{ i18n.t('home.ws.never') }}
+        }
+      </span>
+    </div>
+  } @else if (summary.error()) {
+    <p class="muted stats-error">{{ i18n.t('home.ws.statsUnavailable') }}</p>
+  } @else {
+    <div class="stats skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+  }
+
+  <nav class="org-links" [attr.aria-label]="o.name">
+    <a [routerLink]="['/', o.slug, 'dashboard']">{{ i18n.t('nav.dashboard') }}</a>
+    <a [routerLink]="['/', o.slug, 'vulnerabilities']">{{ i18n.t('nav.vulnerabilities') }}</a>
+    <a [routerLink]="['/', o.slug, 'repositories']">{{ i18n.t('nav.repositories') }}</a>
+    <a [routerLink]="['/', o.slug, 'pipelines']">{{ i18n.t('nav.pipelines') }}</a>
+  </nav>
+</article>

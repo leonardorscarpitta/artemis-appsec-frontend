@@ -95,7 +95,14 @@
   <section class="card form-card" aria-labelledby="orgs-create">
     <h2 id="orgs-create">{{ i18n.t('orgs.create') }}</h2>
     <p class="muted">{{ i18n.t('orgs.createDesc') }}</p>
-    <form (submit)="create($event)" novalidate>
+    @if (freeOwned(); as free) {
+      <p class="warning-notice" role="note">
+        <strong>{{ i18n.t('home.ws.limitTitle') }}</strong>
+        {{ i18n.t('home.ws.limitDesc').replace('{name}', free.name) }}
+        <a [routerLink]="['/', free.slug, 'billing']">{{ i18n.t('home.ws.upgrade') }} →</a>
+      </p>
+    }
+    <form (submit)="create($event)" novalidate [attr.inert]="freeOwned() ? '' : null" [class.locked]="freeOwned()">
       <div class="field">
         <label for="org-name">{{ i18n.t('orgs.name') }}</label>
         <input
@@ -121,7 +128,7 @@
       }
       <p class="hint">{{ i18n.t('orgs.ownerHint') }}</p>
       <div>
-        <button type="submit" class="btn primary" [disabled]="creating()">{{ i18n.t('orgs.createButton') }}</button>
+        <button type="submit" class="btn primary" [disabled]="creating() || !!freeOwned()">{{ i18n.t('orgs.createButton') }}</button>
       </div>
     </form>
   </section>
