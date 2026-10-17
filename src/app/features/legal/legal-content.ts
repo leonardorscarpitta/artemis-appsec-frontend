@@ -11,7 +11,7 @@ export interface LegalText {
 }
 
 const CONTACT = 'privacy@artemisappsec.papopromines.com.br';
-const UPDATED = '2026-10-16';
+const UPDATED = '2026-10-17';
 
 export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
   privacy: {
@@ -317,6 +317,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Plans and payments',
           blocks: [
             { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0, up to 90 scans per month) and PRO (R$ 24,99 per month, in Brazilian reais, up to 300 scans per month), which adds AI-assisted triage. Each pipeline run counts as one scan; once the monthly limit is reached, new runs are refused until the next calendar month. Billing is not enabled yet, so every organization currently uses the Free plan.' },
+            { kind: 'p', text: 'On the PRO plan you can schedule scans of a repository (every 6 hours, 24 hours or 7 days). Scheduled scans are started by Artemis on your behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
             { kind: 'p', text: 'When payments become available, prices and conditions will always be shown before any charge, nothing will be charged without your explicit agreement, and you will be able to cancel or switch back to Free at any time.' },
           ],
         },
@@ -438,6 +439,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Planos e pagamentos',
           blocks: [
             { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0, até 90 análises por mês) e PRO (R$ 24,99 por mês, até 300 análises por mês), que adiciona triagem com IA. Cada execução de pipeline conta como uma análise; ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
+            { kind: 'p', text: 'No plano PRO você pode agendar análises de um repositório (a cada 6 horas, 24 horas ou 7 dias). As análises agendadas são iniciadas pelo Artemis em seu nome, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
             { kind: 'p', text: 'Quando os pagamentos estiverem disponíveis, preços e condições serão sempre exibidos antes de qualquer cobrança, nada será cobrado sem a sua concordância expressa e você poderá cancelar ou voltar ao Free a qualquer momento.' },
           ],
         },

@@ -121,7 +121,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            '(Not available yet) Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
+            'Scan schedule (PRO plan): every 6 hours, 24 hours or 7 days Artemis queues a scan of the default branch by itself — shown as “Scheduled” on the Pipelines page, by “Artemis scheduler”. The settings show the next scheduled scan in your time zone. Scheduled scans count toward the monthly scan limit and run like manual ones (access check, policies); a scan is skipped until the next interval when the limit is reached, access is not verified or a run of the repository is still queued or running. On the Free plan the control is locked and scans run only when someone selects Run scan; a schedule saved earlier is kept but inactive. “On every push” is not available yet (it needs webhooks).',
             '(Not available yet) Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
             '(Not available yet) Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
             'AI triage: automatic review of findings to flag likely false positives and generate reports. It will be part of the PRO plan and is not available yet — the option is shown locked and links to Billing.',
@@ -584,7 +584,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            '(Ainda não disponível) Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
+            'Agendamento de análises (plano PRO): a cada 6 horas, 24 horas ou 7 dias o Artemis coloca na fila, sozinho, uma análise da branch padrão — exibida como “Agendada” na página Pipelines, por “Artemis scheduler”. As configurações mostram a próxima análise agendada no seu fuso horário. As análises agendadas contam no limite mensal de análises e rodam como as manuais (verificação de acesso, políticas); uma análise é pulada até o próximo intervalo quando o limite foi atingido, o acesso não está verificado ou uma execução do repositório ainda está na fila ou rodando. No plano Free o controle fica bloqueado e as análises só rodam quando alguém seleciona Executar análise; um agendamento salvo antes é mantido, mas fica inativo. “A cada push” ainda não está disponível (exige webhooks).',
             '(Ainda não disponível) Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
             '(Ainda não disponível) Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
             'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Fará parte do plano PRO e ainda não está disponível — a opção aparece bloqueada e leva à página de Assinatura.',

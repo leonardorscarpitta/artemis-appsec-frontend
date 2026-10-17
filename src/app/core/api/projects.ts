@@ -6,7 +6,8 @@ import { Stack } from '../domain';
 import { apiUrl } from './api';
 import { RunDetails } from './pipeline-runs';
 
-export type ScanSchedule = 'push' | '6h' | '24h' | '7d';
+/** `6h`, `24h` and `7d` are timed schedules (PRO); `push` needs webhooks (not available yet). */
+export type ScanSchedule = 'manual' | 'push' | '6h' | '24h' | '7d';
 export type AutomaticAction = 'issue' | 'email' | 'block';
 export type DockerfileMode = 'recommended' | 'custom';
 
@@ -22,6 +23,8 @@ export interface ProjectSummary {
   /** Monorepo folders scanned on their own stack; empty scans the whole repository. */
   folders: ProjectFolder[];
   schedule: ScanSchedule;
+  /** Next scheduled scan (UTC) for timed schedules; it runs only on plans with scheduled scans. */
+  nextScanAt: string | null;
   lastScanAt: string | null;
   openFindings?: number;
   /** `ssh` = cloned with an Artemis-generated deploy key (every repository since SSH-only). */
@@ -96,7 +99,7 @@ export interface CreateProject {
 type StageUpdate = Pick<PipelineStage, 'id' | 'enabled' | 'tool' | 'failOn'>;
 
 export const DEFAULT_SETTINGS: ProjectSettings = {
-  schedule: '24h',
+  schedule: 'manual',
   automaticActions: ['issue', 'email'],
   dockerfileMode: 'recommended',
   customDockerfile: null,

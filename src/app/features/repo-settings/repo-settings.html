@@ -85,7 +85,7 @@
         }
         <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
         <hr />
-        <app-scan-settings [(settings)]="settings" />
+        <app-scan-settings [(settings)]="settings" [savedSchedule]="repo.schedule" [nextScanAt]="repo.nextScanAt" />
       }
       @case ('pipeline') {
         <app-pipeline-editor [(stages)]="pipeline" />
