@@ -91,7 +91,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/reports`, `/reports/:id` | Reports list and printable report view |
 | `/onboarding` | 4-step flow: repository (SSH URL, branch, monorepo folders) → settings → pipeline → stack; then the repository's Deploy Key tab |
 | `/integrations` | Integrations and the list of SSH deploy keys (generated per repository; revoke only — no pasting) |
-| `/policies` | Pipeline gates, remediation SLAs, license policy, risk acceptances |
+| `/policies` | Pipeline gates (minimum thresholds + required stages, enforced by `shared/pipeline-editor.ts` via `GET /policies`), remediation SLAs (findings carry `dueAt`/`overdue`), license policy, risk acceptances (create by finding reference or CVE; accepting from a finding asks for justification + expiry) |
 | `/team` | Members, invitations, roles and permissions, ownership transfer |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
 | `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
