@@ -12,7 +12,8 @@ import { ScanSettings } from '../../shared/scan-settings';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { RoleNotice } from '../../shared/role-notice';
-import { MonorepoFolders, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
+import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
+import { Stack } from '../../core/domain';
 import { RepoAccess } from './repo-access';
 
 type Tab = 'general' | 'pipeline' | 'access';
@@ -70,6 +71,13 @@ export class RepoSettings {
         this.removeError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
       },
     });
+  }
+
+  protected readonly stacks = STACKS;
+
+  protected setStack(event: Event): void {
+    const stack = ((event.target as HTMLSelectElement).value || null) as Stack | null;
+    this.settings.update((s) => ({ ...s, stack }));
   }
 
   protected setFolders(folders: ProjectFolder[]): void {

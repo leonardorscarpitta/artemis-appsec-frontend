@@ -15,7 +15,10 @@ export interface ProjectSummary {
   name: string;
   url: string;
   branch: string;
-  stack: Stack;
+  /** Null while automatic detection has not run yet (`stackSource: 'pending'`). */
+  stack: Stack | null;
+  /** `detected` = set from the repository files; `manual` = chosen by a user (never overridden). */
+  stackSource: StackSource;
   /** Monorepo folders scanned on their own stack; empty scans the whole repository. */
   folders: ProjectFolder[];
   schedule: ScanSchedule;
@@ -28,6 +31,7 @@ export interface ProjectSummary {
 }
 
 export type RepositoryAccessType = 'public' | 'ssh';
+export type StackSource = 'pending' | 'detected' | 'manual';
 export type AccessStatus = 'pending' | 'verified' | 'failed';
 export type AccessCheckStatus = 'queued' | 'running' | 'ok' | 'failed';
 
@@ -64,6 +68,8 @@ export interface ProjectSettings {
   folders: ProjectFolder[];
   /** Published image scanned by the image stage, e.g. ghcr.io/acme/app:1.4; null skips that stage. */
   containerImage: string | null;
+  /** Stack of a non-monorepo repository; changing it makes it a manual choice. */
+  stack?: Stack | null;
 }
 
 /** `stack` is null only while the user has not picked one in the form. */
@@ -81,7 +87,8 @@ export interface ProjectDetails {
 export interface CreateProject {
   url: string;
   branch: string;
-  stack: Stack;
+  /** Null = detect automatically after the first successful access check. */
+  stack: Stack | null;
   settings: ProjectSettings;
   pipeline: StageUpdate[];
 }

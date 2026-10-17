@@ -37,7 +37,8 @@ export class Onboarding {
   private readonly catalog = httpResource<PipelineStage[]>(() => stageCatalogUrl());
   protected readonly pipeline = linkedSignal(() => this.catalog.value() ?? defaultPipeline());
   protected readonly stacks: Stack[] = STACKS;
-  protected readonly stack = signal<Stack | null>(null);
+  /** 'auto' lets Artemis detect the stack from the repository files after the first successful access check. */
+  protected readonly stack = signal<Stack | 'auto'>('auto');
 
   protected readonly urlValid = computed(() => REPO_URL.test(this.url().trim()));
   protected readonly monorepo = computed(() => this.settings().folders.length > 0);
@@ -72,11 +73,8 @@ export class Onboarding {
 
   private submit(): void {
     const folders = this.settings().folders.map((f) => ({ ...f, path: normalizeFolder(f.path) }));
-    const stack = folders[0]?.stack ?? this.stack();
-    if (!stack) {
-      this.showErrors.set(true);
-      return;
-    }
+    const chosen = this.stack();
+    const stack = folders[0]?.stack ?? (chosen === 'auto' ? null : chosen);
     this.submitting.set(true);
     this.submitError.set(null);
     this.api

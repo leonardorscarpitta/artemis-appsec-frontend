@@ -13,7 +13,14 @@
         @if (repo.folders.length) {
           <span class="tag">{{ i18n.t('mono.tag') }}</span>
         } @else {
-          <span class="tag">{{ repo.stack }}</span>
+          @if (repo.stackSource === 'pending') {
+            <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
+          } @else {
+            <span class="tag">{{ repo.stack }}</span>
+            @if (repo.stackSource === 'detected') {
+              <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
+            }
+          }
         }
       </h1>
       <p class="mono">
@@ -58,6 +65,24 @@
     <fieldset class="contents" [disabled]="!canEdit()">
     @switch (tab()) {
       @case ('general') {
+        @if (!settings().folders.length) {
+          <div class="field stack-field">
+            <label for="repo-stack">{{ i18n.t('rs.stack') }}</label>
+            <select id="repo-stack" class="input" (change)="setStack($event)">
+              @if (!settings().stack) {
+                <option value="" selected>{{ i18n.t('rs.stackPick') }}</option>
+              }
+              @for (s of stacks; track s) {
+                <option [value]="s" [selected]="s === settings().stack">{{ s }}</option>
+              }
+            </select>
+            @if (repo.stackSource === 'detected') {
+              <span class="hint">{{ i18n.t('rs.stackDetectedHint') }}</span>
+            } @else if (repo.stackSource === 'pending') {
+              <span class="hint">{{ i18n.t('rs.stackPendingHint') }}</span>
+            }
+          </div>
+        }
         <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
         <hr />
         <app-scan-settings [(settings)]="settings" />

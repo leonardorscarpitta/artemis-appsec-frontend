@@ -108,7 +108,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Repository: enter the repository’s SSH URL (for example git@git.example.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
             'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
-            'Stack: select the technology used by the repository — React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. Automatic detection will be available soon.',
+            'Stack: “Detect automatically” (recommended) lets Artemis read the repository’s manifest files (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) after the first successful “Test access” — nothing is executed — and set the stack, or the folders of a monorepo. Or select it yourself: React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. While detection is pending the repository shows “Detecting stack…”; once detected it shows “Auto-detected”.',
           ],
         },
         { kind: 'p', text: 'Select "Start monitoring" to finish. Every option chosen here can be changed later in the repository settings.' },
@@ -211,7 +211,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'General tab: monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
+            'General tab: the stack (change it if the automatic detection got it wrong — your choice is never overwritten afterwards), monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
             'Deploy Key tab: the repository’s deploy key, setup steps, server identity and access test (see "Repository access (deploy keys)").',
           ],
@@ -571,7 +571,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Repositório: informe a URL SSH do repositório (por exemplo git@git.example.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
             'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
-            'Stack: selecione a tecnologia usada pelo repositório — React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. A detecção automática estará disponível em breve.',
+            'Stack: “Detectar automaticamente” (recomendado) faz o Artemis ler os arquivos de manifesto do repositório (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) depois do primeiro “Testar acesso” bem-sucedido — nada é executado — e definir a stack, ou as pastas de um monorepo. Ou selecione você mesmo: React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. Enquanto a detecção está pendente o repositório mostra “Detectando stack…”; depois, “Detectada automaticamente”.',
           ],
         },
         { kind: 'p', text: 'Selecione "Iniciar monitoramento" para concluir. Todas as opções escolhidas aqui podem ser alteradas depois nas configurações do repositório.' },
@@ -674,7 +674,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Aba Geral: pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
+            'Aba Geral: a stack (altere se a detecção automática errou — sua escolha nunca é sobrescrita depois), pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
             'Aba Deploy Key: a deploy key do repositório, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Acesso aos repositórios (deploy keys)").',
           ],
