@@ -1,19 +1,29 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DashboardSummary, FindingsApi, dashboardUrl, findingIdentifier, findingRoute, packageLabel } from '../../core/api/findings';
+import { DashboardTrends, TrendDay, TrendPeriod, browserTimeZone, dashboardTrendsUrl } from '../../core/api/dashboard';
 import { problemMessage } from '../../core/api/api';
 import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
+import { Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
+import { NoRepositories } from '../../shared/no-repositories';
 import { StatusLabel } from '../vulnerabilities/status-label';
 import { OrgLink } from '../../shared/org-link';
+import { ChartPoint, ChartSeries, formatDay } from './charts/chart';
+import { TimeChart } from './charts/time-chart';
+import { BarList, BarRow } from './charts/bar-list';
+
+const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low'];
+const SHORT: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+const LONG: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories, TimeChart, BarList],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -28,6 +38,18 @@ export class Dashboard {
   protected readonly findingIdentifier = findingIdentifier;
   protected readonly findingRoute = findingRoute;
 
+  protected readonly periods: TrendPeriod[] = [30, 90];
+  protected readonly period = signal<TrendPeriod>(30);
+  protected readonly trends = httpResource<DashboardTrends>(() => ({
+    url: dashboardTrendsUrl(),
+    params: { days: this.period(), tz: browserTimeZone() },
+  }));
+  // Keeps the previous charts on screen (dimmed) while another period loads.
+  protected readonly trendData = linkedSignal<DashboardTrends | undefined, DashboardTrends | undefined>({
+    source: this.trends.value,
+    computation: (value, previous) => value ?? previous?.value,
+  });
+
   protected readonly distribution = computed(() => {
     const summary = this.summary.value();
     if (!summary) return [];
@@ -38,6 +60,79 @@ export class Dashboard {
       label: this.i18n.t(`sev.${severity}`),
     }));
   });
+
+  protected readonly severitySeries = computed<ChartSeries[]>(() =>
+    SEVERITIES.map((s) => ({ label: this.i18n.t(`sev.${s}`), color: `var(--chart-${s})` })),
+  );
+
+  protected readonly flowSeries = computed<ChartSeries[]>(() => [
+    { label: this.i18n.t('dash.new'), color: 'var(--chart-high)' },
+    { label: this.i18n.t('dash.fixed'), color: 'var(--chart-low)' },
+  ]);
+
+  protected readonly runSeries = computed<ChartSeries[]>(() => [
+    { label: this.i18n.t('dash.runsSucceeded'), color: 'var(--chart-low)' },
+    { label: this.i18n.t('dash.runsFailed'), color: 'var(--chart-critical)' },
+    { label: this.i18n.t('dash.runsCancelled'), color: 'var(--chart-neutral)' },
+  ]);
+
+  protected readonly kindSeries = computed<ChartSeries[]>(() => [
+    { label: this.i18n.t('dash.openFindings'), color: 'var(--primary)' },
+  ]);
+
+  protected readonly openPoints = computed(() =>
+    this.dailyPoints((d) => [d.critical, d.high, d.medium, d.low]),
+  );
+
+  protected readonly runPoints = computed(() =>
+    this.dailyPoints((d) => [d.runsSucceeded, d.runsFailed, d.runsCancelled]),
+  );
+
+  /** New vs fixed in 7-day buckets ending today (the oldest bucket may be shorter). */
+  protected readonly weeklyPoints = computed<ChartPoint[]>(() => {
+    const days = this.trendData()?.days ?? [];
+    const lang = this.i18n.lang();
+    const weeks: ChartPoint[] = [];
+    for (let end = days.length; end > 0; end -= 7) {
+      const chunk = days.slice(Math.max(0, end - 7), end);
+      const first = chunk[0].date;
+      const last = chunk[chunk.length - 1].date;
+      weeks.unshift({
+        key: first,
+        axisLabel: formatDay(first, lang, SHORT),
+        title: `${formatDay(first, lang, SHORT)} – ${formatDay(last, lang, SHORT)}`,
+        values: [sum(chunk, (d) => d.detected), sum(chunk, (d) => d.fixed)],
+      });
+    }
+    return weeks;
+  });
+
+  protected readonly kindRows = computed<BarRow[]>(() =>
+    (this.summary.value()?.byKind ?? [])
+      .filter((k) => k.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .map((k) => ({ label: this.i18n.t(`vuln.kind.${k.kind}`), values: [k.count], query: { kind: k.kind } })),
+  );
+
+  protected readonly repositoryRows = computed<BarRow[]>(() =>
+    (this.summary.value()?.topRepositories ?? []).map((r) => ({
+      label: r.repository,
+      values: [r.critical, r.high, r.medium, r.low],
+      query: { repository: r.repository },
+    })),
+  );
+
+  protected hasData(points: ChartPoint[]): boolean {
+    return points.some((p) => p.values.some((v) => v > 0));
+  }
+
+  protected mttr(days: number): string {
+    return this.i18n.t('dash.mttrValue').replace('{n}', days.toLocaleString(this.i18n.lang(), { maximumFractionDigits: 1 }));
+  }
+
+  protected periodLabel(period: TrendPeriod): string {
+    return this.i18n.t(period === 30 ? 'dash.days30' : 'dash.days90');
+  }
 
   protected exportCsv(): void {
     this.exporting.set(true);
@@ -57,4 +152,18 @@ export class Dashboard {
       },
     });
   }
+
+  private dailyPoints(values: (day: TrendDay) => number[]): ChartPoint[] {
+    const lang = this.i18n.lang();
+    return (this.trendData()?.days ?? []).map((d) => ({
+      key: d.date,
+      axisLabel: formatDay(d.date, lang, SHORT),
+      title: formatDay(d.date, lang, LONG),
+      values: values(d),
+    }));
+  }
+}
+
+function sum(days: TrendDay[], value: (day: TrendDay) => number): number {
+  return days.reduce((total, d) => total + value(d), 0);
 }

@@ -16,7 +16,10 @@
 }
 
 @if (summary.value(); as s) {
-<section class="stats" aria-label="Summary">
+@if (s.repositories === 0) {
+<app-no-repositories />
+} @else {
+<section class="stats" [attr.aria-label]="i18n.t('dash.summary')">
   <div class="card stat">
     <span class="label">{{ i18n.t('dash.openFindings') }}</span>
     <span class="value">{{ s.openFindings }}</span>
@@ -40,26 +43,111 @@
   </div>
 </section>
 
-<div class="grid">
-  <section class="card" aria-labelledby="dist-title">
-    <div class="card-header">
-      <h2 id="dist-title">{{ i18n.t('dash.severity') }}</h2>
-      <span class="muted note">{{ s.openFindings }} {{ i18n.t('dash.ofTotal') }}</span>
-    </div>
-    <ul class="breakdown">
-      @for (d of distribution(); track d.severity) {
-        <li>
-          <span class="name">{{ d.label }}</span>
-          <span class="track">
-            <span class="fill" [style.width.%]="d.percent" [style.background]="'var(--sev-' + d.severity + ')'"></span>
-          </span>
-          <span class="count">{{ d.count }}</span>
-        </li>
+<section class="card" aria-labelledby="dist-title">
+  <div class="card-header">
+    <h2 id="dist-title">{{ i18n.t('dash.severity') }}</h2>
+    <span class="muted note">{{ s.openFindings }} {{ i18n.t('dash.ofTotal') }}</span>
+  </div>
+  <ul class="breakdown">
+    @for (d of distribution(); track d.severity) {
+      <li>
+        <a class="name" [routerLink]="'/vulnerabilities' | orgLink" [queryParams]="{ severity: d.severity }">{{ d.label }}</a>
+        <span class="track">
+          <span class="fill" [style.width.%]="d.percent" [style.background]="'var(--sev-' + d.severity + ')'"></span>
+        </span>
+        <span class="count">{{ d.count }}</span>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="trends" aria-labelledby="trends-title">
+  <div class="section-head">
+    <h2 id="trends-title">{{ i18n.t('dash.trends') }}</h2>
+    <div class="segmented" role="group" [attr.aria-label]="i18n.t('dash.period')">
+      @for (p of periods; track p) {
+        <button type="button" [attr.aria-pressed]="period() === p" (click)="period.set(p)">{{ periodLabel(p) }}</button>
       }
-    </ul>
+    </div>
+  </div>
+
+  @if (trendData(); as t) {
+  <div class="trend-grid" [class.refreshing]="trends.isLoading()" [attr.aria-busy]="trends.isLoading()">
+    <section class="card chart-card wide" aria-labelledby="open-trend-title">
+      <div class="card-header">
+        <h3 id="open-trend-title">{{ i18n.t('dash.openTrend') }}</h3>
+        <span class="muted note">{{ i18n.t('dash.openTrendHint') }}</span>
+      </div>
+      @if (hasData(openPoints())) {
+        <app-time-chart kind="area" [series]="severitySeries()" [points]="openPoints()" [label]="i18n.t('dash.openTrend')" />
+      } @else {
+        <p class="chart-empty muted">{{ i18n.t('dash.noData') }}</p>
+      }
+    </section>
+
+    <section class="card chart-card" aria-labelledby="flow-title">
+      <div class="card-header">
+        <h3 id="flow-title">{{ i18n.t('dash.newVsFixed') }}</h3>
+      </div>
+      <dl class="figures">
+        <div>
+          <dt>{{ i18n.t('dash.mttr') }}</dt>
+          <dd>{{ t.meanTimeToRemediateDays != null ? mttr(t.meanTimeToRemediateDays) : '—' }}</dd>
+        </div>
+        <div>
+          <dt>{{ i18n.t('dash.fixedInPeriod') }}</dt>
+          <dd>{{ t.fixedInPeriod }}</dd>
+        </div>
+      </dl>
+      @if (hasData(weeklyPoints())) {
+        <app-time-chart kind="grouped" [series]="flowSeries()" [points]="weeklyPoints()" [label]="i18n.t('dash.newVsFixed')" />
+      } @else {
+        <p class="chart-empty muted">{{ i18n.t('dash.noData') }}</p>
+      }
+    </section>
+
+    <section class="card chart-card" aria-labelledby="runs-title">
+      <div class="card-header">
+        <h3 id="runs-title">{{ i18n.t('dash.runsTrend') }}</h3>
+        <a class="note" [routerLink]="'/pipelines' | orgLink">{{ i18n.t('dash.viewRuns') }}</a>
+      </div>
+      @if (hasData(runPoints())) {
+        <app-time-chart kind="stacked" [series]="runSeries()" [points]="runPoints()" [label]="i18n.t('dash.runsTrend')" />
+      } @else {
+        <p class="chart-empty muted">{{ i18n.t('dash.noRuns') }}</p>
+      }
+    </section>
+  </div>
+  } @else {
+    <app-request-state [resource]="trends" />
+  }
+</section>
+
+<div class="current-grid">
+  <section class="card chart-card" aria-labelledby="kind-title">
+    <div class="card-header">
+      <h2 id="kind-title">{{ i18n.t('dash.byKind') }}</h2>
+    </div>
+    @if (kindRows().length) {
+      <app-bar-list [series]="kindSeries()" [rows]="kindRows()" />
+    } @else {
+      <p class="chart-empty muted">{{ i18n.t('dash.noOpen') }}</p>
+    }
   </section>
 
-  <section class="card table-card" aria-labelledby="recent-title">
+  <section class="card chart-card" aria-labelledby="repos-title">
+    <div class="card-header">
+      <h2 id="repos-title">{{ i18n.t('dash.topRepos') }}</h2>
+    </div>
+    @if (repositoryRows().length) {
+      <app-bar-list [series]="severitySeries()" [rows]="repositoryRows()" [mono]="true" />
+    } @else {
+      <p class="chart-empty muted">{{ i18n.t('dash.noOpen') }}</p>
+    }
+  </section>
+</div>
+
+<section class="card table-card" aria-labelledby="recent-title">
     <div class="card-header">
       <h2 id="recent-title">{{ i18n.t('dash.recent') }}</h2>
       <div class="head-links">
@@ -94,7 +182,7 @@
       </tbody>
     </table>
   </section>
-</div>
+}
 } @else {
   <app-request-state [resource]="summary" />
 }

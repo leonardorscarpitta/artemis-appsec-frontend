@@ -71,7 +71,18 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Last scan: when the most recent pipeline finished.',
           ],
         },
-        { kind: 'p', text: '"Findings by severity" breaks the open findings down by severity. "Recent vulnerabilities" lists the latest findings; select a CVE identifier to open its details, or "View all" to open the Vulnerabilities page.' },
+        { kind: 'p', text: '"Findings by severity" breaks the open findings down by severity; select a severity to see those findings. "Recent vulnerabilities" lists the latest findings; select a CVE identifier to open its details, or "View all" to open the Vulnerabilities page.' },
+        { kind: 'p', text: '"Trends" shows the last 30 or 90 days (choose the period at the top right of the section). Days follow your browser’s time zone. Hover over a chart, or select it and use the arrow keys, to read the values of each day or week; "Show data table" lists every value.' },
+        {
+          kind: 'ul',
+          items: [
+            'Open findings over time: findings that were open or triaged at the end of each day, stacked by severity. Each finding is counted under its current severity.',
+            'New vs fixed per week: first detections and fixes (automatic, when a scan no longer reports the issue, or manual) in 7-day blocks ending today. A finding that is reopened is not counted as new again.',
+            'Mean time to remediate: average time from a finding’s first detection to its fix, over the fixes in the period. "Fixed in the period" counts those fixes.',
+            'Pipeline runs per day: finished runs by result (succeeded, failed, cancelled), on the day they started.',
+            'Open findings by kind and Repositories with the most open findings (top 5, by severity): select a bar to open Vulnerabilities filtered by that kind or repository.',
+          ],
+        },
         { kind: 'p', text: 'Severity is derived from the CVSS v3 base score:' },
         {
           kind: 'table',
@@ -534,7 +545,18 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Última análise: quando o pipeline mais recente terminou.',
           ],
         },
-        { kind: 'p', text: '"Achados por severidade" divide os achados abertos por severidade. "Vulnerabilidades recentes" lista os achados mais novos; selecione o identificador de uma CVE para abrir seus detalhes, ou "Ver todas" para abrir a página Vulnerabilidades.' },
+        { kind: 'p', text: '"Achados por severidade" divide os achados abertos por severidade; selecione uma severidade para ver esses achados. "Vulnerabilidades recentes" lista os achados mais novos; selecione o identificador de uma CVE para abrir seus detalhes, ou "Ver todas" para abrir a página Vulnerabilidades.' },
+        { kind: 'p', text: '"Tendências" mostra os últimos 30 ou 90 dias (escolha o período no canto superior direito da seção). Os dias seguem o fuso horário do seu navegador. Passe o mouse sobre um gráfico, ou selecione-o e use as setas, para ler os valores de cada dia ou semana; "Mostrar tabela de dados" lista todos os valores.' },
+        {
+          kind: 'ul',
+          items: [
+            'Achados abertos ao longo do tempo: achados que estavam abertos ou em triagem ao fim de cada dia, empilhados por severidade. Cada achado é contado pela severidade atual.',
+            'Novos vs corrigidos por semana: primeiras detecções e correções (automáticas, quando uma análise não relata mais o problema, ou manuais) em blocos de 7 dias terminando hoje. Um achado reaberto não é contado de novo como novo.',
+            'Tempo médio de correção: tempo médio entre a primeira detecção de um achado e sua correção, considerando as correções do período. "Corrigidos no período" conta essas correções.',
+            'Execuções de pipeline por dia: execuções concluídas por resultado (sucesso, falha, canceladas), no dia em que começaram.',
+            'Achados abertos por tipo e Repositórios com mais achados abertos (os 5 primeiros, por severidade): selecione uma barra para abrir Vulnerabilidades filtrada por esse tipo ou repositório.',
+          ],
+        },
         { kind: 'p', text: 'A severidade é derivada da pontuação base do CVSS v3:' },
         {
           kind: 'table',
