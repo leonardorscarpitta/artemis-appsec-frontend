@@ -12,10 +12,11 @@ import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { Unavailable } from '../../shared/unavailable';
 import { OrgLink } from '../../shared/org-link';
+import { Paginator, paginate } from '../../shared/paginator';
 
 @Component({
   selector: 'app-reports',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories, Unavailable],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories, Unavailable, Paginator],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })
@@ -30,6 +31,7 @@ export class Reports {
     url: reportsUrl(),
     headers: { 'Accept-Language': this.i18n.lang() },
   }));
+  protected readonly pager = paginate(() => this.reports.value() ?? []);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
 
   protected readonly formOpen = signal(false);

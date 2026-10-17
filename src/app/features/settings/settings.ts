@@ -21,6 +21,7 @@ import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
 import { Unavailable } from '../../shared/unavailable';
+import { Paginator, paginate } from '../../shared/paginator';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
 import { slugify } from '../../core/org/slug';
@@ -38,7 +39,7 @@ const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'p
 
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState, RoleNotice, Unavailable],
+  imports: [DatePipe, RequestState, RoleNotice, Unavailable, Paginator],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -90,6 +91,7 @@ export class Settings {
 
   protected readonly scopes = SCOPES;
   protected readonly tokens = httpResource<ApiToken[]>(() => apiTokensUrl(), { defaultValue: [] });
+  protected readonly tokenPager = paginate(this.tokens.value);
   protected readonly creatingToken = signal(false);
   protected readonly newToken = signal<string | null>(null);
   protected readonly copied = signal(false);

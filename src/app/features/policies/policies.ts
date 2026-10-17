@@ -11,12 +11,13 @@ import { RouterLink } from '@angular/router';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
 import { RoleNotice } from '../../shared/role-notice';
+import { Paginator, paginate } from '../../shared/paginator';
 
 type LicenseList = 'licensesAllowed' | 'licensesDenied';
 
 @Component({
   selector: 'app-policies',
-  imports: [RequestState, RoleNotice, RouterLink, OrgLink],
+  imports: [RequestState, RoleNotice, RouterLink, OrgLink, Paginator],
   templateUrl: './policies.html',
   styleUrl: './policies.scss',
 })
@@ -29,6 +30,7 @@ export class Policies {
 
   protected readonly server = httpResource<PolicyModel>(() => policiesUrl());
   protected readonly acceptances = httpResource<RiskAcceptance[]>(() => riskAcceptancesUrl());
+  protected readonly acceptancePager = paginate(() => this.acceptances.value() ?? []);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl(), { defaultValue: [] });
   private readonly unavailable = new Set(defaultPipeline().filter((s) => !s.available).map((s) => s.id));
 

@@ -82,7 +82,7 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/core/org/` | `OrgContext` (memberships, current organization, `can()`/`reason()`), `orgGuard`, `orgInterceptor` |
-| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `role-notice`, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
+| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `role-notice`, `scan-settings`, `pipeline-editor` (`[(stages)]`) and `paginator` (`paginate(rows, resetOn)` + `<app-paginator [pager]>`: 15 rows per page, shown only above 15 rows; back to page 1 when `resetOn` changes, clamped on reloads) |
 | `src/app/features/` | One folder per page: `home`, `login`, `organizations`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
 
 ## Routes
