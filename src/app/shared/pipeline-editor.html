@@ -53,7 +53,8 @@
             class="switch"
             [attr.aria-checked]="stage.enabled"
             [attr.aria-labelledby]="'stage-' + stage.id"
-            [disabled]="stage.available === false"
+            [disabled]="stage.available === false || required(stage)"
+            [title]="required(stage) ? i18n.t('pipe.requiredByPolicy') : ''"
             (click)="patch(stage.id, { enabled: !stage.enabled })"
           ></button>
 
@@ -66,6 +67,14 @@
                     <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
                   </svg>
                   {{ i18n.t('pipe.unavailable') }}
+                </span>
+              }
+              @if (required(stage)) {
+                <span class="tag lock" [title]="i18n.t('pipe.requiredByPolicy')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
+                  </svg>
+                  {{ i18n.t('pipe.requiredByPolicy') }}
                 </span>
               }
             </strong>
@@ -87,7 +96,7 @@
               <label [for]="'fail-' + stage.id">{{ i18n.t('pipe.failOn') }}</label>
               <select class="input" [id]="'fail-' + stage.id" [disabled]="!stage.enabled" (change)="setFailOn(stage.id, $event)">
                 @for (t of thresholds; track t) {
-                  <option [value]="t" [selected]="t === stage.failOn">{{ failLabel(t) }}</option>
+                  <option [value]="t" [selected]="t === stage.failOn" [disabled]="tooLoose(stage, t)">{{ failLabel(t) }}</option>
                 }
               </select>
             } @else {

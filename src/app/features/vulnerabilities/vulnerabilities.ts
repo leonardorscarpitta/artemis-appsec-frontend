@@ -41,6 +41,13 @@ export class Vulnerabilities {
   protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
 
+  /** "Overdue" or "Due in N days" from the remediation SLA. */
+  protected dueLabel(dueAt: string, overdue: boolean): string {
+    if (overdue) return this.i18n.t('vuln.overdue');
+    const days = Math.max(0, Math.ceil((new Date(dueAt).getTime() - Date.now()) / 86_400_000));
+    return this.i18n.t('vuln.dueIn').replace('{n}', String(days));
+  }
+
   protected readonly severities: Severity[] = ['critical', 'high', 'medium', 'low'];
   protected readonly statuses = Object.keys(STATUS_KEYS) as FindingStatus[];
   protected readonly sorts: Sort[] = ['cvssDesc', 'cvssAsc', 'dateDesc', 'dateAsc'];
