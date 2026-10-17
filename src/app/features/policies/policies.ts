@@ -2,18 +2,21 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { problemMessage } from '../../core/api/api';
 import { Policies as PolicyModel, PoliciesApi, RiskAcceptance, policiesUrl, riskAcceptancesUrl } from '../../core/api/policies';
+import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
 import { OrgContext } from '../../core/org/org-context';
 import { Severity } from '../../core/domain';
-import { FAIL_THRESHOLDS, FailThreshold, StageId } from '../../core/pipeline';
+import { FAIL_THRESHOLDS, FailThreshold, StageId, defaultPipeline } from '../../core/pipeline';
+import { RouterLink } from '@angular/router';
 import { RequestState } from '../../shared/request-state';
+import { OrgLink } from '../../shared/org-link';
 import { RoleNotice } from '../../shared/role-notice';
 
 type LicenseList = 'licensesAllowed' | 'licensesDenied';
 
 @Component({
   selector: 'app-policies',
-  imports: [RequestState, RoleNotice],
+  imports: [RequestState, RoleNotice, RouterLink, OrgLink],
   templateUrl: './policies.html',
   styleUrl: './policies.scss',
 })
@@ -26,6 +29,14 @@ export class Policies {
 
   protected readonly server = httpResource<PolicyModel>(() => policiesUrl());
   protected readonly acceptances = httpResource<RiskAcceptance[]>(() => riskAcceptancesUrl());
+  protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl(), { defaultValue: [] });
+  private readonly unavailable = new Set(defaultPipeline().filter((s) => !s.available).map((s) => s.id));
+
+  protected readonly accepting = signal(false);
+  protected readonly acceptError = signal<string | null>(null);
+  protected readonly listError = signal<string | null>(null);
+  protected readonly tomorrow = isoDate(1);
+  protected readonly maxExpiry = isoDate(365);
 
   /** Local draft; reset whenever the server copy changes. */
   protected readonly policies = linkedSignal(() => this.server.value());
@@ -58,6 +69,33 @@ export class Policies {
     this.patch((p) => ({ ...p, stages: p.stages.map((g) => (g.stage === stage ? { ...g, failOn } : g)) }));
   }
 
+  protected available(stage: StageId): boolean {
+    return !this.unavailable.has(stage);
+  }
+
+  protected acceptRisk(form: HTMLFormElement): void {
+    const data = new FormData(form);
+    const body = {
+      finding: String(data.get('finding') ?? '').trim(),
+      repository: String(data.get('repository') ?? ''),
+      justification: String(data.get('justification') ?? '').trim(),
+      expiresAt: String(data.get('expiresAt') ?? ''),
+    };
+    if (!body.finding || !body.repository || body.justification.length < 10 || !body.expiresAt) {
+      this.acceptError.set(this.i18n.t('policies.exceptions.invalid'));
+      return;
+    }
+    this.acceptError.set(null);
+    this.api.acceptRisk(body).subscribe({
+      next: () => {
+        form.reset();
+        this.accepting.set(false);
+        this.acceptances.reload();
+      },
+      error: (err) => this.acceptError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+    });
+  }
+
   protected toggleRequired(stage: StageId): void {
     this.patch((p) => ({ ...p, stages: p.stages.map((g) => (g.stage === stage ? { ...g, required: !g.required } : g)) }));
   }
@@ -81,10 +119,11 @@ export class Policies {
   }
 
   protected revoke(acceptance: RiskAcceptance): void {
-    this.error.set(null);
+    if (!confirm(this.i18n.t('policies.exceptions.revokeConfirm'))) return;
+    this.listError.set(null);
     this.api.revokeRiskAcceptance(acceptance.id).subscribe({
       next: () => this.acceptances.reload(),
-      error: (err) => this.error.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
+      error: (err) => this.listError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
     });
   }
 
@@ -115,4 +154,11 @@ export class Policies {
   private patch(change: (p: PolicyModel) => PolicyModel): void {
     this.policies.update((p) => (p ? change(p) : p));
   }
+}
+
+/** Local date {@code days} from today as yyyy-MM-dd. */
+function isoDate(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
