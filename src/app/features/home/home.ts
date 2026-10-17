@@ -1,7 +1,8 @@
-import { ViewportScroller } from '@angular/common';
+import { NgTemplateOutlet, ViewportScroller } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PLAN_FEATURES, Plan, PlanId, formatPrice, plansUrl } from '../../core/api/billing';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
@@ -17,7 +18,7 @@ import { UserBadge } from '../../shared/user-badge';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, Logo, LangSwitch, ThemeToggle, SeverityBadge, UserBadge, HomeWorkspace],
+  imports: [RouterLink, NgTemplateOutlet, Logo, LangSwitch, ThemeToggle, SeverityBadge, UserBadge, HomeWorkspace],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -35,8 +36,21 @@ export class Home {
     return orgs ? landingUrl(orgs, null) : '/organizations';
   });
 
+  private readonly about = viewChild<ElementRef<HTMLDetailsElement>>('about');
+
   constructor() {
-    inject(ViewportScroller).setOffset([0, 80]);
+    const scroller = inject(ViewportScroller);
+    scroller.setOffset([0, 80]);
+    // Signed-in users see the presentation collapsed: links to its sections (footer, FAQ…) open it first.
+    inject(ActivatedRoute)
+      .fragment.pipe(takeUntilDestroyed())
+      .subscribe((fragment) => {
+        const details = this.about()?.nativeElement;
+        if (fragment && details && !details.open) {
+          details.open = true;
+          setTimeout(() => scroller.scrollToAnchor(fragment));
+        }
+      });
   }
 
   protected register(): void {
