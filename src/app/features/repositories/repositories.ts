@@ -1,8 +1,17 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProjectFolder, ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
+import { problemMessage } from '../../core/api/api';
+import {
+  ProjectFolder,
+  ProjectSummary,
+  ProjectsApi,
+  RemovedRepository,
+  ScanSchedule,
+  removedRepositoriesUrl,
+  repositoriesUrl,
+} from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
@@ -103,6 +112,40 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     </div>
     }
     }
+
+    @if (removed.value()?.length) {
+      <section class="card table-card removed" aria-labelledby="removed-title">
+        <div class="removed-head">
+          <h2 id="removed-title">{{ i18n.t('repo.removed.title') }}</h2>
+          <p class="muted">{{ i18n.t('repo.removed.desc') }}</p>
+        </div>
+        @if (purgeError(); as message) {
+          <p class="error" role="alert">{{ message }}</p>
+        }
+        <table class="table stack">
+          <thead>
+            <tr>
+              <th scope="col">{{ i18n.t('col.repository') }}</th>
+              <th scope="col">{{ i18n.t('repo.removed.at') }}</th>
+              <th scope="col"><span class="sr-only">{{ i18n.t('repo.removed.purge') }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of removed.value(); track r.id) {
+              <tr>
+                <td class="primary-cell"><strong>{{ r.name }}</strong></td>
+                <td class="muted mono" [attr.data-label]="i18n.t('repo.removed.at')">{{ r.removedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+                <td class="num actions" data-label="">
+                  <button type="button" class="btn danger" [disabled]="purging() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="purge(r)">
+                    {{ i18n.t('repo.removed.purge') }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
   `,
   styles: `
     .primary-cell .tag {
@@ -144,6 +187,32 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     .tag.ok {
       color: var(--sev-low);
       background: var(--sev-low-bg);
+    }
+
+    .removed {
+      margin-top: 1.5rem;
+    }
+
+    .removed-head {
+      padding: 1rem 1.25rem 0;
+
+      h2 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .removed .error {
+      padding: 0 1.25rem;
+    }
+
+    .btn.danger {
+      color: var(--sev-critical);
+      border-color: var(--sev-critical);
     }
 
     .url {
@@ -189,6 +258,26 @@ export class Repositories {
   protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
   protected readonly scheduleLabels = SCHEDULE_LABELS;
+  private readonly api = inject(ProjectsApi);
+  protected readonly removed = httpResource<RemovedRepository[]>(() => removedRepositoriesUrl());
+  protected readonly purging = signal(false);
+  protected readonly purgeError = signal<string | null>(null);
+
+  protected purge(repository: RemovedRepository): void {
+    if (!confirm(this.i18n.t('repo.removed.purgeConfirm').replace('{name}', repository.name))) return;
+    this.purging.set(true);
+    this.purgeError.set(null);
+    this.api.purgeRemoved(repository.id).subscribe({
+      next: () => {
+        this.purging.set(false);
+        this.removed.reload();
+      },
+      error: (err) => {
+        this.purging.set(false);
+        this.purgeError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
 
   protected folderPaths(folders: ProjectFolder[]): string[] {
     return folders.map((f) => f.path);

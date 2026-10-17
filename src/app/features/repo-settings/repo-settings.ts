@@ -55,6 +55,21 @@ export class RepoSettings {
   protected readonly confirmName = signal('');
   protected readonly removing = signal(false);
   protected readonly removeError = signal<string | null>(null);
+  protected readonly purge = signal(false);
+
+  protected openRemove(dialog: HTMLDialogElement): void {
+    dialog.showModal();
+  }
+
+  protected closeRemove(): void {
+    this.purge.set(false);
+    this.confirmName.set('');
+    this.removeError.set(null);
+  }
+
+  protected setPurge(event: Event): void {
+    this.purge.set((event.target as HTMLInputElement).checked);
+  }
 
   protected setConfirmName(event: Event): void {
     this.confirmName.set((event.target as HTMLInputElement).value.trim());
@@ -64,7 +79,7 @@ export class RepoSettings {
   protected remove(): void {
     this.removing.set(true);
     this.removeError.set(null);
-    this.api.remove(this.name()).subscribe({
+    this.api.remove(this.name(), this.purge()).subscribe({
       next: () => void this.router.navigateByUrl(this.org.url('/repositories')),
       error: (err) => {
         this.removing.set(false);

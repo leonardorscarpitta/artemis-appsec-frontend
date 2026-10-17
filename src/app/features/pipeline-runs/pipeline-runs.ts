@@ -19,12 +19,13 @@ import { RunStatusBadge } from './run-status';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
+import { RepoName } from '../../shared/repo-name';
 
 const STATUSES: RunStatus[] = ['success', 'failed', 'running', 'queued', 'cancelled'];
 
 @Component({
   selector: 'app-pipeline-runs',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, NoRepositories, RepoName],
   templateUrl: './pipeline-runs.html',
   styleUrl: './pipeline-runs.scss',
 })

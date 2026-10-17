@@ -93,7 +93,7 @@
           <tr>
             <td class="primary-cell">
               <a class="run-link" [routerLink]="['/pipelines', run.number] | orgLink" [attr.aria-label]="i18n.t('runs.open') + ' #' + run.number">#{{ run.number }}</a>
-              <div class="repo">{{ run.repository }}</div>
+              <div class="repo"><app-repo-name [name]="run.repository" [removed]="run.repositoryRemoved" /></div>
             </td>
             <td [attr.data-label]="i18n.t('col.status')"><app-run-status [status]="run.status" /></td>
             <td [attr.data-label]="i18n.t('runs.col.commit')" class="commit">
