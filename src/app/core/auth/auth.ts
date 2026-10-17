@@ -56,13 +56,18 @@ export class Auth {
   });
 
   constructor() {
-    this.manager.events.addAccessTokenExpired(() => this.user.set(null));
+    // Expired sessions are removed from storage too, so no stale access or refresh token is left behind.
+    this.manager.events.addAccessTokenExpired(() => void this.clearSession());
   }
 
   /** Restores a session saved in this browser tab. */
   async init(): Promise<void> {
     const user = await this.manager.getUser();
-    this.user.set(user && !user.expired ? user : null);
+    if (user?.expired) {
+      await this.clearSession();
+      return;
+    }
+    this.user.set(user);
   }
 
   accessToken(): string | null {
@@ -87,11 +92,13 @@ export class Auth {
 
   /** Signs out of Artemis and of the identity provider, which then returns to the home page. */
   async logout(): Promise<void> {
+    const idToken = this.user()?.id_token;
+    // Local tokens go first: the redirect leaves the app and must not leave a usable session behind.
+    await this.clearSession();
     try {
-      await this.manager.signoutRedirect();
+      await this.manager.signoutRedirect({ id_token_hint: idToken });
     } catch (error) {
       console.error('Could not reach the identity provider to sign out', error);
-      await this.clearSession();
     }
   }
 
