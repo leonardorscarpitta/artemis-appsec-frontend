@@ -6,6 +6,7 @@ import {
   FINDING_KINDS,
   FindingKind,
   FindingSummary,
+  FindingsApi,
   findingIdentifier,
   findingParams,
   findingRoute,
@@ -14,7 +15,9 @@ import {
 } from '../../core/api/findings';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
 import { I18n } from '../../core/i18n';
-import { FindingStatus, STATUS_KEYS, Severity } from '../../core/domain';
+import { FindingStatus, STATUS_ACTIONS, STATUS_KEYS, STATUS_TRANSITIONS, Severity, StatusAction, isoDate } from '../../core/domain';
+import { problemMessage } from '../../core/api/api';
+import { OrgContext } from '../../core/org/org-context';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { StatusLabel } from './status-label';
@@ -41,6 +44,8 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 export class Vulnerabilities {
   protected readonly orgSummary = inject(OrgSummary);
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
+  private readonly api = inject(FindingsApi);
 
   /** "Overdue" or "Due in N days" from the remediation SLA. */
   protected dueLabel(dueAt: string, overdue: boolean): string {
@@ -95,11 +100,98 @@ export class Vulnerabilities {
     () => !!(this.query() || this.kind() || this.severity() || this.status() || this.repository()),
   );
 
+  // Selection mode: several findings get the same status change at once.
+  protected readonly selecting = signal(false);
+  private readonly selectedIds = signal<ReadonlySet<string>>(new Set());
+  /** Only rows still on screen count, so changing filters never acts on hidden findings. */
+  protected readonly selected = computed(() => this.rows().filter((f) => this.selectedIds().has(f.id)));
+  protected readonly allSelected = computed(() => this.rows().length > 0 && this.selected().length === this.rows().length);
+  protected readonly actions = STATUS_ACTIONS;
+  protected readonly accepting = signal(false);
+  protected readonly saving = signal(false);
+  protected readonly bulkError = signal<string | null>(null);
+  protected readonly bulkMessage = signal<string | null>(null);
+  protected readonly tomorrow = isoDate(1);
+  protected readonly maxExpiry = isoDate(365);
+
   constructor() {
     effect((onCleanup) => {
       const term = this.query();
       const timer = setTimeout(() => this.searchTerm.set(term.trim()), 300);
       onCleanup(() => clearTimeout(timer));
+    });
+  }
+
+  protected toggleSelecting(): void {
+    this.selecting.update((on) => !on);
+    this.selectedIds.set(new Set());
+    this.accepting.set(false);
+    this.bulkError.set(null);
+    this.bulkMessage.set(null);
+  }
+
+  protected isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  protected toggle(id: string): void {
+    this.selectedIds.update((ids) => {
+      const next = new Set(ids);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+  }
+
+  protected toggleAll(): void {
+    this.selectedIds.set(this.allSelected() ? new Set() : new Set(this.rows().map((f) => f.id)));
+  }
+
+  /** How many selected findings can move to the status. */
+  protected applicable(action: StatusAction): number {
+    return this.selected().filter((f) => STATUS_TRANSITIONS[f.status].includes(action)).length;
+  }
+
+  protected actionLabel(action: StatusAction): string {
+    return this.i18n.t(`vuln.action.${action}`);
+  }
+
+  protected bulkApply(action: StatusAction): void {
+    if (action === 'accepted') {
+      this.bulkError.set(null);
+      this.accepting.set(true);
+      return;
+    }
+    this.submit(action);
+  }
+
+  protected confirmAccept(justification: string, expiresAt: string): void {
+    if (justification.trim().length < 10 || !expiresAt) {
+      this.bulkError.set(this.i18n.t('vuln.accept.invalid'));
+      return;
+    }
+    this.submit('accepted', justification.trim(), expiresAt);
+  }
+
+  private submit(status: FindingStatus, note?: string, expiresAt?: string): void {
+    const ids = this.selected()
+      .filter((f) => STATUS_TRANSITIONS[f.status].includes(status))
+      .map((f) => f.id);
+    if (!ids.length) return;
+    this.saving.set(true);
+    this.bulkError.set(null);
+    this.bulkMessage.set(null);
+    this.api.changeStatuses(ids, status, note, expiresAt).subscribe({
+      next: (result) => {
+        this.saving.set(false);
+        this.accepting.set(false);
+        this.selectedIds.set(new Set());
+        this.bulkMessage.set(this.i18n.t('vuln.bulk.done').replace('{n}', String(result.updated)));
+        this.results.reload();
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.bulkError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
     });
   }
 
