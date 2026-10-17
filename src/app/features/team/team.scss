@@ -188,6 +188,51 @@
   .no {
     color: var(--text-muted);
   }
+
+  .cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .locked {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .perm-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+}
+
+.matrix-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid var(--border);
+
+  .hint {
+    font-size: 0.85rem;
+  }
+
+  .ok {
+    color: var(--sev-low);
+  }
+
+  .error {
+    color: var(--sev-critical);
+  }
+
+  .buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
 }
 
 @media (max-width: 899px) {
