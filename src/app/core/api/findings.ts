@@ -28,6 +28,8 @@ export interface FindingSummary {
   location: FindingLocation | null;
   cve: string | null;
   repository: string;
+  /** The repository was removed and this finding is kept as history. */
+  repositoryRemoved: boolean;
   packageName: string | null;
   packageGroup: string | null;
   installedVersion: string | null;

@@ -98,7 +98,7 @@
               <span class="title"><span class="tag kind">{{ kindLabel(f.kind) }}</span> {{ f.title }}</span>
             </td>
             <td class="mono where" [attr.data-label]="i18n.t('col.where')">{{ packageLabel(f) }}</td>
-            <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>
+            <td [attr.data-label]="i18n.t('col.repository')"><app-repo-name [name]="f.repository" [removed]="f.repositoryRemoved" /></td>
             <td [attr.data-label]="i18n.t('col.severity')"><app-severity-badge [cvss]="f.cvss" [level]="f.severity" /></td>
             <td [attr.data-label]="i18n.t('col.status')">
               <app-status-label [status]="f.status" />

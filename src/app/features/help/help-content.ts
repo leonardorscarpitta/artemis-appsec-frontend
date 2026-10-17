@@ -217,7 +217,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Select "Save changes" to apply. Changes take effect from the next pipeline run; "Cancel" discards them.' },
-        { kind: 'p', text: 'To stop monitoring a repository, open its General tab and use "Remove repository": type the repository name to confirm. Its findings, pipeline runs, reports, deploy keys and risk acceptances are deleted permanently; the repository itself is not touched. Removing requires a role that can manage pipelines.' },
+        { kind: 'p', text: 'To stop monitoring a repository, open its General tab, select "Remove repository…" and type the repository name to confirm. The repository leaves the list, can no longer be scanned, its queued scans are cancelled and its deploy key is destroyed (also remove it from your Git provider); the repository itself is not touched. By default its history is kept: findings, pipeline runs and logs, reports and risk acceptances stay visible in Vulnerabilities, Pipeline runs, reports and the CSV export, tagged “Removed repository” (those runs cannot be re-run, and its open findings no longer count on the dashboard). Check “Also delete everything linked to this repository” to delete all of it permanently instead. Kept history is listed under Repositories → Removed repositories, where “Delete history” deletes it later. You can connect a repository with the same name again; it starts with a fresh history. Removing requires a role that can manage pipelines.' },
       ],
     },
     {
@@ -235,7 +235,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Server identity: Artemis only connects to a Git server whose host key it trusts. GitHub, GitLab and Bitbucket are verified against the keys they publish. For other servers the key is recorded the first time you test access and shown with its fingerprint — check that it matches your server; later connections must present the same key.' },
-        { kind: 'p', text: '"Rotate key" generates a new key and deletes the old one immediately: add the new public key to the repository and remove the old one. Removing the repository deletes its key too.' },
+        { kind: 'p', text: '"Rotate key" generates a new key and deletes the old one immediately: add the new public key to the repository and remove the old one. Removing the repository deletes its key too (whether or not its history is kept).' },
         {
           kind: 'table',
           head: ['Test result', 'What to do'],
@@ -680,7 +680,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Selecione "Salvar alterações" para aplicar. As alterações valem a partir da próxima execução do pipeline; "Cancelar" as descarta.' },
-        { kind: 'p', text: 'Para parar de monitorar um repositório, abra a aba Geral e use "Remover repositório": digite o nome do repositório para confirmar. Os achados, execuções de pipeline, relatórios, deploy keys e aceites de risco dele são apagados definitivamente; o repositório em si não é alterado. Remover exige um papel que possa gerenciar pipelines.' },
+        { kind: 'p', text: 'Para parar de monitorar um repositório, abra a aba Geral, selecione "Remover repositório…" e digite o nome do repositório para confirmar. O repositório sai da lista, não pode mais ser escaneado, seus scans na fila são cancelados e sua deploy key é destruída (remova-a também do seu provedor Git); o repositório em si não é alterado. Por padrão o histórico é mantido: achados, execuções de pipeline e logs, relatórios e aceites de risco continuam visíveis em Vulnerabilidades, Execuções de pipeline, relatórios e na exportação CSV, marcados como “Repositório removido” (essas execuções não podem ser executadas de novo, e os achados abertos dele deixam de contar no painel). Marque “Apagar também tudo o que está vinculado a este repositório” para apagar tudo definitivamente. O histórico mantido aparece em Repositórios → Repositórios removidos, onde “Apagar histórico” o apaga depois. Você pode conectar de novo um repositório com o mesmo nome; ele começa com um histórico novo. Remover exige um papel que possa gerenciar pipelines.' },
       ],
     },
     {
@@ -698,7 +698,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Identidade do servidor: o Artemis só se conecta a um servidor Git cuja chave de host ele confia. GitHub, GitLab e Bitbucket são verificados com as chaves que eles publicam. Para outros servidores, a chave é registrada na primeira vez que você testa o acesso e exibida com a impressão digital — confira se ela corresponde ao seu servidor; as conexões seguintes precisam apresentar a mesma chave.' },
-        { kind: 'p', text: '"Trocar chave" gera uma nova chave e apaga a antiga na hora: adicione a nova chave pública ao repositório e remova a antiga. Remover o repositório também apaga a chave dele.' },
+        { kind: 'p', text: '"Trocar chave" gera uma nova chave e apaga a antiga na hora: adicione a nova chave pública ao repositório e remova a antiga. Remover o repositório também apaga a chave dele (mantendo ou não o histórico).' },
         {
           kind: 'table',
           head: ['Resultado do teste', 'O que fazer'],

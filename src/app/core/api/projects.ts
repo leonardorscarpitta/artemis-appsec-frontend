@@ -108,6 +108,14 @@ export const repositoriesUrl = () => apiUrl('/repositories');
 export const repositoryUrl = (name: string) => apiUrl(`/repositories/${encodeURIComponent(name)}`);
 export const repositoryAccessUrl = (name: string) => `${repositoryUrl(name)}/access`;
 export const stageCatalogUrl = () => apiUrl('/pipeline/stages');
+export const removedRepositoriesUrl = () => apiUrl('/removed-repositories');
+
+/** A repository removed with its history (findings, runs, reports) kept. */
+export interface RemovedRepository {
+  id: string;
+  name: string;
+  removedAt: string;
+}
 
 @Service()
 export class ProjectsApi {
@@ -134,9 +142,14 @@ export class ProjectsApi {
     return this.http.post<RepositoryAccess>(`${repositoryUrl(name)}/access/checks`, null);
   }
 
-  /** Removes the repository with its findings, runs and reports. */
-  remove(name: string): Observable<void> {
-    return this.http.delete<void>(repositoryUrl(name));
+  /** Removes the repository; `purge` also deletes its findings, runs, reports and risk acceptances (else they are kept). */
+  remove(name: string, purge: boolean): Observable<void> {
+    return this.http.delete<void>(repositoryUrl(name), { params: { purge } });
+  }
+
+  /** Deletes the history kept for a removed repository. */
+  purgeRemoved(id: string): Observable<void> {
+    return this.http.delete<void>(`${removedRepositoriesUrl()}/${encodeURIComponent(id)}`);
   }
 
   updatePipeline(name: string, stages: PipelineStage[]): Observable<ProjectDetails> {

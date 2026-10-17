@@ -21,6 +21,7 @@ import { StatusLabel } from './status-label';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { OrgLink } from '../../shared/org-link';
+import { RepoName } from '../../shared/repo-name';
 
 type Sort = 'cvssDesc' | 'cvssAsc' | 'dateDesc' | 'dateAsc';
 
@@ -33,7 +34,7 @@ const SORT_PARAMS: Record<Sort, { sort: 'cvss' | 'detected'; dir: 'asc' | 'desc'
 
 @Component({
   selector: 'app-vulnerabilities',
-  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories],
+  imports: [RouterLink, DatePipe, SeverityBadge, StatusLabel, RequestState, OrgLink, NoRepositories, RepoName],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
 })

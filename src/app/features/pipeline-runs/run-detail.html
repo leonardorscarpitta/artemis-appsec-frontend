@@ -12,9 +12,13 @@
       <app-run-status [status]="run.status" />
     </div>
     <div class="page-actions">
-      <a class="btn" [routerLink]="['/repositories', run.repository] | orgLink">{{ i18n.t('runs.repoSettings') }}</a>
+      @if (!run.repositoryRemoved) {
+        <a class="btn" [routerLink]="['/repositories', run.repository] | orgLink">{{ i18n.t('runs.repoSettings') }}</a>
+      }
       @if (run.status === 'running' || run.status === 'queued') {
         <button type="button" class="btn" [disabled]="busy() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="cancel(run.number)">{{ i18n.t('runs.cancel') }}</button>
+      } @else if (run.repositoryRemoved) {
+        <button type="button" class="btn primary" disabled [title]="i18n.t('runs.removedNoRerun')">{{ i18n.t('runs.rerun') }}</button>
       } @else {
         <button type="button" class="btn primary" [disabled]="busy() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="rerun(run.number)">{{ i18n.t('runs.rerun') }}</button>
       }
@@ -22,7 +26,7 @@
   </header>
 
   <p class="notice" aria-live="polite">{{ message() }}</p>
-  @if (accessLost()) {
+  @if (accessLost() && !run.repositoryRemoved) {
     <p class="notice error access-lost" role="alert">
       {{ i18n.t('runs.accessLost') }}
       <a [routerLink]="['/repositories', run.repository] | orgLink" [queryParams]="{ tab: 'access' }">{{ i18n.t('runs.openDeployKey') }}</a>
@@ -36,7 +40,7 @@
     <dl class="meta">
       <div>
         <dt>{{ i18n.t('col.repository') }}</dt>
-        <dd>{{ run.repository }}</dd>
+        <dd><app-repo-name [name]="run.repository" [removed]="run.repositoryRemoved" /></dd>
       </div>
       <div>
         <dt>{{ i18n.t('runs.filter.branch') }}</dt>
