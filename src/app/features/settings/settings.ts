@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
-import { problemMessage } from '../../core/api/api';
+import { problemCode, problemMessage } from '../../core/api/api';
+import { BillingOverview, billingUrl } from '../../core/api/billing';
 import {
   ApiToken,
   NotificationChannel,
@@ -22,9 +23,16 @@ import { RoleNotice } from '../../shared/role-notice';
 import { Unavailable } from '../../shared/unavailable';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
+import { slugify } from '../../core/org/slug';
 
 type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'danger';
 type RetentionField = keyof OrganizationSettings['retention'];
+
+const SAVE_ERRORS: Record<string, TranslationKey> = {
+  'plan-required': 'settings.renamePro',
+  'slug-taken': 'orgs.error.slugTaken',
+  'slug-reserved': 'orgs.error.slugReserved',
+};
 
 const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'pipelines:write'];
 
@@ -53,6 +61,14 @@ export class Settings {
 
   protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
   protected readonly form = linkedSignal(() => this.remote.value());
+  // Renaming changes the slug (and every URL), so it is a PRO feature.
+  private readonly billing = httpResource<BillingOverview>(() => billingUrl());
+  protected readonly canRename = computed(() => this.billing.value()?.entitlements.includes('organizationRename') ?? false);
+  protected readonly slugPreview = computed(() => {
+    const f = this.form();
+    if (!f) return '';
+    return f.general.name.trim() === this.remote.value()?.general.name ? f.general.slug : slugify(f.general.name);
+  });
 
   protected readonly tabs: Tab[] = ['general', 'auth', 'notifications', 'tokens', 'retention', 'danger'];
   protected readonly tab = signal<Tab>('general');
@@ -159,7 +175,8 @@ export class Settings {
       },
       error: (err) => {
         this.saving.set(false);
-        this.saveError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+        const key = SAVE_ERRORS[problemCode(err) ?? ''];
+        this.saveError.set(key ? this.i18n.t(key) : (problemMessage(err) ?? this.i18n.t('api.saveError')));
       },
     });
   }

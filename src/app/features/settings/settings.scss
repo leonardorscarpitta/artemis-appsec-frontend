@@ -321,3 +321,23 @@
   background: var(--primary-soft);
   font-size: 0.875rem;
 }
+
+.plan-lock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+}
+
+output.readonly {
+  display: block;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
