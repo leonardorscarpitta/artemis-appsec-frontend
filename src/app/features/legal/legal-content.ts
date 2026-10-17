@@ -49,7 +49,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Language, theme and session in your browser’s local storage', 'To remember your preferences and keep you signed in. This stays on your device.'],
               ],
             },
-            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts. Artemis does not collect or store payment information: payments are not enabled yet, and when they are, this policy will be updated before anything changes.' },
+            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts. The app’s pages, scripts and fonts are served from Artemis’s own servers, so your browser does not contact third parties (such as font or CDN providers) while you use it. Artemis does not collect or store payment information: payments are not enabled yet, and when they are, this policy will be updated before anything changes.' },
           ],
         },
         {
@@ -152,7 +152,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Idioma, tema e sessão no armazenamento local do navegador', 'Para lembrar suas preferências e manter você conectado. Isso fica no seu dispositivo.'],
               ],
             },
-            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros. O Artemis não coleta nem armazena dados de pagamento: os pagamentos ainda não estão habilitados e, quando estiverem, esta política será atualizada antes de qualquer mudança.' },
+            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros. As páginas, os scripts e as fontes do aplicativo são servidos pelos servidores do próprio Artemis, então seu navegador não contata terceiros (como provedores de fontes ou CDNs) enquanto você o usa. O Artemis não coleta nem armazena dados de pagamento: os pagamentos ainda não estão habilitados e, quando estiverem, esta política será atualizada antes de qualquer mudança.' },
           ],
         },
         {
