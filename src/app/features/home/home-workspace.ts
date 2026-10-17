@@ -5,6 +5,7 @@ import { MyInvitation, myInvitationsUrl } from '../../core/api/organization';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
 import { OrgContext } from '../../core/org/org-context';
+import { LOCK_ICON } from '../../shared/role-notice';
 import { HomeOrgCard } from './home-org-card';
 
 /** Shortcuts into the signed-in user's organizations, shown on the public home page. */
@@ -23,6 +24,7 @@ export class HomeWorkspace {
   protected readonly pending = computed(() => (this.invitations.hasValue() ? this.invitations.value() : []));
   protected readonly firstName = computed(() => this.auth.profile()?.name.split(/\s+/)[0] ?? '');
   protected readonly failed = signal(false);
+  protected readonly lock = LOCK_ICON;
   /** The Free plan includes one owned organization per account; owning one blocks creating another. */
   protected readonly freeOwned = computed(() => this.org.organizations()?.find((o) => o.role === 'owner' && o.plan === 'free') ?? null);
 

@@ -32,7 +32,7 @@
           <li>
             @if (freeOwned(); as free) {
               <div class="card create limit" role="note">
-                <span class="plus lock" aria-hidden="true">🔒</span>
+                <span class="plus lock" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" [attr.d]="lock" /></svg></span>
                 <span>
                   <strong>{{ i18n.t('home.ws.limitTitle') }}</strong>
                   <span class="muted">{{ i18n.t('home.ws.limitDesc').replace('{name}', free.name) }}</span>
