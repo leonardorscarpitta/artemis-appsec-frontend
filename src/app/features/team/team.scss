@@ -235,3 +235,31 @@
 p.card.error-text {
   margin: 0 0 1rem;
 }
+
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 1.25rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--primary-soft);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .input {
+    flex: 1 1 18rem;
+    min-width: 0;
+    background: var(--surface);
+  }
+}

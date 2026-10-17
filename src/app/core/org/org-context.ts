@@ -74,9 +74,13 @@ export class OrgContext {
   }
 }
 
+export const INVITE_LINK = /^\/invite\/[\w-]{16,200}$/;
+
 /** Where to go after signing in: the requested page when allowed, the only organization, or the picker. */
 export function landingUrl(orgs: OrganizationSummary[], returnUrl: string | null): string {
   const first = returnUrl?.split(/[/?#]/).filter(Boolean)[0];
   if (returnUrl && (first === 'organizations' || orgs.some((o) => o.slug === first))) return returnUrl;
+  // Invitation links must survive sign-in or registration.
+  if (returnUrl && INVITE_LINK.test(returnUrl)) return returnUrl;
   return orgs.length === 1 ? `/${orgs[0].slug}/dashboard` : '/organizations';
 }

@@ -31,6 +31,7 @@ const PLATFORM = [
   ['Spring Boot', 'Apache-2.0', 'https://github.com/spring-projects/spring-boot'],
   ['Angular', 'MIT', 'https://github.com/angular/angular'],
   ['oidc-client-ts', 'Apache-2.0', 'https://github.com/authts/oidc-client-ts'],
+  ['IBM Plex Sans / IBM Plex Mono (fonts, served by Artemis)', 'SIL OFL 1.1', 'https://github.com/IBM/plex'],
 ];
 
 export const LICENSES: Record<Lang, LegalText> = {

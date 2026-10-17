@@ -62,6 +62,8 @@ export interface Invitation {
   role: Role;
   sentAt: string;
   expiresAt: string;
+  /** The one-time secret of the invitation link; only returned when the invitation is created or renewed. */
+  token?: string;
 }
 
 /** An organization the signed-in user belongs to, with their role in it. */
@@ -187,6 +189,11 @@ export class OrganizationApi {
 
   createOrganization(name: string, slug: string): Observable<OrganizationSummary> {
     return this.http.post<OrganizationSummary>(apiUrl('/organizations'), { name, slug });
+  }
+
+  /** Joins the organization of an invitation link; the token works once. */
+  acceptInvitationLink(token: string): Observable<OrganizationSummary> {
+    return this.http.post<OrganizationSummary>(`${myInvitationsUrl()}/accept`, { token });
   }
 
   acceptInvitation(id: string): Observable<OrganizationSummary> {

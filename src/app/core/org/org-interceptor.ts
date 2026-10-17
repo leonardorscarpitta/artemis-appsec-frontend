@@ -2,19 +2,19 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { problemCode } from '../api/api';
+import { apiPath, problemCode } from '../api/api';
 import { ORG_HEADER, OrgContext } from './org-context';
 
 const UNSCOPED = /^\/(me|organizations)(\/|$|\?)/;
 
 /** Scopes API calls to the organization in the URL and reacts when the membership changed meanwhile. */
 export const orgInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith(environment.apiUrl)) return next(req);
+  const path = apiPath(req.url);
+  if (path === null) return next(req);
   const org = inject(OrgContext);
   const router = inject(Router);
   const slug = org.slug();
-  if (!slug || UNSCOPED.test(req.url.slice(environment.apiUrl.length))) return next(req);
+  if (!slug || UNSCOPED.test(path)) return next(req);
   return next(req.clone({ setHeaders: { [ORG_HEADER]: slug } })).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {
