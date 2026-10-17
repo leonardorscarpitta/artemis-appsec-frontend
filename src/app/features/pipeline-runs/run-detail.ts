@@ -39,8 +39,17 @@ export class RunDetail {
 
   protected readonly live = computed(() => this.run()?.status === 'running' || this.run()?.status === 'queued');
   // Stages report only when they finish, and the scanner runs them in order: the first pending one is in progress.
+  protected readonly accessLost = computed(
+    () =>
+      this.run()?.status === 'failed' &&
+      (this.details.value()?.stages ?? []).some((s) => s.log.some((line) => line.includes('Repository access check failed'))),
+  );
+  // Before the first stage the scanner re-checks access to the repository and clones it (commit still unknown).
+  protected readonly checkingAccess = computed(() => this.run()?.status === 'running' && this.run()?.commit === 'pending');
   protected readonly currentStage = computed(() =>
-    this.run()?.status === 'running' ? this.ordered().find((s) => s.status === 'pending') ?? null : null,
+    this.run()?.status === 'running' && !this.checkingAccess()
+      ? (this.ordered().find((s) => s.status === 'pending') ?? null)
+      : null,
   );
   protected readonly progress = computed(() => {
     const stages = this.ordered();
