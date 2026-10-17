@@ -36,7 +36,7 @@ export const plansUrl = () => apiUrl('/billing/plans');
 
 /** What each plan includes, besides its scan limit; AI triage is the PRO differentiator. */
 export const PLAN_FEATURES: Record<PlanId, TranslationKey[]> = {
-  free: ['billing.f.scanning', 'billing.f.pipeline', 'billing.f.dashboard', 'billing.f.reports', 'billing.f.team'],
+  free: ['billing.f.scanning', 'billing.f.pipeline', 'billing.f.dashboard', 'billing.f.reports', 'billing.f.team', 'billing.f.oneOrg'],
   pro: ['billing.f.everythingFree', 'billing.f.schedules', 'billing.f.rename', 'billing.f.aiTriage', 'billing.f.aiReports'],
 };
 

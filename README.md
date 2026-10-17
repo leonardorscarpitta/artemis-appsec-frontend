@@ -97,7 +97,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
-| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner; one Free organization per account → `free-organization-limit`) |
 | `/invite/:token` | Accepts a one-time invitation link (`POST /me/invitations/accept` `{token}`), then opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
 | `/dashboard` | Security overview with CVSS severities |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
