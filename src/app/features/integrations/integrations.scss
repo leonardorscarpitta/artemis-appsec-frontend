@@ -207,3 +207,15 @@
   gap: 0.5rem;
   margin-top: auto;
 }
+
+.notice {
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--primary);
+  background: var(--primary-soft);
+  color: var(--text);
+}
+
+.integration.unavailable .mono-icon,
+.integration.unavailable h3 {
+  opacity: 0.65;
+}

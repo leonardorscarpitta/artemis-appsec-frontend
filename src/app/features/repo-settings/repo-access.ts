@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { problemMessage } from '../../core/api/api';
@@ -14,7 +15,7 @@ const POLL_MS = 2000;
 /** Deploy key, provider instructions and access checks of a private (SSH) repository. */
 @Component({
   selector: 'app-repo-access',
-  imports: [RoleNotice, RunScanButton],
+  imports: [DatePipe, RoleNotice, RunScanButton],
   templateUrl: './repo-access.html',
   styleUrl: './repo-access.scss',
 })

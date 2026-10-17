@@ -18,13 +18,14 @@ import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
+import { Unavailable } from '../../shared/unavailable';
 import { OrgLink } from '../../shared/org-link';
 
 const CATEGORIES: IntegrationCategory[] = ['scm', 'ci', 'notifications', 'issues', 'vulnData'];
 
 @Component({
   selector: 'app-integrations',
-  imports: [DatePipe, RequestState, RoleNotice, RouterLink, OrgLink],
+  imports: [DatePipe, RequestState, RoleNotice, RouterLink, OrgLink, Unavailable],
   templateUrl: './integrations.html',
   styleUrl: './integrations.scss',
 })

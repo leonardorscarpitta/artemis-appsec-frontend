@@ -121,9 +121,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
-            'Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
-            'Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
+            '(Not available yet) Re-run scans every: on every push, or every 6 hours, 24 hours or 7 days.',
+            '(Not available yet) Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
+            '(Not available yet) Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
             'AI triage: automatic review of findings to flag likely false positives and generate reports. It will be part of the PRO plan and is not available yet — the option is shown locked and links to Billing.',
           ],
         },
@@ -330,7 +330,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Compliance', 'Findings mapped to the OWASP Top 10 categories, useful for audits.'],
           ],
         },
-        { kind: 'p', text: 'To request a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period (the last complete week, month or quarter), then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready". AI triage reports are not available yet.' },
+        { kind: 'p', text: '(Not available yet) To request a report on demand, select "Generate report", choose the type, the scope (the whole organization or one repository) and the period (the last complete week, month or quarter), then select "Generate". The report appears in the list with status "Generating" and can be opened once it is "Ready". AI triage reports are not available yet.' },
         { kind: 'p', text: 'A report contains:' },
         {
           kind: 'ul',
@@ -368,7 +368,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrations',
       blocks: [
-        { kind: 'p', text: 'The Integrations page connects Artemis to the tools your team already uses. Integrations are grouped by category: source control, CI/CD, notifications, issue tracking and vulnerability data.' },
+        { kind: 'p', text: 'The Integrations page connects Artemis to the tools your team already uses. Integrations are grouped by category: source control, CI/CD, notifications, issue tracking and vulnerability data. Only NIST NVD works today; the other integrations are shown with “Not available yet” until they are released.' },
         {
           kind: 'ul',
           items: [
@@ -425,10 +425,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'General: organization name, URL slug, default language and time zone. Each member can still choose their own language in the top bar.',
-            'Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
-            'Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
-            'API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
-            'Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
+            '(Not available yet) Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
+            '(Not available yet) Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
+            '(Not available yet) API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
+            '(Not available yet) Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
             'Danger zone: members other than the owner can leave the organization. The owner can delete it by typing its name exactly — this permanently deletes all its repositories, findings, pipeline runs, reports, policies, integrations, tokens and memberships, and cannot be undone.',
           ],
         },
@@ -584,9 +584,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
-            'Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
-            'Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
+            '(Ainda não disponível) Reexecutar análises a cada: a cada push, ou a cada 6 horas, 24 horas ou 7 dias.',
+            '(Ainda não disponível) Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
+            '(Ainda não disponível) Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
             'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Fará parte do plano PRO e ainda não está disponível — a opção aparece bloqueada e leva à página de Assinatura.',
           ],
         },
@@ -793,7 +793,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Conformidade', 'Achados mapeados para as categorias do OWASP Top 10, útil para auditorias.'],
           ],
         },
-        { kind: 'p', text: 'Para solicitar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período (a última semana, mês ou trimestre completo), e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto". Relatórios de triagem com IA ainda não estão disponíveis.' },
+        { kind: 'p', text: '(Ainda não disponível) Para solicitar um relatório sob demanda, selecione "Gerar relatório", escolha o tipo, o escopo (a organização inteira ou um repositório) e o período (a última semana, mês ou trimestre completo), e selecione "Gerar". O relatório aparece na lista com status "Gerando" e pode ser aberto quando estiver "Pronto". Relatórios de triagem com IA ainda não estão disponíveis.' },
         { kind: 'p', text: 'Um relatório contém:' },
         {
           kind: 'ul',
@@ -831,7 +831,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrações',
       blocks: [
-        { kind: 'p', text: 'A página Integrações conecta o Artemis às ferramentas que sua equipe já usa. As integrações são agrupadas por categoria: controle de versão, CI/CD, notificações, gestão de issues e dados de vulnerabilidades.' },
+        { kind: 'p', text: 'A página Integrações conecta o Artemis às ferramentas que sua equipe já usa. As integrações são agrupadas por categoria: controle de versão, CI/CD, notificações, gestão de issues e dados de vulnerabilidades. Hoje só o NIST NVD funciona; as demais integrações aparecem como “Ainda não disponível” até serem lançadas.' },
         {
           kind: 'ul',
           items: [
@@ -888,10 +888,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ul',
           items: [
             'Geral: nome da organização, identificador na URL, idioma padrão e fuso horário. Cada membro ainda pode escolher o próprio idioma na barra superior.',
-            'Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
-            'Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
-            'Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
-            'Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
+            '(Ainda não disponível) Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
+            '(Ainda não disponível) Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
+            '(Ainda não disponível) Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
+            '(Ainda não disponível) Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
             'Zona de perigo: membros que não são o proprietário podem sair da organização. O proprietário pode excluí-la digitando o nome exato — isso apaga permanentemente todos os repositórios, achados, execuções de pipeline, relatórios, políticas, integrações, tokens e vínculos de membros, sem possibilidade de desfazer.',
           ],
         },

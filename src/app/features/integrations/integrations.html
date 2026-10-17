@@ -5,6 +5,7 @@
   </div>
 </header>
 
+<p class="card notice">{{ i18n.t('unavailable.integrations') }}</p>
 <app-role-notice permission="integrations" />
 <app-request-state [resource]="integrations" />
 <fieldset class="contents" [disabled]="!canManage()">
@@ -18,12 +19,16 @@
     <h2 [id]="'cat-' + group.category">{{ group.label }}</h2>
     <ul class="grid">
       @for (item of group.items; track item.id) {
-        <li class="card integration" [class]="item.status">
+        <li class="card integration" [class]="item.id === 'nvd' ? item.status : 'unavailable'">
           <div class="head">
             <span class="mono-icon" aria-hidden="true">{{ item.shortCode }}</span>
             <div class="title">
               <h3>{{ item.name }}</h3>
-              <span class="status">{{ statusLabel(item.status) }}</span>
+              @if (item.id === 'nvd') {
+                <span class="status">{{ statusLabel(item.status) }}</span>
+              } @else {
+                <app-unavailable />
+              }
             </div>
           </div>
           <p class="muted">{{ desc(item) }}</p>
@@ -35,11 +40,11 @@
                 <dd class="mono">{{ (item.lastSyncAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</dd>
               </div>
             </dl>
-          } @else if (item.detail) {
-            <p class="detail mono">{{ item.detail }}</p>
           }
 
-          @if (editing() === item.id) {
+          @if (item.id !== 'nvd') {
+            <!-- Planned integration: shown, but nothing can be connected yet. -->
+          } @else if (editing() === item.id) {
             <form class="detail-form" (submit)="saveDetail(item.id, $event)">
               <label class="sr-only" [for]="'detail-' + item.id">{{ i18n.t('int.detail') }}</label>
               <input

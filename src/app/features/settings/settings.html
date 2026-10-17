@@ -73,6 +73,8 @@
     }
 
     @case ('auth') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.authentication') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.auth.desc') }}</p>
       <div class="grid-2">
         <div class="field">
@@ -130,9 +132,12 @@
           (click)="patchAuth({ enforceSso: !f.authentication.enforceSso })"
         ></button>
       </div>
+      </fieldset>
     }
 
     @case ('notifications') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.notifications') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.notif.desc') }}</p>
       <div class="table-wrap">
         <table class="table notif">
@@ -163,14 +168,14 @@
           </tbody>
         </table>
       </div>
+      </fieldset>
     }
 
     @case ('tokens') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.apiTokens') }}</p>
       <div class="section-head">
         <p class="muted">{{ i18n.t('settings.tokens.desc') }}</p>
-        @if (!creatingToken() && !newToken() && canManageTokens()) {
-          <button type="button" class="btn primary" (click)="creatingToken.set(true)">{{ i18n.t('settings.tokens.create') }}</button>
-        }
+        <button type="button" class="btn primary" disabled [title]="i18n.t('unavailable.apiTokens')">{{ i18n.t('settings.tokens.create') }}</button>
       </div>
 
       @if (tokenError(); as message) {
@@ -282,6 +287,8 @@
     }
 
     @case ('retention') {
+      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.retention') }}</p>
+      <fieldset class="contents" disabled>
       <p class="muted">{{ i18n.t('settings.retention.desc') }}</p>
       <div class="grid-3">
         @for (item of retention; track item.key) {
@@ -295,6 +302,7 @@
           </div>
         }
       </div>
+      </fieldset>
     }
 
     @case ('danger') {

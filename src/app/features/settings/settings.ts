@@ -19,6 +19,7 @@ import {
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
+import { Unavailable } from '../../shared/unavailable';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
 
@@ -29,7 +30,7 @@ const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'p
 
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState, RoleNotice],
+  imports: [DatePipe, RequestState, RoleNotice, Unavailable],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
