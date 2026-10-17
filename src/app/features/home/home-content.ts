@@ -36,7 +36,7 @@ export const HOME: Record<Lang, HomeContent> = {
       lead: 'No agents to install. Artemis only needs read access to your code.',
       steps: [
         { title: 'Choose a repository', text: 'Paste its SSH URL, pick the branch and its stack — or several folders for a monorepo — then add the read-only deploy key Artemis generates.' },
-        { title: 'Grant read-only access', text: 'Public repositories need nothing. For private ones, add the read-only deploy key Artemis generates for you.' },
+        { title: 'Grant read-only access', text: 'Every repository, public or private, gets a read-only deploy key from Artemis: add it to the repository and Artemis can clone it.' },
         { title: 'Configure the pipeline', text: 'Pick the security stages, tools and fail thresholds, or start from a preset.' },
         { title: 'Monitor and respond', text: 'Scans run on your schedule; new CVEs open issues, notify maintainers or block merges.' },
       ],
@@ -118,7 +118,7 @@ export const HOME: Record<Lang, HomeContent> = {
       lead: 'Nenhum agente para instalar. O Artemis só precisa de acesso de leitura ao seu código.',
       steps: [
         { title: 'Escolha um repositório', text: 'Cole a URL SSH, escolha a branch e a stack — ou várias pastas em um monorepo — e adicione a deploy key somente leitura que o Artemis gera.' },
-        { title: 'Libere acesso de leitura', text: 'Repositórios públicos não precisam de nada. Para os privados, adicione a deploy key somente leitura que o Artemis gera para você.' },
+        { title: 'Libere acesso de leitura', text: 'Todo repositório, público ou privado, recebe uma deploy key somente leitura do Artemis: adicione-a ao repositório e o Artemis passa a cloná-lo.' },
         { title: 'Configure o pipeline', text: 'Escolha etapas de segurança, ferramentas e critérios de falha, ou comece por um modelo.' },
         { title: 'Monitore e responda', text: 'As análises rodam no seu agendamento; novas CVEs abrem issues, notificam mantenedores ou bloqueiam merges.' },
       ],

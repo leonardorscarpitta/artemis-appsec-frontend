@@ -12,7 +12,7 @@ import { OrgContext } from '../../core/org/org-context';
 import { RoleNotice } from '../../shared/role-notice';
 import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 
-// Public HTTPS URLs (no embedded credentials) or SSH URLs of private repositories (cloned with an Artemis deploy key).
+// SSH URLs only: every repository is cloned with its own Artemis deploy key.
 const REPO_URL = /^(git@[\w.-]+:[\w./-]+\.git|ssh:\/\/[\w.@:/-]+)$/;
 
 @Component({

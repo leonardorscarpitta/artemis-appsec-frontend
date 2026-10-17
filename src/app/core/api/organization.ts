@@ -50,7 +50,8 @@ export type Permission = 'viewFindings' | 'triage' | 'pipelines' | 'integrations
 export interface Member {
   id: string;
   name: string;
-  email: string;
+  /** Null for roles without the team permission (data minimisation). */
+  email: string | null;
   role: Role;
   active: boolean;
   lastActiveAt: string | null;

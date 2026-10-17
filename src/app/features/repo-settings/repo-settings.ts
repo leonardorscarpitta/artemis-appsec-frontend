@@ -31,7 +31,7 @@ export class RepoSettings {
   protected readonly canEdit = computed(() => this.org.can('pipelines'));
 
   readonly name = input.required<string>();
-  /** `?tab=access` opens the Deploy Key tab (e.g. right after adding a private repository). */
+  /** `?tab=access` opens the Deploy Key tab (e.g. right after adding a repository). */
   readonly initialTab = input<string | undefined>(undefined, { alias: 'tab' });
 
   protected readonly details = httpResource<ProjectDetails>(() => repositoryUrl(this.name()));
