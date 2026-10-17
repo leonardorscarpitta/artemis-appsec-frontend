@@ -400,7 +400,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Viewer', 'Read-only access to findings and reports.'],
           ],
         },
-        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do. Artemis enforces it on every request:' },
+        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do in this organization, and Artemis enforces it on every request. Owners and admins can change it: tick or untick the boxes and select "Save permissions"; the change applies to everyone with that role on their next action. Admins can change analysts, developers and viewers, but only the owner changes admin permissions. Some cells are locked: the owner always has every permission, every role can view findings, and billing (plan, ownership, deleting the organization) stays with the owner. New organizations start with these defaults:' },
         {
           kind: 'table',
           head: ['Permission', 'What it allows', 'Roles'],
@@ -863,7 +863,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Leitor', 'Acesso somente leitura a achados e relatórios.'],
           ],
         },
-        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer. O Artemis aplica essas regras em todas as requisições:' },
+        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer nesta organização, e o Artemis aplica essas regras em todas as requisições. Proprietários e administradores podem alterá-la: marque ou desmarque as caixas e selecione "Salvar permissões"; a mudança vale para todos com aquele papel na próxima ação. Administradores podem alterar analistas, desenvolvedores e leitores, mas só o proprietário altera as permissões de administrador. Algumas células são fixas: o proprietário sempre tem todas as permissões, todo papel pode ver os achados e a assinatura (plano, propriedade, exclusão da organização) fica com o proprietário. Organizações novas começam com estes padrões:' },
         {
           kind: 'table',
           head: ['Permissão', 'O que permite', 'Papéis'],

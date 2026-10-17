@@ -86,10 +86,12 @@ export interface MyInvitation {
   expiresAt: string;
 }
 
+/** A role's permissions in the current organization; `editable`: the signed-in user may change them. */
 export interface RoleInfo {
   role: Role;
   permissions: Permission[];
   assignable: boolean;
+  editable: boolean;
 }
 
 export type SessionTimeout = '1h' | '8h' | '24h' | '7d';
@@ -162,6 +164,10 @@ export class OrganizationApi {
 
   removeMember(memberId: string): Observable<void> {
     return this.http.delete<void>(`${membersUrl()}/${memberId}`);
+  }
+
+  updateRolePermissions(role: Role, permissions: Permission[]): Observable<RoleInfo> {
+    return this.http.put<RoleInfo>(`${rolesUrl()}/${role}/permissions`, { permissions });
   }
 
   changeRole(memberId: string, role: Role): Observable<Member> {
