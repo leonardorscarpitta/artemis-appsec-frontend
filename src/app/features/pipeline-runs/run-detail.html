@@ -22,6 +22,12 @@
   </header>
 
   <p class="notice" aria-live="polite">{{ message() }}</p>
+  @if (accessLost()) {
+    <p class="notice error access-lost" role="alert">
+      {{ i18n.t('runs.accessLost') }}
+      <a [routerLink]="['/repositories', run.repository] | orgLink" [queryParams]="{ tab: 'access' }">{{ i18n.t('runs.openDeployKey') }}</a>
+    </p>
+  }
   @if (error()) {
     <p class="notice error" role="alert">{{ error() }}</p>
   }
@@ -76,7 +82,10 @@
     <section class="card live-progress" aria-live="polite" [attr.aria-label]="i18n.t('runs.progress')">
       <span class="spinner" aria-hidden="true"></span>
       <div class="live-text">
-        @if (currentStage(); as current) {
+        @if (checkingAccess()) {
+          <strong>{{ i18n.t('runs.checkingAccess') }}</strong>
+          <span class="muted">{{ i18n.t('runs.checkingAccessDesc') }}</span>
+        } @else if (currentStage(); as current) {
           <strong>
             {{ i18n.t('runs.step').replace('{n}', '' + progress().step).replace('{total}', '' + progress().total) }}
             — {{ stageName(current.id) }}
