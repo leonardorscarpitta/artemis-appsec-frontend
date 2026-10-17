@@ -11,15 +11,12 @@
       <h1>
         {{ repo.name }}
         @if (repo.folders.length) {
-          <span class="tag">{{ i18n.t('mono.tag') }}</span>
+          <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ i18n.t('mono.tag') }}</span>
         } @else {
           @if (repo.stackSource === 'pending') {
             <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
           } @else {
-            <span class="tag">{{ repo.stack }}</span>
-            @if (repo.stackSource === 'detected') {
-              <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
-            }
+            <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ repo.stack }}</span>
           }
         }
       </h1>

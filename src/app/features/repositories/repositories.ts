@@ -20,6 +20,7 @@ import { OrgContext } from '../../core/org/org-context';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { RoleNotice } from '../../shared/role-notice';
+import { StackSourceIcon } from '../../shared/stack-source';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   manual: 'ob.settings.interval.manual',
@@ -31,7 +32,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories, StackSourceIcon],
   template: `
     <header class="page-header">
       <div>
@@ -84,15 +85,12 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               </td>
               <td [attr.data-label]="i18n.t('col.stack')">
                 @if (repo.folders.length) {
-                  <span class="tag" [title]="folderSummary(repo.folders)">{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
+                  <span class="tag" [title]="folderSummary(repo.folders)"><app-stack-source [source]="repo.stackSource" />{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
                 } @else {
                   @if (repo.stackSource === 'pending') {
                     <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
                   } @else {
-                    <span class="tag">{{ repo.stack }}</span>
-                    @if (repo.stackSource === 'detected') {
-                      <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
-                    }
+                    <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ repo.stack }}</span>
                   }
                 }
               </td>
@@ -178,8 +176,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       background: var(--sev-critical-bg);
     }
 
-    .tag.pending,
-    .tag.auto {
+    .tag.pending {
       color: var(--primary);
       background: var(--primary-soft);
     }

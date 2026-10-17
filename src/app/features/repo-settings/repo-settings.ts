@@ -12,6 +12,7 @@ import { ScanSettings } from '../../shared/scan-settings';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { RoleNotice } from '../../shared/role-notice';
+import { StackSourceIcon } from '../../shared/stack-source';
 import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 import { Stack } from '../../core/domain';
 import { RepoAccess } from './repo-access';
@@ -20,7 +21,7 @@ type Tab = 'general' | 'pipeline' | 'access';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders, RepoAccess],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders, RepoAccess, StackSourceIcon],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })
