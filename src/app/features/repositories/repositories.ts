@@ -59,7 +59,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
           @for (repo of repositories.value(); track repo.id) {
             <tr>
               <td class="primary-cell">
-                <strong>{{ repo.name }}</strong>
+                <a class="repo-link" [routerLink]="['/repositories', repo.name] | orgLink" [queryParams]="{ tab: 'general' }"><strong>{{ repo.name }}</strong></a>
                 @if (repo.access === 'ssh') {
                   <a
                     class="tag"
@@ -104,6 +104,17 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
     a.tag {
       text-decoration: none;
+    }
+
+    .repo-link {
+      color: var(--text);
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--primary);
+        text-decoration: underline;
+      }
     }
 
     .tag.warn {

@@ -39,7 +39,10 @@ export class RepoSettings {
   protected readonly repo = computed(() => this.details.value()?.project);
   protected readonly settings = linkedSignal(() => this.details.value()?.settings ?? DEFAULT_SETTINGS);
   protected readonly pipeline = linkedSignal(() => this.details.value()?.pipeline ?? []);
-  protected readonly tab = linkedSignal<Tab>(() => (this.initialTab() === 'access' ? 'access' : 'pipeline'));
+  protected readonly tab = linkedSignal<Tab>(() => {
+    const requested = this.initialTab();
+    return requested === 'access' || requested === 'general' ? requested : 'pipeline';
+  });
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
