@@ -40,6 +40,8 @@ export class Organizations {
 
   protected readonly name = signal('');
   protected readonly slug = computed(() => slugify(this.name()));
+  /** The Free plan includes one owned organization per account. */
+  protected readonly freeOwned = computed(() => this.org.organizations()?.find((o) => o.role === 'owner' && o.plan === 'free') ?? null);
   protected readonly creating = signal(false);
   protected readonly createError = signal<string | null>(null);
   protected readonly busyInvitation = signal<string | null>(null);

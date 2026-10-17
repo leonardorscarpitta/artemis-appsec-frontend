@@ -1,4 +1,5 @@
 .workspace {
+  flex: 1;
   padding: 2.5rem 0 3rem;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
@@ -22,6 +23,124 @@
   h2 {
     font-size: 1.5rem;
   }
+}
+
+.ws-sub {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+:host(app-home-org-card) {
+  display: block;
+  height: 100%;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  border-top: 1px solid var(--border);
+
+  > div {
+    padding: 0.7rem 1.1rem;
+
+    & + div {
+      border-left: 1px solid var(--border);
+    }
+  }
+
+  dt {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0.15rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .alert dd {
+    color: var(--sev-critical);
+  }
+
+  &.skeleton {
+    min-height: 66px;
+
+    span {
+      margin: 0.9rem 1.1rem;
+      border-radius: var(--radius);
+      background: var(--surface-alt);
+    }
+  }
+}
+
+.stats-error {
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0 1.1rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+.usage {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.25rem 0.6rem;
+  align-items: center;
+  min-width: 160px;
+  flex: 1;
+}
+
+.usage-value {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+
+    &.full {
+      background: var(--sev-critical);
+    }
+  }
+}
+
+.last-scan {
+  white-space: nowrap;
+}
+
+.tag.pro {
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .eyebrow {
@@ -111,6 +230,20 @@
   }
 }
 
+.limit {
+  border-style: solid;
+  border-color: var(--sev-high);
+  background: var(--sev-high-bg);
+
+  &:hover {
+    border-color: var(--sev-high);
+  }
+
+  .text-link {
+    margin-top: 0.35rem;
+  }
+}
+
 .plus {
   display: grid;
   place-items: center;
@@ -122,6 +255,11 @@
   color: var(--primary);
   font-size: 1.5rem;
   font-weight: 500;
+
+  &.lock {
+    font-size: 1.1rem;
+    background: var(--surface);
+  }
 }
 
 .org-text {
