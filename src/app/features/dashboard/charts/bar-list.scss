@@ -64,6 +64,12 @@
   }
 }
 
+.muted .name,
+.muted .value {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 .name {
   overflow: hidden;
   font-size: 0.85rem;

@@ -9,6 +9,8 @@ export interface BarRow {
   values: number[];
   /** Query parameters of the row's link to the findings list. */
   query: Record<string, string>;
+  /** Shown dimmed (e.g. a category with no findings). */
+  muted?: boolean;
 }
 
 /** Horizontal bars (stacked when there is more than one series), each linking to the matching findings. */
@@ -25,7 +27,7 @@ export interface BarRow {
     }
     <ul class="bars">
       @for (row of bars(); track row.label) {
-        <li>
+        <li [class.muted]="row.muted">
           <a class="bar" [routerLink]="'/vulnerabilities' | orgLink" [queryParams]="row.query" [attr.aria-label]="row.description">
             <span class="name" [class.mono]="mono()" [title]="row.label">{{ row.label }}</span>
             <span class="track" aria-hidden="true">
