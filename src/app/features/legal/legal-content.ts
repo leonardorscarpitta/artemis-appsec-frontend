@@ -11,7 +11,7 @@ export interface LegalText {
 }
 
 const CONTACT = 'privacy@artemisappsec.papopromines.com.br';
-const UPDATED = '2026-10-16';
+const UPDATED = '2026-10-17';
 
 export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
   privacy: {
@@ -316,7 +316,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'payments',
           title: 'Plans and payments',
           blocks: [
-            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0, up to 90 scans per month) and PRO (R$ 24,99 per month, in Brazilian reais, up to 300 scans per month), which adds AI-assisted triage. Each pipeline run counts as one scan; once the monthly limit is reached, new runs are refused until the next calendar month. Billing is not enabled yet, so every organization currently uses the Free plan.' },
+            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0, up to 25 scans per month) and PRO (R$ 24,99 per month, in Brazilian reais, up to 300 scans per month), which adds renaming the organization and AI-assisted triage. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month. Billing is not enabled yet, so every organization currently uses the Free plan.' },
             { kind: 'p', text: 'When payments become available, prices and conditions will always be shown before any charge, nothing will be charged without your explicit agreement, and you will be able to cancel or switch back to Free at any time.' },
           ],
         },
@@ -437,7 +437,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'payments',
           title: 'Planos e pagamentos',
           blocks: [
-            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0, até 90 análises por mês) e PRO (R$ 24,99 por mês, até 300 análises por mês), que adiciona triagem com IA. Cada execução de pipeline conta como uma análise; ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
+            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0, até 25 análises por mês) e PRO (R$ 24,99 por mês, até 300 análises por mês), que adiciona renomear a organização e triagem com IA. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
             { kind: 'p', text: 'Quando os pagamentos estiverem disponíveis, preços e condições serão sempre exibidos antes de qualquer cobrança, nada será cobrado sem a sua concordância expressa e você poderá cancelar ou voltar ao Free a qualquer momento.' },
           ],
         },
