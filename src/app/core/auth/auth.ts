@@ -8,6 +8,8 @@ interface LoginState {
 }
 
 export interface Profile {
+  /** Keycloak user id (`sub`). */
+  subject: string;
   username: string;
   name: string;
   email: string | null;
@@ -45,6 +47,7 @@ export class Auth {
     if (!claims) return null;
     const name = claims.name ?? claims.preferred_username ?? claims.sub;
     return {
+      subject: claims.sub,
       username: claims.preferred_username ?? claims.sub,
       name,
       email: claims.email ?? null,

@@ -1,5 +1,8 @@
 :host {
   display: block;
+}
+
+:host(app-admin) {
   min-height: 100vh;
   background: var(--bg);
 }
@@ -148,6 +151,85 @@
 
 .empty {
   padding: 1.25rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+
+  button {
+    flex-shrink: 0;
+    padding: 0.6rem 1rem;
+    margin-bottom: -1px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--text-muted);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &[aria-selected='true'] {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.chip {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+}
+
+.admin-tag {
+  margin-left: 0.35rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.reason {
+  max-width: 16rem;
+}
+
+.truncated {
+  padding: 0.75rem;
+}
+
+.state-503 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+
+  p {
+    margin: 0;
+    max-width: 36rem;
+  }
 }
 
 @media (max-width: 599px) {
