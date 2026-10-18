@@ -17,7 +17,6 @@ const CREATE_ERRORS: Record<string, TranslationKey> = {
   'slug-taken': 'orgs.error.slugTaken',
   'slug-reserved': 'orgs.error.slugReserved',
   'organization-limit': 'orgs.error.limit',
-  'free-organization-limit': 'orgs.error.freeLimit',
 };
 
 /** Organization picker: the user's organizations, invitations addressed to them, and creating a new one. */
@@ -40,8 +39,8 @@ export class Organizations {
 
   protected readonly name = signal('');
   protected readonly slug = computed(() => slugify(this.name()));
-  /** The Free plan includes one owned organization per account. */
-  protected readonly freeOwned = computed(() => this.org.organizations()?.find((o) => o.role === 'owner' && o.plan === 'free') ?? null);
+  /** Each account can own one organization. */
+  protected readonly owned = computed(() => this.org.organizations()?.find((o) => o.role === 'owner') ?? null);
   protected readonly creating = signal(false);
   protected readonly createError = signal<string | null>(null);
   protected readonly busyInvitation = signal<string | null>(null);
@@ -59,10 +58,6 @@ export class Organizations {
 
   protected roleLabel(role: string): string {
     return this.i18n.t(`team.role.${role}` as TranslationKey);
-  }
-
-  protected planLabel(plan: string): string {
-    return this.i18n.t(`nav.plan.${plan}` as TranslationKey);
   }
 
   protected setName(value: string): void {

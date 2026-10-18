@@ -34,7 +34,7 @@
           @for (t of types; track t) {
             <option [value]="t" [selected]="t === type()">{{ typeLabel(t) }}</option>
           }
-          <option disabled>{{ i18n.t('reports.type.aiTriage') }} ({{ i18n.t('ob.settings.aiLocked') }})</option>
+          <option disabled>{{ i18n.t('reports.type.aiTriage') }} ({{ i18n.t(org.aiLabel()) }})</option>
         </select>
       </div>
       <div class="field">

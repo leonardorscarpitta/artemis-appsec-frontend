@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/auth/admin-guard';
 import { authGuard } from './core/auth/auth-guard';
 import { legacyPageGuard, legacyPageMatcher, orgGuard } from './core/org/org-guard';
 import { Shell } from './layout/shell';
@@ -38,6 +39,11 @@ export const routes: Routes = [
     path: 'organizations',
     canActivate: [authGuard],
     loadComponent: () => import('./features/organizations/organizations').then((m) => m.Organizations),
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/admin').then((m) => m.Admin),
   },
   { matcher: legacyPageMatcher, canActivate: [authGuard, legacyPageGuard], children: [] },
   {
@@ -99,7 +105,8 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () => import('./features/settings/settings').then((m) => m.Settings),
       },
-      { path: 'billing', loadComponent: () => import('./features/billing/billing').then((m) => m.Billing) },
+      { path: 'usage', loadComponent: () => import('./features/usage/usage').then((m) => m.Usage) },
+      { path: 'billing', redirectTo: 'usage' },
       { path: 'help', loadComponent: () => import('./features/help/help').then((m) => m.Help) },
       { path: '**', redirectTo: 'dashboard' },
     ],

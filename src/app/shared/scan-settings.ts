@@ -1,10 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, input, model } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BillingOverview, billingUrl } from '../core/api/billing';
 import { AutomaticAction, DockerfileMode, ProjectSettings, ScanSchedule } from '../core/api/projects';
 import { I18n, TranslationKey } from '../core/i18n';
+import { OrgContext } from '../core/org/org-context';
 import { OrgLink } from './org-link';
 import { LOCK_ICON } from './role-notice';
 import { Unavailable } from './unavailable';
@@ -19,15 +18,15 @@ const TIMED: ScanSchedule[] = ['6h', '24h', '7d'];
 })
 export class ScanSettings {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
 
   readonly settings = model.required<ProjectSettings>();
   /** The saved repository's schedule and next scheduled scan (absent while onboarding). */
   readonly savedSchedule = input<ScanSchedule | null>(null);
   readonly nextScanAt = input<string | null>(null);
 
-  private readonly billing = httpResource<BillingOverview>(() => billingUrl());
-  /** Timed schedules are a PRO feature; other plans keep saved ones, inactive. */
-  protected readonly scheduledScans = computed(() => this.billing.value()?.entitlements.includes('scheduledScans') ?? false);
+  /** Timed schedules must be enabled by the Artemis administrators; without it saved ones stay inactive. */
+  protected readonly scheduledScans = computed(() => this.org.hasFeature('scheduledScans'));
   protected readonly timed = computed(() => TIMED.includes(this.settings().schedule));
   protected readonly nextScan = computed(() =>
     this.scheduledScans() && this.timed() && this.settings().schedule === this.savedSchedule() ? this.nextScanAt() : null,

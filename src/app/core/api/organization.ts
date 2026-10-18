@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiUrl } from './api';
+import { Feature } from './usage';
 
 export type IntegrationCategory = 'scm' | 'ci' | 'notifications' | 'issues' | 'vulnData';
 export type IntegrationStatus = 'connected' | 'disconnected' | 'error';
@@ -73,7 +74,8 @@ export interface OrganizationSummary {
   name: string;
   role: Role;
   permissions: Permission[];
-  plan: 'free' | 'pro';
+  /** Optional features the Artemis administrators enabled for the organization. */
+  features: Feature[];
 }
 
 /** An invitation addressed to the signed-in user's e-mail. */

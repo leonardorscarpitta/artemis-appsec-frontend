@@ -1,0 +1,54 @@
+<header class="page-header">
+  <div>
+    <h1>{{ i18n.t('usage.title') }}</h1>
+    <p>{{ i18n.t('usage.subtitle') }}</p>
+  </div>
+</header>
+
+@if (usage.value(); as u) {
+  <section class="card" aria-labelledby="scans-title">
+    <div class="usage-head">
+      <h2 id="scans-title">{{ i18n.t('nav.usage') }}</h2>
+      <span class="mono">{{ u.scansThisMonth }} / {{ u.scanLimit }}</span>
+    </div>
+    <div
+      class="meter"
+      role="meter"
+      [attr.aria-label]="i18n.t('nav.usage')"
+      aria-valuemin="0"
+      [attr.aria-valuemax]="u.scanLimit"
+      [attr.aria-valuenow]="u.scansThisMonth"
+    >
+      <span [style.width.%]="percent()" [class.full]="percent() >= 90"></span>
+    </div>
+    <p class="muted">{{ i18n.t('usage.resets').replace('{date}', (u.resetsAt | date: 'yyyy-MM-dd HH:mm') ?? '') }}</p>
+    <p class="muted">{{ i18n.t('usage.limitHint').replace('{n}', '' + u.scanLimit) }}</p>
+  </section>
+
+  <section class="card" aria-labelledby="features-title">
+    <h2 id="features-title">{{ i18n.t('usage.features') }}</h2>
+    <p class="muted">{{ i18n.t('usage.featuresDesc') }}</p>
+    <ul class="features">
+      @for (f of features; track f) {
+        @let on = u.features.includes(f);
+        <li>
+          <div>
+            <strong>{{ name(f) }}</strong>
+            <span class="muted">{{ description(f) }}</span>
+          </div>
+          @if (on) {
+            <span class="tag enabled">{{ i18n.t('usage.enabled') }}</span>
+          } @else {
+            <span class="tag" [title]="i18n.t('feature.ask')">
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="lock" /></svg>
+              {{ i18n.t('feature.locked') }}
+            </span>
+          }
+        </li>
+      }
+    </ul>
+    <p class="muted fineprint">{{ i18n.t('feature.ask') }}</p>
+  </section>
+} @else {
+  <app-request-state [resource]="usage" />
+}

@@ -3,7 +3,7 @@
     {{ i18n.t('ob.settings.interval') }}
     @if (!scheduledScans()) {
       <span class="lock">
-        <a class="tag" [routerLink]="'/billing' | orgLink" [title]="i18n.t('ob.settings.scheduleLockedHint')">
+        <a class="tag" [routerLink]="'/usage' | orgLink" [title]="i18n.t('ob.settings.scheduleLockedHint')">
           <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="lock" /></svg>
           {{ i18n.t('ob.settings.scheduleLocked') }}
         </a>
@@ -105,11 +105,11 @@
     <p class="muted" id="ai-desc">{{ i18n.t('ob.settings.aiDesc') }}</p>
   </div>
   <div class="lock">
-    <a class="tag" [routerLink]="'/billing' | orgLink">
+    <a class="tag" [routerLink]="'/usage' | orgLink" [title]="i18n.t('feature.ask')">
       <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
         <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
       </svg>
-      {{ i18n.t('ob.settings.aiLocked') }}
+      {{ i18n.t(org.aiLabel()) }}
     </a>
     <button
       type="button"

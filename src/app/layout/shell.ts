@@ -7,7 +7,8 @@ import { filter } from 'rxjs';
 import { Auth } from '../core/auth/auth';
 import { OrgContext } from '../core/org/org-context';
 import { I18n, TranslationKey } from '../core/i18n';
-import { BillingOverview, billingUrl } from '../core/api/billing';
+import { UsageOverview, usageUrl } from '../core/api/usage';
+import { Account } from '../core/auth/account';
 import { OrgSummary } from '../core/org/org-summary';
 import { LangSwitch } from '../shared/lang-switch';
 import { Logo } from '../shared/logo';
@@ -30,7 +31,7 @@ interface NavGroup {
 }
 
 const ICONS = {
-  card: 'M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 14H4v-6h16zm0-10H4V6h16z',
+  meter: 'M3 13h2v8H3zm4-4h2v12H7zm4-6h2v18h-2zm4 9h2v9h-2zm4-3h2v12h-2z',
   dashboard: 'M3 13h8V3H3zm0 8h8v-6H3zm10 0h8V11h-8zm0-18v6h8V3z',
   bug: 'M20 8h-2.8a6 6 0 0 0-1.8-2L17 4.4 15.6 3l-2.2 2.2a6 6 0 0 0-2.8 0L8.4 3 7 4.4 8.6 6a6 6 0 0 0-1.8 2H4v2h2.1a6 6 0 0 0-.1 1v1H4v2h2v1a6 6 0 0 0 .1 1H4v2h2.8a6 6 0 0 0 10.4 0H20v-2h-2.1a6 6 0 0 0 .1-1v-1h2v-2h-2v-1a6 6 0 0 0-.1-1H20zm-6 8h-4v-2h4zm0-4h-4v-2h4z',
   folder: 'M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8z',
@@ -53,6 +54,7 @@ export class Shell {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(Auth);
   protected readonly org = inject(OrgContext);
+  protected readonly account = inject(Account);
   private readonly router = inject(Router);
   protected readonly lock = LOCK_ICON;
   protected readonly orgMenuOpen = signal(false);
@@ -66,6 +68,7 @@ export class Shell {
   constructor() {
     // Keeps anchor targets (e.g. Help sections) clear of the sticky top bar.
     inject(ViewportScroller).setOffset([0, 72]);
+    this.account.load().catch(() => undefined);
 
     this.router.events.pipe(
         filter((e) => e instanceof NavigationEnd),
@@ -97,18 +100,14 @@ export class Shell {
   // Badge counts; refreshed on every navigation so status changes are reflected.
   // Reading the slug re-fetches both when the user switches organization.
   private readonly counts = inject(OrgSummary).summary;
-  private readonly billing = httpResource<BillingOverview>(() => (this.org.slug() ? billingUrl() : undefined));
+  private readonly usageResource = httpResource<UsageOverview>(() => (this.org.slug() ? usageUrl() : undefined));
   protected readonly roleLabel = computed(() => {
     const role = this.org.current()?.role;
     return role ? this.i18n.t(`team.role.${role}`) : '';
   });
   protected readonly usage = computed(() => {
-    const usage = this.billing.value()?.usage;
+    const usage = this.usageResource.value();
     return usage ? { used: usage.scansThisMonth, limit: usage.scanLimit } : null;
-  });
-  protected readonly planLabel = computed(() => {
-    const plan = this.billing.value()?.currentPlan;
-    return plan ? this.i18n.t(`nav.plan.${plan}`) : '';
   });
 
   protected readonly groups = computed<NavGroup[]>(() => [
@@ -138,7 +137,7 @@ export class Shell {
         { path: '/policies', label: 'nav.policies', icon: ICONS.shield },
         { path: '/team', label: 'nav.team', icon: ICONS.team },
         { path: '/settings', label: 'nav.settings', icon: ICONS.gear },
-        { path: '/billing', label: 'nav.billing', icon: ICONS.card },
+        { path: '/usage', label: 'nav.usagePage', icon: ICONS.meter },
       ],
     },
   ]);

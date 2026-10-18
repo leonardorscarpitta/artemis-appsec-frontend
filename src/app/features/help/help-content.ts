@@ -23,14 +23,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'To create an account, select "Get started" on the home page or "Create an account" on the sign-in screen. The sign-up form (provided by Keycloak, the Artemis identity service) asks for your name, e-mail and a password of at least 12 characters, and asks you to accept the Terms of Use and Privacy Policy. Afterwards you create an organization or join one you were invited to (see "Organizations and invitations").' },
         { kind: 'p', text: 'The sign-in, sign-up and password-reset pages are run by Artemis’s identity service (Keycloak) with the Artemis look; they open in the language selected in the app. To sign in, select "Sign in" and enter your username or e-mail and password; you return to the page you were trying to open. If you forgot your password, use "Forgot password?" on the sign-in page. Authentication uses OpenID Connect; Artemis itself never sees or stores your password. Several failed attempts temporarily lock the account to protect it.' },
         { kind: 'p', text: 'Your name appears in the top bar while you are signed in, next to your role in the current organization; select your name to open your account page at the identity service (profile, password, two-factor authentication, signed-in devices and account deletion). The session is shared by all tabs of the browser, and the home page shows you as signed in with a "Go to dashboard" button, plus a "Your workspace" section listing your organizations and pending invitations. If the session expires you are asked to sign in again. "Sign out" ends both your Artemis session and your session at the identity service.' },
-        { kind: 'p', text: 'While you are signed in, the home page opens on your workspace: one card per organization with its open and critical findings, repositories, scans used this month and last scan, plus shortcuts to its pages. If you already own an organization on the Free plan, the create card explains that you need to upgrade it to PRO to create another one.' },
+        { kind: 'p', text: 'While you are signed in, the home page opens on your workspace: one card per organization with its open and critical findings, repositories, scans used this month and last scan, plus shortcuts to its pages. If you already own an organization, the create card explains that each account can own one. Artemis administrators also see a “Platform administration” button there.' },
         { kind: 'p', text: 'The interface is organized as follows:' },
         {
           kind: 'ul',
           items: [
             'Sidebar: navigation grouped into Overview, Security and Configuration. Badges show the number of open vulnerabilities and connected repositories.',
             'New project button: starts the flow to connect a new repository.',
-            'Bottom of the sidebar: scans used this month against your plan limit, this help page and the current organization. Select the organization to switch to another one or to open "All organizations".',
+            'Bottom of the sidebar: scans used this month against the monthly limit (25 per organization), this help page and the current organization. Select the organization to switch to another one or to open "All organizations".',
             'Top bar: language selector (English or Portuguese), light/dark theme toggle and sign out. Language and theme are remembered in your browser.',
             'Addresses: every page lives under your organization, for example /acme/vulnerabilities. Links you share point to the same page for your colleagues.',
             'Lists: tables with more than 15 items show 15 per page, with the range shown (for example “Showing 16–30 of 42”) and buttons to move between pages. Changing a filter, the search or the sort order goes back to the first page.',
@@ -43,14 +43,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'organizations',
       title: 'Organizations and invitations',
       blocks: [
-        { kind: 'p', text: 'Everything in Artemis — repositories, findings, pipelines, reports, policies, integrations, team, settings and plan — belongs to an organization. You can be a member of several organizations, with a different role in each, and their data is kept completely separate.' },
+        { kind: 'p', text: 'Everything in Artemis — repositories, findings, pipelines, reports, policies, integrations, team and settings — belongs to an organization. You can be a member of several organizations, with a different role in each, and their data is kept completely separate.' },
         { kind: 'p', text: 'After signing in you go straight to your organization if you have only one; otherwise the Organizations page (/organizations) opens. It shows:' },
         {
           kind: 'ul',
           items: [
-            'Your organizations: name, address, your role and plan. Select one to open its dashboard.',
+            'Your organizations: name, address and your role. Select one to open its dashboard.',
             'Invitation links: to join an organization, open the invitation link the person who invited you shared with you (sign in or create an account first if asked). The link adds you with the role it offers and takes you to that organization’s dashboard; it works once and expires after 7 days.',
-            'Create organization: enter a name; the URL name is generated from it (lowercase, accents removed, spaces and symbols become hyphens — “Acme Corp” becomes /acme-corp — used in every link, such as /acme-corp/dashboard) and cannot be edited. The name needs at least 3 letters or numbers, and some URL names are reserved or already taken. You become the owner and the organization starts on the Free plan, where the name cannot be changed later. On the Free plan each account can own one organization (organizations created before this rule stay available); ownership of a Free organization can only be transferred to someone who doesn’t own a Free organization yet. You can join any number of organizations by invitation.',
+            'Create organization: enter a name; the URL name is generated from it (lowercase, accents removed, spaces and symbols become hyphens — “Acme Corp” becomes /acme-corp — used in every link, such as /acme-corp/dashboard) and cannot be edited. The name needs at least 3 letters or numbers, and some URL names are reserved or already taken. You become the owner. The name cannot be changed later unless the Artemis administrators enable renaming for the organization. Each account can own one organization (organizations created before this rule stay available); ownership can only be transferred to someone who doesn’t own an organization yet. You can join any number of organizations by invitation.',
           ],
         },
         { kind: 'p', text: 'To switch organization at any time, select the organization at the bottom of the sidebar and pick another one, or "All organizations · create one".' },
@@ -135,10 +135,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Scan schedule (PRO plan): every 6 hours, 24 hours or 7 days Artemis queues a scan of the default branch by itself — shown as “Scheduled” on the Pipelines page, by “Artemis scheduler”. The settings show the next scheduled scan in your time zone. Scheduled scans count toward the monthly scan limit and run like manual ones (access check, policies); a scan is skipped until the next interval when the limit is reached, access is not verified or a run of the repository is still queued or running. On the Free plan the control is locked and scans run only when someone selects Run scan; a schedule saved earlier is kept but inactive. “On every push” is not available yet (it needs webhooks).',
+            'Scan schedule (optional feature, enabled by the Artemis administrators): every 6 hours, 24 hours or 7 days Artemis queues a scan of the default branch by itself — shown as “Scheduled” on the Pipelines page, by “Artemis scheduler”. The settings show the next scheduled scan in your time zone. Scheduled scans count toward the monthly scan limit and run like manual ones (access check, policies); a scan is skipped until the next interval when the limit is reached, access is not verified or a run of the repository is still queued or running. Until the feature is enabled for the organization the control is locked (“Available on request”) and scans run only when someone selects Run scan; a schedule saved earlier is kept but inactive. “On every push” is not available yet (it needs webhooks).',
             '(Not available yet) Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
             '(Not available yet) Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
-            'AI triage: automatic review of findings to flag likely false positives and generate reports. It will be part of the PRO plan and is not available yet — the option is shown locked and links to Billing.',
+            'AI triage: automatic review of findings to flag likely false positives and generate reports. It is not available yet. It will be an optional feature the Artemis administrators enable per organization on request: the option is shown locked (“Available on request · coming soon”, or “Enabled for your organization · coming soon” once enabled) and links to the Usage page.',
           ],
         },
       ],
@@ -211,7 +211,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['License', 'Trivy', 'Package and the license that conflicts with your policy.'],
           ],
         },
-        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against your plan’s monthly limit, unless it ends before any stage runs (for example the access check or the clone fails, or it is cancelled while queued): then the run page says it did not count and the scan is given back.' },
+        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against the organization’s monthly limit (25 scans), unless it ends before any stage runs (for example the access check or the clone fails, or it is cancelled while queued): then the run page says it did not count and the scan is given back.' },
         { kind: 'note', text: 'Scans run entirely on Artemis’s own infrastructure with open-source tools (see Third-party notices). Your code is never sent to third-party scanning services.' },
       ],
     },
@@ -409,14 +409,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'table',
           head: ['Role', 'Intended for'],
           rows: [
-            ['Owner', 'Full access, including billing. One per organization.'],
+            ['Owner', 'Full access, including transferring ownership and deleting the organization. One per organization.'],
             ['Admin', 'Manages repositories, pipelines, integrations and the team.'],
             ['Security analyst', 'Triages findings and configures pipelines.'],
             ['Developer', 'Views and triages findings in their repositories.'],
             ['Viewer', 'Read-only access to findings and reports.'],
           ],
         },
-        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do in this organization, and Artemis enforces it on every request. Owners and admins can change it: click a cell to switch between ✓ (allowed) and – (not allowed), then select "Save permissions"; the change applies to everyone with that role on their next action. Admins can change analysts, developers and viewers, but only the owner changes admin permissions. Some cells are locked: the owner always has every permission, every role can view findings, and billing (plan, ownership, deleting the organization) stays with the owner. New organizations start with these defaults:' },
+        { kind: 'p', text: 'The "Roles and permissions" table at the bottom of the page shows exactly what each role can do in this organization, and Artemis enforces it on every request. Owners and admins can change it: click a cell to switch between ✓ (allowed) and – (not allowed), then select "Save permissions"; the change applies to everyone with that role on their next action. Admins can change analysts, developers and viewers, but only the owner changes admin permissions. Some cells are locked: the owner always has every permission, every role can view findings, and “Ownership and deletion” (transferring ownership, deleting the organization) stays with the owner. New organizations start with these defaults:' },
         {
           kind: 'table',
           head: ['Permission', 'What it allows', 'Roles'],
@@ -426,7 +426,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Configure pipelines', 'Add repositories, run and cancel scans, test repository access, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
             ['Manage integrations', 'Integrations, generating, rotating and revoking deploy keys, API tokens', 'Owner, Admin'],
             ['Manage team', 'Invitations, roles and organization settings', 'Owner, Admin'],
-            ['Manage billing', 'Change the plan, transfer ownership, delete the organization', 'Owner'],
+            ['Ownership and deletion', 'Transfer ownership, delete the organization', 'Owner'],
           ],
         },
         { kind: 'p', text: 'When your role does not allow something, the controls are shown disabled with a lock and a short explanation instead of being hidden. Ask an owner or admin if you need more access.' },
@@ -440,7 +440,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'General: organization name, default language and time zone. The URL is always generated from the name and shown read-only. Renaming the organization is a PRO plan feature (on the Free plan the name is locked); renaming also changes the URL, so the page moves to the new address and old links stop working. Each member can still choose their own language in the top bar.',
+            'General: organization name, default language and time zone. The URL is always generated from the name and shown read-only. Renaming the organization is an optional feature the Artemis administrators enable per organization (until then the name is locked); renaming also changes the URL, so the page moves to the new address and old links stop working. Each member can still choose their own language in the top bar.',
             '(Not available yet) Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
             '(Not available yet) Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
             '(Not available yet) API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
@@ -454,20 +454,29 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
 
     {
-      id: 'billing',
-      title: 'Billing and plans',
+      id: 'usage',
+      title: 'Usage and optional features',
       blocks: [
-        { kind: 'p', text: 'Configuration → Billing shows your organization’s current plan and compares the available plans.' },
+        { kind: 'p', text: 'Artemis is free: there are no plans, prices or payments. Configuration → Usage shows how many scans your organization ran this month, the limit and when the counter starts again, and which optional features are enabled for it.' },
+        { kind: 'p', text: 'Every organization can run 25 scans per calendar month (UTC). Each pipeline run counts as one scan — manual, scheduled, first scans and re-runs; runs that end before any stage runs (access check or clone failed, cancelled while queued, runner stopped) do not count. The usage also appears at the bottom of the sidebar and on the home page; when the limit is reached, new runs are refused until the next month.' },
         {
           kind: 'table',
-          head: ['Plan', 'Price', 'Includes'],
+          head: ['Optional feature', 'What it does'],
           rows: [
-            ['Free', 'R$ 0', '25 scans per month. Scanning (secrets, SAST, dependencies, containers), DevSecOps pipeline and policies, dashboard, findings, reports, team, integrations and API tokens.'],
-            ['PRO', 'R$ 24,99 per month', '300 scans per month. Everything in Free plus renaming the organization, AI triage of findings and AI-generated triage reports.'],
+            ['Scheduled scans', 'Scan repositories automatically every 6 hours, 24 hours or 7 days.'],
+            ['Organization rename', 'Rename the organization; its URL changes too.'],
+            ['AI triage', 'AI review of findings and triage reports. Not available yet (coming soon), even when enabled.'],
           ],
         },
-        { kind: 'p', text: 'Each pipeline run counts as one scan; runs that end before any stage runs (access check or clone failed, cancelled while queued, runner stopped) do not count. The usage for the current month (UTC) appears at the bottom of the sidebar and on the Billing page; when the limit is reached, new runs (such as re-runs) are refused until the next month. Plans are also shown in the Pricing section of the home page.' },
-        { kind: 'note', text: 'Billing is not enabled yet: every organization is on the Free plan and the upgrade button is locked. Nothing is ever charged without your explicit agreement.' },
+        { kind: 'note', text: 'Optional features are enabled per organization by the Artemis administrators — the people who run this Artemis instance, not your organization’s owner or admins. Locked controls say “Available on request”: ask the Artemis administrators to enable the feature.' },
+      ],
+    },
+    {
+      id: 'platform-admin',
+      title: 'Platform administration',
+      blocks: [
+        { kind: 'p', text: 'Artemis administrators (a role given in the identity provider, unrelated to the Admin role of an organization) open Platform administration from the top bar or the home page. It lists every organization — name, URL, owner, number of members and repositories, creation date — with a search box, and a switch per optional feature; each change is saved immediately.' },
+        { kind: 'note', text: 'Artemis administrators can see organizations but not their repositories, findings, pipeline runs or members’ e-mail addresses, and the role does not make them members of any organization.' },
       ],
     },
     {
@@ -502,14 +511,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
         { kind: 'p', text: 'Para criar uma conta, selecione "Começar" na página inicial ou "Criar uma conta" na tela de login. O formulário de cadastro (fornecido pelo Keycloak, o serviço de identidade do Artemis) pede nome, e-mail e uma senha de pelo menos 12 caracteres, e pede que você aceite os Termos de Uso e a Política de Privacidade. Depois você cria uma organização ou entra em uma para a qual foi convidado (veja "Organizações e convites").' },
         { kind: 'p', text: 'As páginas de login, cadastro e redefinição de senha são executadas pelo serviço de identidade do Artemis (Keycloak) com o visual do Artemis; elas abrem no idioma selecionado no app. Para entrar, selecione "Entrar" e informe seu usuário ou e-mail e a senha; você voltará para a página que tentava abrir. Se esqueceu a senha, use "Esqueceu sua senha?" na página de login. A autenticação usa OpenID Connect; o próprio Artemis nunca vê nem armazena sua senha. Várias tentativas erradas bloqueiam a conta temporariamente para protegê-la.' },
         { kind: 'p', text: 'Seu nome aparece na barra superior enquanto você estiver conectado, ao lado do seu papel na organização atual; selecione o nome para abrir sua conta no serviço de identidade (perfil, senha, verificação em duas etapas, dispositivos conectados e exclusão da conta). A sessão é compartilhada por todas as abas do navegador, e a página inicial mostra você conectado com o botão "Ir para o painel", além da seção "Seu espaço de trabalho" com as suas organizações e convites pendentes. Se a sessão expirar, será pedido um novo login. "Sair" encerra a sua sessão no Artemis e no serviço de identidade.' },
-        { kind: 'p', text: 'Enquanto você estiver conectado, a página inicial abre no seu espaço de trabalho: um cartão por organização com achados abertos e críticos, repositórios, análises usadas no mês e a última análise, além de atalhos para as páginas dela. Se você já é proprietário de uma organização no plano Free, o cartão de criação explica que é preciso fazer upgrade para o PRO para criar outra.' },
+        { kind: 'p', text: 'Enquanto você estiver conectado, a página inicial abre no seu espaço de trabalho: um cartão por organização com achados abertos e críticos, repositórios, análises usadas no mês e a última análise, além de atalhos para as páginas dela. Se você já é proprietário de uma organização, o cartão de criação explica que cada conta pode ser proprietária de uma. Os administradores do Artemis também veem ali o botão “Administração da plataforma”.' },
         { kind: 'p', text: 'A interface está organizada assim:' },
         {
           kind: 'ul',
           items: [
             'Barra lateral: navegação agrupada em Visão geral, Segurança e Configuração. Os indicadores mostram a quantidade de vulnerabilidades abertas e de repositórios conectados.',
             'Botão Novo projeto: inicia o fluxo para conectar um novo repositório.',
-            'Rodapé da barra lateral: análises usadas no mês em relação ao limite do plano, esta página de ajuda e a organização atual. Selecione a organização para trocar por outra ou abrir "Todas as organizações".',
+            'Rodapé da barra lateral: análises usadas no mês em relação ao limite mensal (25 por organização), esta página de ajuda e a organização atual. Selecione a organização para trocar por outra ou abrir "Todas as organizações".',
             'Barra superior: seletor de idioma (inglês ou português), alternância entre tema claro e escuro e sair. Idioma e tema ficam salvos no seu navegador.',
             'Endereços: todas as páginas ficam sob a sua organização, por exemplo /acme/vulnerabilities. Links compartilhados levam seus colegas à mesma página.',
             'Listas: tabelas com mais de 15 itens mostram 15 por página, com o intervalo exibido (por exemplo “Exibindo 16–30 de 42”) e botões para navegar entre as páginas. Alterar um filtro, a busca ou a ordenação volta para a primeira página.',
@@ -522,14 +531,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'organizations',
       title: 'Organizações e convites',
       blocks: [
-        { kind: 'p', text: 'Tudo no Artemis — repositórios, achados, pipelines, relatórios, políticas, integrações, equipe, configurações e plano — pertence a uma organização. Você pode ser membro de várias organizações, com um papel diferente em cada uma, e os dados delas ficam totalmente separados.' },
+        { kind: 'p', text: 'Tudo no Artemis — repositórios, achados, pipelines, relatórios, políticas, integrações, equipe e configurações — pertence a uma organização. Você pode ser membro de várias organizações, com um papel diferente em cada uma, e os dados delas ficam totalmente separados.' },
         { kind: 'p', text: 'Depois do login você vai direto para a sua organização se tiver apenas uma; caso contrário abre a página Organizações (/organizations). Ela mostra:' },
         {
           kind: 'ul',
           items: [
-            'Suas organizações: nome, endereço, seu papel e o plano. Selecione uma para abrir o painel dela.',
+            'Suas organizações: nome, endereço e seu papel. Selecione uma para abrir o painel dela.',
             'Links de convite: para entrar em uma organização, abra o link de convite que a pessoa que convidou você compartilhou (entre ou crie uma conta antes, se for pedido). O link adiciona você com o papel oferecido e leva ao painel da organização; ele funciona uma vez e expira em 7 dias.',
-            'Criar organização: informe um nome; o nome na URL é gerado a partir dele (minúsculas, sem acentos, espaços e símbolos viram hífens — “Acme Corp” vira /acme-corp — usado em todos os links, como /acme-corp/dashboard) e não pode ser editado. O nome precisa ter pelo menos 3 letras ou números, e alguns nomes de URL são reservados ou já estão em uso. Você será o proprietário e a organização começa no plano Free, no qual o nome não pode ser alterado depois. No plano Free cada conta pode ser proprietária de uma organização (organizações criadas antes desta regra continuam disponíveis); a propriedade de uma organização Free só pode ser transferida para quem ainda não é proprietário de uma organização Free. Você pode entrar em quantas organizações quiser por convite.',
+            'Criar organização: informe um nome; o nome na URL é gerado a partir dele (minúsculas, sem acentos, espaços e símbolos viram hífens — “Acme Corp” vira /acme-corp — usado em todos os links, como /acme-corp/dashboard) e não pode ser editado. O nome precisa ter pelo menos 3 letras ou números, e alguns nomes de URL são reservados ou já estão em uso. Você será o proprietário. O nome não pode ser alterado depois, a menos que os administradores do Artemis habilitem a renomeação para a organização. Cada conta pode ser proprietária de uma organização (organizações criadas antes desta regra continuam disponíveis); a propriedade só pode ser transferida para quem ainda não é proprietário de uma organização. Você pode entrar em quantas organizações quiser por convite.',
           ],
         },
         { kind: 'p', text: 'Para trocar de organização a qualquer momento, selecione a organização no rodapé da barra lateral e escolha outra, ou "Todas as organizações · criar uma".' },
@@ -614,10 +623,10 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Agendamento de análises (plano PRO): a cada 6 horas, 24 horas ou 7 dias o Artemis coloca na fila, sozinho, uma análise da branch padrão — exibida como “Agendada” na página Pipelines, por “Artemis scheduler”. As configurações mostram a próxima análise agendada no seu fuso horário. As análises agendadas contam no limite mensal de análises e rodam como as manuais (verificação de acesso, políticas); uma análise é pulada até o próximo intervalo quando o limite foi atingido, o acesso não está verificado ou uma execução do repositório ainda está na fila ou rodando. No plano Free o controle fica bloqueado e as análises só rodam quando alguém seleciona Executar análise; um agendamento salvo antes é mantido, mas fica inativo. “A cada push” ainda não está disponível (exige webhooks).',
+            'Agendamento de análises (recurso opcional, habilitado pelos administradores do Artemis): a cada 6 horas, 24 horas ou 7 dias o Artemis coloca na fila, sozinho, uma análise da branch padrão — exibida como “Agendada” na página Pipelines, por “Artemis scheduler”. As configurações mostram a próxima análise agendada no seu fuso horário. As análises agendadas contam no limite mensal de análises e rodam como as manuais (verificação de acesso, políticas); uma análise é pulada até o próximo intervalo quando o limite foi atingido, o acesso não está verificado ou uma execução do repositório ainda está na fila ou rodando. Enquanto o recurso não estiver habilitado para a organização, o controle fica bloqueado (“Disponível mediante solicitação”) e as análises só rodam quando alguém seleciona Executar análise; um agendamento salvo antes é mantido, mas fica inativo. “A cada push” ainda não está disponível (exige webhooks).',
             '(Ainda não disponível) Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
             '(Ainda não disponível) Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
-            'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Fará parte do plano PRO e ainda não está disponível — a opção aparece bloqueada e leva à página de Assinatura.',
+            'Triagem com IA: revisão automática dos achados para sinalizar prováveis falsos positivos e gerar relatórios. Ainda não está disponível. Será um recurso opcional que os administradores do Artemis habilitam por organização mediante solicitação: a opção aparece bloqueada (“Disponível mediante solicitação · em breve”, ou “Habilitado para sua organização · em breve” depois de habilitada) e leva à página de Uso.',
           ],
         },
       ],
@@ -690,7 +699,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Licença', 'Trivy', 'Pacote e a licença que conflita com a sua política.'],
           ],
         },
-        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal do seu plano, a menos que termine antes de qualquer etapa rodar (por exemplo, se a verificação de acesso ou o clone falhar, ou se for cancelada ainda na fila): nesse caso a página da execução informa que ela não contou e a análise é devolvida.' },
+        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal da organização (25 análises), a menos que termine antes de qualquer etapa rodar (por exemplo, se a verificação de acesso ou o clone falhar, ou se for cancelada ainda na fila): nesse caso a página da execução informa que ela não contou e a análise é devolvida.' },
         { kind: 'note', text: 'As análises rodam inteiramente na infraestrutura do Artemis com ferramentas de código aberto (veja Avisos de terceiros). Seu código nunca é enviado a serviços de análise de terceiros.' },
       ],
     },
@@ -888,14 +897,14 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'table',
           head: ['Papel', 'Indicado para'],
           rows: [
-            ['Proprietário', 'Acesso total, incluindo cobrança. Um por organização.'],
+            ['Proprietário', 'Acesso total, incluindo transferir a propriedade e excluir a organização. Um por organização.'],
             ['Administrador', 'Gerencia repositórios, pipelines, integrações e a equipe.'],
             ['Analista de segurança', 'Faz a triagem de achados e configura pipelines.'],
             ['Desenvolvedor', 'Vê e faz a triagem de achados nos seus repositórios.'],
             ['Leitor', 'Acesso somente leitura a achados e relatórios.'],
           ],
         },
-        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer nesta organização, e o Artemis aplica essas regras em todas as requisições. Proprietários e administradores podem alterá-la: clique em uma célula para alternar entre ✓ (permitido) e – (não permitido) e selecione "Salvar permissões"; a mudança vale para todos com aquele papel na próxima ação. Administradores podem alterar analistas, desenvolvedores e leitores, mas só o proprietário altera as permissões de administrador. Algumas células são fixas: o proprietário sempre tem todas as permissões, todo papel pode ver os achados e a assinatura (plano, propriedade, exclusão da organização) fica com o proprietário. Organizações novas começam com estes padrões:' },
+        { kind: 'p', text: 'A tabela "Papéis e permissões", no fim da página, mostra exatamente o que cada papel pode fazer nesta organização, e o Artemis aplica essas regras em todas as requisições. Proprietários e administradores podem alterá-la: clique em uma célula para alternar entre ✓ (permitido) e – (não permitido) e selecione "Salvar permissões"; a mudança vale para todos com aquele papel na próxima ação. Administradores podem alterar analistas, desenvolvedores e leitores, mas só o proprietário altera as permissões de administrador. Algumas células são fixas: o proprietário sempre tem todas as permissões, todo papel pode ver os achados e “Propriedade e exclusão” (transferir a propriedade, excluir a organização) fica com o proprietário. Organizações novas começam com estes padrões:' },
         {
           kind: 'table',
           head: ['Permissão', 'O que permite', 'Papéis'],
@@ -905,7 +914,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, testar o acesso a repositórios, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
             ['Gerenciar integrações', 'Integrações, gerar, trocar e revogar deploy keys, tokens de API', 'Proprietário, Administrador'],
             ['Gerenciar equipe', 'Convites, papéis e configurações da organização', 'Proprietário, Administrador'],
-            ['Gerenciar cobrança', 'Mudar o plano, transferir a propriedade, excluir a organização', 'Proprietário'],
+            ['Propriedade e exclusão', 'Transferir a propriedade, excluir a organização', 'Proprietário'],
           ],
         },
         { kind: 'p', text: 'Quando o seu papel não permite algo, os controles aparecem desativados com um cadeado e uma breve explicação, em vez de ficarem ocultos. Peça a um proprietário ou administrador se precisar de mais acesso.' },
@@ -919,7 +928,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Geral: nome da organização, idioma padrão e fuso horário. A URL é sempre gerada a partir do nome e aparece somente para leitura. Renomear a organização é um recurso do plano PRO (no plano Free o nome fica bloqueado); renomear também muda a URL, então a página vai para o novo endereço e links antigos deixam de funcionar. Cada membro ainda pode escolher o próprio idioma na barra superior.',
+            'Geral: nome da organização, idioma padrão e fuso horário. A URL é sempre gerada a partir do nome e aparece somente para leitura. Renomear a organização é um recurso opcional que os administradores do Artemis habilitam por organização (até lá o nome fica bloqueado); renomear também muda a URL, então a página vai para o novo endereço e links antigos deixam de funcionar. Cada membro ainda pode escolher o próprio idioma na barra superior.',
             '(Ainda não disponível) Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
             '(Ainda não disponível) Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
             '(Ainda não disponível) Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
@@ -933,20 +942,29 @@ export const HELP: Record<Lang, HelpSection[]> = {
     },
 
     {
-      id: 'billing',
-      title: 'Assinatura e planos',
+      id: 'usage',
+      title: 'Uso e recursos opcionais',
       blocks: [
-        { kind: 'p', text: 'Configuração → Assinatura mostra o plano atual da sua organização e compara os planos disponíveis.' },
+        { kind: 'p', text: 'O Artemis é gratuito: não há planos, preços nem pagamentos. Configuração → Uso mostra quantas análises sua organização executou neste mês, o limite e quando o contador recomeça, e quais recursos opcionais estão habilitados para ela.' },
+        { kind: 'p', text: 'Cada organização pode executar 25 análises por mês do calendário (UTC). Cada execução de pipeline conta como uma análise — manuais, agendadas, primeiras análises e reexecuções; execuções que terminam antes de qualquer etapa rodar (verificação de acesso ou clone com falha, cancelada na fila, runner interrompido) não contam. O uso também aparece no rodapé da barra lateral e na página inicial; ao atingir o limite, novas execuções são recusadas até o mês seguinte.' },
         {
           kind: 'table',
-          head: ['Plano', 'Preço', 'Inclui'],
+          head: ['Recurso opcional', 'O que faz'],
           rows: [
-            ['Free', 'R$ 0', '25 análises por mês. Varreduras (segredos, SAST, dependências, contêineres), pipeline DevSecOps e políticas, painel, achados, relatórios, equipe, integrações e tokens de API.'],
-            ['PRO', 'R$ 24,99 por mês', '300 análises por mês. Tudo do Free mais renomear a organização, triagem de achados com IA e relatórios de triagem gerados por IA.'],
+            ['Análises agendadas', 'Analisar repositórios automaticamente a cada 6 horas, 24 horas ou 7 dias.'],
+            ['Renomear a organização', 'Renomear a organização; a URL também muda.'],
+            ['Triagem com IA', 'Revisão de achados e relatórios de triagem por IA. Ainda não disponível (em breve), mesmo quando habilitada.'],
           ],
         },
-        { kind: 'p', text: 'Cada execução de pipeline conta como uma análise; execuções que terminam antes de qualquer etapa rodar (verificação de acesso ou clone com falha, cancelada na fila, runner interrompido) não contam. O uso do mês atual (UTC) aparece no rodapé da barra lateral e na página de Assinatura; ao atingir o limite, novas execuções (como reexecuções) são recusadas até o mês seguinte. Os planos também aparecem na seção Preços da página inicial.' },
-        { kind: 'note', text: 'A cobrança ainda não está habilitada: todas as organizações estão no plano Free e o botão de assinatura está bloqueado. Nada é cobrado sem a sua concordância expressa.' },
+        { kind: 'note', text: 'Os recursos opcionais são habilitados por organização pelos administradores do Artemis — as pessoas que operam esta instância do Artemis, não o proprietário nem os administradores da sua organização. Controles bloqueados mostram “Disponível mediante solicitação”: peça aos administradores do Artemis para habilitar o recurso.' },
+      ],
+    },
+    {
+      id: 'platform-admin',
+      title: 'Administração da plataforma',
+      blocks: [
+        { kind: 'p', text: 'Os administradores do Artemis (um papel atribuído no provedor de identidade, sem relação com o papel Administrador de uma organização) abrem a Administração da plataforma pela barra superior ou pela página inicial. Ela lista todas as organizações — nome, URL, proprietário, número de membros e de repositórios, data de criação — com uma caixa de busca e um interruptor por recurso opcional; cada mudança é salva na hora.' },
+        { kind: 'note', text: 'Os administradores do Artemis podem ver as organizações, mas não os repositórios, achados, execuções de pipeline nem os e-mails dos membros delas, e o papel não os torna membros de nenhuma organização.' },
       ],
     },
     {

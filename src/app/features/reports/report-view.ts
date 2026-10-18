@@ -4,6 +4,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReportDetails, ReportType, reportUrl } from '../../core/api/reports';
 import { I18n } from '../../core/i18n';
+import { OrgContext } from '../../core/org/org-context';
 import { Severity } from '../../core/domain';
 import { RequestState } from '../../shared/request-state';
 import { SeverityBadge } from '../../shared/severity-badge';
@@ -20,6 +21,7 @@ const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low'];
 })
 export class ReportView {
   protected readonly i18n = inject(I18n);
+  protected readonly org = inject(OrgContext);
 
   readonly id = input.required<string>();
 

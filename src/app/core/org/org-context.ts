@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Service, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { OrganizationSummary, Permission, myOrganizationsUrl } from '../api/organization';
+import { Feature } from '../api/usage';
 import { I18n, TranslationKey } from '../i18n';
 
 /** Header that scopes an API request to one organization. */
@@ -36,6 +37,16 @@ export class OrgContext {
 
   can(permission: Permission): boolean {
     return this.current()?.permissions.includes(permission) ?? false;
+  }
+
+  /** Optional feature enabled for the current organization by the Artemis administrators. */
+  hasFeature(feature: Feature): boolean {
+    return this.current()?.features.includes(feature) ?? false;
+  }
+
+  /** Label of the (not yet implemented) AI features: locked unless enabled for the organization. */
+  aiLabel(): TranslationKey {
+    return this.hasFeature('aiTriage') ? 'ob.settings.aiEnabled' : 'ob.settings.aiLocked';
   }
 
   /** Why the current role cannot do something, e.g. "Your role (Viewer) can't run scans." */

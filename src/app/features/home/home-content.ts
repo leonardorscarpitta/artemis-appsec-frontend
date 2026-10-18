@@ -2,7 +2,7 @@ import { Lang } from '../../core/i18n';
 
 export interface HomeContent {
   nav: { product: string; how: string; pipeline: string; pricing: string; faq: string; signIn: string; cta: string; menu: string };
-  pricing: { title: string; lead: string; freeCta: string; note: string };
+  pricing: { title: string; lead: string; card: string; included: string[]; freeCta: string; note: string };
   hero: { eyebrow: string; title: string; lead: string; primary: string; secondary: string; previewLabel: string };
   facts: { label: string; value: string }[];
   how: { title: string; lead: string; steps: { title: string; text: string }[] };
@@ -16,7 +16,7 @@ export interface HomeContent {
 
 export const HOME: Record<Lang, HomeContent> = {
   'en-US': {
-    nav: { product: 'Product', how: 'How it works', pipeline: 'Pipeline', pricing: 'Pricing', faq: 'FAQ', signIn: 'Sign in', cta: 'Get started', menu: 'Page sections' },
+    nav: { product: 'Product', how: 'How it works', pipeline: 'Pipeline', pricing: 'Free', faq: 'FAQ', signIn: 'Sign in', cta: 'Get started', menu: 'Page sections' },
     hero: {
       eyebrow: 'Application Security Testing',
       title: 'Find and fix vulnerabilities before they reach production',
@@ -64,17 +64,26 @@ export const HOME: Record<Lang, HomeContent> = {
       note: 'Bring your own Dockerfile — it is audited before use — or use the one recommended for your stack.',
     },
     pricing: {
-      title: 'Simple pricing',
-      lead: 'Start for free. Upgrade when you want AI to help triage findings.',
-      freeCta: 'Get started for free',
-      note: 'Prices in Brazilian reais (BRL), billed monthly. Paid plans are not available yet — nothing is charged.',
+      title: 'Free for everyone',
+      lead: 'Artemis is free: no plans, no payments, no credit card.',
+      card: 'Every organization includes',
+      included: [
+        '25 scans per organization each month',
+        'Secret, SAST, dependency, license, Dockerfile, container image and IaC scanning',
+        'Configurable DevSecOps pipeline and policies',
+        'Dashboard, findings and pipeline history',
+        'Team, roles and integrations',
+        'One organization per account (join others by invitation)',
+      ],
+      freeCta: 'Get started',
+      note: 'Scheduled scans, renaming an organization and AI triage (coming soon) are optional features the Artemis administrators enable per organization on request.',
     },
     faq: {
       title: 'Frequently asked questions',
       items: [
         { q: 'Which technologies are supported?', a: 'React and Angular front ends, and Java + Spring or Python (Flask, FastAPI, Django) back ends. Artemis detects the stack automatically when you connect a repository.' },
         { q: 'What access does Artemis need to my code?', a: 'A read-only SSH deploy key that Artemis generates for each repository, public or private — adding it also proves the repository is yours; you add the public key to the repository and can revoke it at any time. You never share your passwords or personal keys.' },
-        { q: 'How do I get started?', a: 'Create an account with your e-mail address and confirm it from the message we send. Then create an organization — you become its owner, on the Free plan — or accept an invitation to join an existing one.' },
+        { q: 'How do I get started?', a: 'Create an account with your e-mail address and confirm it from the message we send. Then create an organization — you become its owner — or accept an invitation to join an existing one.' },
         { q: 'How does my team work together?', a: 'Invite colleagues by e-mail and give each one a role — owner, admin, security analyst, developer or viewer. Every person can belong to several organizations, and each organization’s data is kept separate.' },
         { q: 'How do users sign in?', a: 'With an Artemis account (OpenID Connect, with a strong password policy and optional two-factor authentication). Artemis itself never sees or stores your password.' },
         { q: 'Where does vulnerability data come from?', a: 'Findings are matched to CVE records and CVSS scores from the NIST National Vulnerability Database.' },
@@ -98,7 +107,7 @@ export const HOME: Record<Lang, HomeContent> = {
     preview: { open: 'Open findings', critical: 'Critical', avg: 'Avg. CVSS', repos: 'Repositories', recent: 'Recent vulnerabilities' },
   },
   'pt-BR': {
-    nav: { product: 'Produto', how: 'Como funciona', pipeline: 'Pipeline', pricing: 'Preços', faq: 'Dúvidas', signIn: 'Entrar', cta: 'Começar', menu: 'Seções da página' },
+    nav: { product: 'Produto', how: 'Como funciona', pipeline: 'Pipeline', pricing: 'Gratuito', faq: 'Dúvidas', signIn: 'Entrar', cta: 'Começar', menu: 'Seções da página' },
     hero: {
       eyebrow: 'Testes de Segurança de Aplicações',
       title: 'Encontre e corrija vulnerabilidades antes que cheguem à produção',
@@ -146,17 +155,26 @@ export const HOME: Record<Lang, HomeContent> = {
       note: 'Use seu próprio Dockerfile — ele é auditado antes do uso — ou o recomendado para a sua stack.',
     },
     pricing: {
-      title: 'Preços simples',
-      lead: 'Comece de graça. Assine quando quiser que a IA ajude na triagem dos achados.',
-      freeCta: 'Começar de graça',
-      note: 'Preços em reais (BRL), cobrança mensal. Os planos pagos ainda não estão disponíveis — nada é cobrado.',
+      title: 'Gratuito para todos',
+      lead: 'O Artemis é gratuito: sem planos, sem pagamentos, sem cartão de crédito.',
+      card: 'Toda organização inclui',
+      included: [
+        '25 análises por organização a cada mês',
+        'Varredura de segredos, SAST, dependências, licenças, Dockerfile, imagens de contêiner e IaC',
+        'Pipeline DevSecOps configurável e políticas',
+        'Painel, achados e histórico de pipelines',
+        'Equipe, papéis e integrações',
+        'Uma organização por conta (entre em outras por convite)',
+      ],
+      freeCta: 'Começar',
+      note: 'Análises agendadas, renomear a organização e a triagem com IA (em breve) são recursos opcionais que os administradores do Artemis habilitam por organização, mediante solicitação.',
     },
     faq: {
       title: 'Perguntas frequentes',
       items: [
         { q: 'Quais tecnologias são suportadas?', a: 'Front-ends React e Angular, e back-ends Java + Spring ou Python (Flask, FastAPI, Django). O Artemis detecta a stack automaticamente ao conectar um repositório.' },
         { q: 'Que acesso o Artemis precisa ao meu código?', a: 'Uma deploy key SSH somente leitura que o Artemis gera para cada repositório, público ou privado — adicioná-la também comprova que o repositório é seu; você adiciona a chave pública ao repositório e pode revogá-la quando quiser. Você nunca compartilha suas senhas ou chaves pessoais.' },
-        { q: 'Como começo?', a: 'Crie uma conta com seu e-mail e confirme-o pela mensagem que enviamos. Depois crie uma organização — você será o proprietário, no plano Free — ou aceite um convite para entrar em uma existente.' },
+        { q: 'Como começo?', a: 'Crie uma conta com seu e-mail e confirme-o pela mensagem que enviamos. Depois crie uma organização — você será o proprietário — ou aceite um convite para entrar em uma existente.' },
         { q: 'Como minha equipe trabalha junto?', a: 'Convide colegas por e-mail e dê a cada um um papel — proprietário, administrador, analista de segurança, desenvolvedor ou leitor. Cada pessoa pode participar de várias organizações, e os dados de cada organização ficam separados.' },
         { q: 'Como os usuários entram?', a: 'Com uma conta Artemis (OpenID Connect, com política de senhas forte e verificação em duas etapas opcional). O próprio Artemis nunca vê nem armazena sua senha.' },
         { q: 'De onde vêm os dados de vulnerabilidades?', a: 'Os achados são associados a registros CVE e pontuações CVSS da National Vulnerability Database do NIST.' },

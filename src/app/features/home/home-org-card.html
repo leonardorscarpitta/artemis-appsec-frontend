@@ -8,7 +8,6 @@
     </span>
     <span class="tags">
       <span class="tag">{{ roleLabel(o.role) }}</span>
-      <span class="tag" [class.pro]="o.plan === 'pro'">{{ planLabel(o.plan) }}</span>
     </span>
   </a>
 
@@ -28,7 +27,7 @@
       </div>
     </dl>
     <div class="meta">
-      @if (usage(); as u) {
+      @if (usage.value(); as u) {
         <div class="usage" [attr.aria-label]="i18n.t('home.ws.scansUsed')">
           <span class="muted">{{ i18n.t('home.ws.scansUsed') }}</span>
           <span class="usage-value">{{ u.scansThisMonth }} / {{ u.scanLimit }}</span>
