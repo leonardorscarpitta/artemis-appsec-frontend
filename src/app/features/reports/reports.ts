@@ -1,22 +1,23 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
-import { ReportAuthor, ReportPeriod, ReportStatus, ReportSummary, ReportType, ReportsApi, reportsUrl } from '../../core/api/reports';
+import { ReportAuthor, ReportError, ReportPeriod, ReportStatus, ReportSummary, ReportType, ReportsApi, reportsUrl } from '../../core/api/reports';
 import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
-import { Unavailable } from '../../shared/unavailable';
+import { LOCK_ICON, RoleNotice } from '../../shared/role-notice';
+import { SPARKLE_ICON } from '../../shared/stack-source';
 import { OrgLink } from '../../shared/org-link';
 import { Paginator, paginate } from '../../shared/paginator';
 
 @Component({
   selector: 'app-reports',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories, Unavailable, Paginator],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, NoRepositories, RoleNotice, Paginator],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })
@@ -34,6 +35,14 @@ export class Reports {
   protected readonly pager = paginate(() => this.reports.value() ?? []);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
 
+  protected readonly sparkle = SPARKLE_ICON;
+  protected readonly lock = LOCK_ICON;
+  protected readonly canGenerate = computed(() => this.org.can('triage'));
+  protected readonly aiEnabled = computed(() => this.org.hasFeature('aiTriage'));
+  private readonly generating = computed(() => (this.reports.value() ?? []).some((r) => r.status === 'generating'));
+  protected readonly retrying = signal<string | null>(null);
+  protected readonly retryError = signal<string | null>(null);
+
   protected readonly formOpen = signal(false);
   protected readonly queued = signal(false);
   protected readonly submitting = signal(false);
@@ -46,6 +55,15 @@ export class Reports {
   protected readonly scope = signal('');
   protected readonly period = signal<ReportPeriod>('week');
 
+  constructor() {
+    // Keeps statuses current while any report is still being generated.
+    effect((onCleanup) => {
+      if (!this.generating()) return;
+      const timer = setInterval(() => this.reports.reload(), 4000);
+      onCleanup(() => clearInterval(timer));
+    });
+  }
+
   protected typeLabel(type: ReportType): string {
     return this.i18n.t(`reports.type.${type}`);
   }
@@ -56,6 +74,10 @@ export class Reports {
 
   protected statusLabel(status: ReportStatus): string {
     return this.i18n.t(`reports.status.${status}`);
+  }
+
+  protected errorLabel(error: ReportError): string {
+    return this.i18n.t(`reports.error.${error}`);
   }
 
   protected periodLabel(period: ReportPeriod): string {
@@ -85,6 +107,21 @@ export class Reports {
       error: (err) => {
         this.submitting.set(false);
         this.submitError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
+
+  protected retry(id: string): void {
+    this.retrying.set(id);
+    this.retryError.set(null);
+    this.api.retry(id).subscribe({
+      next: () => {
+        this.retrying.set(null);
+        this.reports.reload();
+      },
+      error: (err) => {
+        this.retrying.set(null);
+        this.retryError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
       },
     });
   }
