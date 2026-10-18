@@ -13,6 +13,9 @@
       <nav class="ws-actions">
         <a class="btn" routerLink="/docs">{{ i18n.t('home.ws.docs') }}</a>
         <a class="btn" routerLink="/organizations">{{ i18n.t('home.ws.manage') }}</a>
+        @if (account.platformAdmin()) {
+          <a class="btn" routerLink="/admin">{{ i18n.t('nav.admin') }}</a>
+        }
       </nav>
     </header>
 
@@ -30,13 +33,12 @@
             <li><app-home-org-card [org]="o" /></li>
           }
           <li>
-            @if (freeOwned(); as free) {
+            @if (owned(); as mine) {
               <div class="card create limit" role="note">
                 <span class="plus lock" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" [attr.d]="lock" /></svg></span>
                 <span>
                   <strong>{{ i18n.t('home.ws.limitTitle') }}</strong>
-                  <span class="muted">{{ i18n.t('home.ws.limitDesc').replace('{name}', free.name) }}</span>
-                  <a class="text-link" [routerLink]="['/', free.slug, 'billing']">{{ i18n.t('home.ws.upgrade') }} →</a>
+                  <span class="muted">{{ i18n.t('home.ws.limitDesc').replace('{name}', mine.name) }}</span>
                 </span>
               </div>
             } @else {

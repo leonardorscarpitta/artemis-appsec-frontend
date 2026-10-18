@@ -23,7 +23,7 @@ export interface ProjectSummary {
   /** Monorepo folders scanned on their own stack; empty scans the whole repository. */
   folders: ProjectFolder[];
   schedule: ScanSchedule;
-  /** Next scheduled scan (UTC) for timed schedules; it runs only on plans with scheduled scans. */
+  /** Next scheduled scan (UTC) for timed schedules; it runs only when scheduled scans are enabled for the organization. */
   nextScanAt: string | null;
   lastScanAt: string | null;
   openFindings?: number;

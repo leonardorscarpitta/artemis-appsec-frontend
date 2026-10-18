@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { problemCode, problemMessage } from '../../core/api/api';
-import { BillingOverview, billingUrl } from '../../core/api/billing';
 import {
   ApiToken,
   NotificationChannel,
@@ -30,7 +29,7 @@ type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'dang
 type RetentionField = keyof OrganizationSettings['retention'];
 
 const SAVE_ERRORS: Record<string, TranslationKey> = {
-  'plan-required': 'settings.renamePro',
+  'feature-not-enabled': 'settings.renameLocked',
   'slug-taken': 'orgs.error.slugTaken',
   'slug-reserved': 'orgs.error.slugReserved',
 };
@@ -62,9 +61,8 @@ export class Settings {
 
   protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
   protected readonly form = linkedSignal(() => this.remote.value());
-  // Renaming changes the slug (and every URL), so it is a PRO feature.
-  private readonly billing = httpResource<BillingOverview>(() => billingUrl());
-  protected readonly canRename = computed(() => this.billing.value()?.entitlements.includes('organizationRename') ?? false);
+  // Renaming changes the slug (and every URL), so the Artemis administrators enable it per organization.
+  protected readonly canRename = computed(() => this.org.hasFeature('organizationRename'));
   protected readonly slugPreview = computed(() => {
     const f = this.form();
     if (!f) return '';
@@ -258,8 +256,8 @@ export class Settings {
       error: (err) => {
         this.transferring.set(false);
         this.transferError.set(
-          problemCode(err) === 'free-organization-limit'
-            ? this.i18n.t('settings.transferFreeLimit')
+          problemCode(err) === 'organization-limit'
+            ? this.i18n.t('settings.transferLimit')
             : (problemMessage(err) ?? this.i18n.t('api.saveError')),
         );
       },

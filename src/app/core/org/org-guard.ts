@@ -24,7 +24,7 @@ export const orgGuard: CanActivateFn = async (route) => {
 
 const APP_PAGES = new Set([
   'dashboard', 'vulnerabilities', 'repositories', 'pipelines', 'reports', 'onboarding',
-  'integrations', 'policies', 'team', 'settings', 'billing', 'help',
+  'integrations', 'policies', 'team', 'settings', 'usage', 'billing', 'help',
 ]);
 
 /** Matches pre-organization URLs such as `/vulnerabilities/CVE-1`. */

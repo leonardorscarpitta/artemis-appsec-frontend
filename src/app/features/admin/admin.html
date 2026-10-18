@@ -1,0 +1,94 @@
+<header class="bar">
+  <a routerLink="/" class="home-link"><app-logo /></a>
+  <span class="spacer"></span>
+  <app-lang-switch />
+  <app-theme-toggle />
+  <app-user-badge />
+  <button type="button" class="btn ghost" (click)="signOut()">{{ i18n.t('nav.signOut') }}</button>
+</header>
+
+<main class="page">
+  <header class="page-header">
+    <div>
+      <h1>{{ i18n.t('admin.title') }}</h1>
+      <p class="muted">{{ i18n.t('admin.subtitle') }}</p>
+    </div>
+  </header>
+
+  <p class="info-notice" role="note">{{ i18n.t('admin.privacy') }}</p>
+
+  <section class="card table-card" aria-labelledby="admin-orgs">
+    <div class="card-header">
+      <h2 id="admin-orgs">{{ i18n.t('admin.organizations') }}</h2>
+      <input
+        class="input search"
+        type="search"
+        [attr.aria-label]="i18n.t('admin.search')"
+        [placeholder]="i18n.t('admin.search')"
+        [value]="query()"
+        (input)="search($event)"
+      />
+    </div>
+
+    @if (organizations.hasValue()) {
+      @if (filtered().length) {
+        <table class="table stack">
+          <thead>
+            <tr>
+              <th scope="col">{{ i18n.t('admin.col.organization') }}</th>
+              <th scope="col">{{ i18n.t('admin.col.owner') }}</th>
+              <th scope="col" class="num">{{ i18n.t('admin.col.members') }}</th>
+              <th scope="col" class="num">{{ i18n.t('admin.col.repositories') }}</th>
+              <th scope="col">{{ i18n.t('admin.col.created') }}</th>
+              <th scope="col">{{ i18n.t('admin.col.features') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of pager.items(); track o.slug) {
+              <tr>
+                <td [attr.data-label]="i18n.t('admin.col.organization')">
+                  <span class="org">
+                    <strong>{{ o.name }}</strong>
+                    <span class="mono muted">/{{ o.slug }}</span>
+                  </span>
+                </td>
+                <td [attr.data-label]="i18n.t('admin.col.owner')">{{ o.ownerName ?? '—' }}</td>
+                <td class="num" [attr.data-label]="i18n.t('admin.col.members')">{{ o.memberCount }}</td>
+                <td class="num" [attr.data-label]="i18n.t('admin.col.repositories')">{{ o.repositoryCount }}</td>
+                <td [attr.data-label]="i18n.t('admin.col.created')">{{ o.createdAt | date: 'yyyy-MM-dd' }}</td>
+                <td [attr.data-label]="i18n.t('admin.col.features')">
+                  <div class="features">
+                    @for (f of features; track f) {
+                      <label class="feature">
+                        <button
+                          type="button"
+                          role="switch"
+                          class="switch"
+                          [attr.aria-checked]="o.features.includes(f)"
+                          [attr.aria-label]="featureName(f) + ' · ' + o.name"
+                          [disabled]="busy() === o.slug"
+                          (click)="toggle(o, f)"
+                        ></button>
+                        <span>{{ featureName(f) }}</span>
+                      </label>
+                    }
+                  </div>
+                  @if (message(); as m) {
+                    @if (m.slug === o.slug) {
+                      <p class="feedback" [class.error]="!m.ok" [attr.role]="m.ok ? 'status' : 'alert'">{{ m.text }}</p>
+                    }
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-paginator [pager]="pager" />
+      } @else {
+        <p class="empty muted">{{ i18n.t('admin.empty') }}</p>
+      }
+    } @else {
+      <app-request-state [resource]="organizations" />
+    }
+  </section>
+</main>
