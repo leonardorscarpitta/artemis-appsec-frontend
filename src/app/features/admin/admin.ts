@@ -14,14 +14,15 @@ import { Paginator, paginate } from '../../shared/paginator';
 import { RequestState } from '../../shared/request-state';
 import { ThemeToggle } from '../../shared/theme-toggle';
 import { UserBadge } from '../../shared/user-badge';
+import { AdminUsers } from './admin-users';
 
 /**
  * Platform administration (Artemis administrators, not organization admins): every organization's metadata, its
- * optional features, a read-only view of it and its deletion.
+ * optional features, a read-only view of it and its deletion; the accounts with their organizations and their deletion.
  */
 @Component({
   selector: 'app-admin',
-  imports: [RouterLink, DatePipe, Logo, LangSwitch, ThemeToggle, UserBadge, Paginator, RequestState],
+  imports: [RouterLink, DatePipe, Logo, LangSwitch, ThemeToggle, UserBadge, Paginator, RequestState, AdminUsers],
   templateUrl: './admin.html',
   styleUrl: './admin.scss',
 })
@@ -30,6 +31,7 @@ export class Admin {
   private readonly auth = inject(Auth);
   private readonly api = inject(AdminApi);
 
+  protected readonly tab = signal<'organizations' | 'users'>('organizations');
   protected readonly organizations = httpResource<AdminOrganization[]>(() => adminOrganizationsUrl());
   protected readonly features = FEATURES;
   protected readonly query = signal('');

@@ -1,0 +1,124 @@
+<section class="card table-card" aria-labelledby="admin-users">
+  <div class="card-header">
+    <h2 id="admin-users">{{ i18n.t('admin.users') }}</h2>
+    <input
+      class="input search"
+      type="search"
+      [attr.aria-label]="i18n.t('admin.users.search')"
+      [placeholder]="i18n.t('admin.users.search')"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  @if (users.hasValue()) {
+    @if (rows().length) {
+      <table class="table stack">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('admin.users.col.user') }}</th>
+            <th scope="col">{{ i18n.t('admin.users.col.email') }}</th>
+            <th scope="col">{{ i18n.t('admin.col.created') }}</th>
+            <th scope="col">{{ i18n.t('admin.organizations') }}</th>
+            <th scope="col"><span class="sr-only">{{ i18n.t('admin.col.actions') }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of pager.items(); track u.id) {
+            <tr>
+              <td [attr.data-label]="i18n.t('admin.users.col.user')">
+                <span class="org">
+                  <strong>
+                    {{ u.name ?? u.username }}
+                    @if (u.platformAdmin) {
+                      <span class="tag admin-tag">{{ i18n.t('adminView.role') }}</span>
+                    }
+                    @if (!u.enabled) {
+                      <span class="tag">{{ i18n.t('admin.users.disabled') }}</span>
+                    }
+                  </strong>
+                  <span class="mono muted">{{ u.username }}</span>
+                </span>
+              </td>
+              <td [attr.data-label]="i18n.t('admin.users.col.email')">{{ u.email ?? '—' }}</td>
+              <td [attr.data-label]="i18n.t('admin.col.created')">{{ u.createdAt ? (u.createdAt | date: 'yyyy-MM-dd') : '—' }}</td>
+              <td [attr.data-label]="i18n.t('admin.organizations')">
+                @if (u.organizations.length) {
+                  <div class="chips">
+                    @for (o of u.organizations; track o.slug) {
+                      <a class="chip" [routerLink]="['/', o.slug, 'dashboard']" [title]="o.name">{{ o.slug }} · {{ roleName(o.role) }}</a>
+                    }
+                  </div>
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td class="actions" [attr.data-label]="i18n.t('admin.col.actions')">
+                @if (blocked(u); as reason) {
+                  <button type="button" class="btn danger-outline" disabled [title]="reason" [attr.aria-label]="i18n.t('admin.delete') + ' · ' + u.username + ' — ' + reason">
+                    {{ i18n.t('admin.delete') }}
+                  </button>
+                  <p class="feedback reason">{{ reason }}</p>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn danger-outline"
+                    [attr.aria-label]="i18n.t('admin.delete') + ' · ' + u.username"
+                    (click)="openDelete(u, deleteDialog)"
+                  >
+                    {{ i18n.t('admin.delete') }}
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <app-paginator [pager]="pager" />
+      @if (truncated()) {
+        <p class="feedback truncated">
+          {{ i18n.t('admin.users.truncated').replace('{shown}', '' + rows().length).replace('{total}', '' + users.value().total) }}
+        </p>
+      }
+    } @else {
+      <p class="empty muted">{{ i18n.t('admin.users.empty') }}</p>
+    }
+  } @else if (notConfigured()) {
+    <div class="state-503" role="alert">
+      <strong>{{ i18n.t('admin.users.notConfigured') }}</strong>
+      <p class="muted">{{ i18n.t('admin.users.notConfiguredHint') }}</p>
+      <button type="button" class="btn" (click)="users.reload()">{{ i18n.t('api.retry') }}</button>
+    </div>
+  } @else {
+    <app-request-state [resource]="users" />
+  }
+</section>
+
+<dialog #deleteDialog class="delete-dialog" aria-labelledby="delete-user-title" (close)="closeDelete()">
+  @if (deleting(); as u) {
+    <form method="dialog" (submit)="$event.preventDefault(); confirmDelete(deleteDialog)">
+      <h2 id="delete-user-title">{{ i18n.t('admin.users.deleteTitle') }}: <span class="mono">{{ u.username }}</span></h2>
+      <p class="outcome">{{ i18n.t('admin.users.deleteOutcome') }}</p>
+      @if (u.organizations.length) {
+        <p class="muted">
+          {{ i18n.t('admin.users.deleteMemberships') }}
+          @for (o of u.organizations; track o.slug; let last = $last) {
+            <span class="mono">{{ o.slug }}</span> ({{ roleName(o.role) }}){{ last ? '.' : ', ' }}
+          }
+        </p>
+      }
+      <div class="field">
+        <label for="confirm-username">{{ i18n.t('admin.users.deleteConfirm') }}: <strong class="mono">{{ u.username }}</strong></label>
+        <input id="confirm-username" class="input mono" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
+      </div>
+      @if (deleteError(); as message) {
+        <p class="feedback error" role="alert">{{ message }}</p>
+      }
+      <div class="dialog-actions">
+        <button type="button" class="btn" (click)="deleteDialog.close()">{{ i18n.t('admin.cancel') }}</button>
+        <button type="submit" class="btn danger" [disabled]="busy() || confirmName() !== u.username">
+          {{ i18n.t('admin.users.deleteButton') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>
