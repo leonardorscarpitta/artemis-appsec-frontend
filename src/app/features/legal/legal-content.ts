@@ -26,7 +26,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'commitment',
           title: 'Our commitment',
           blocks: [
-            { kind: 'note', text: 'We do not sell, rent, trade, share or give away any information about you, your organization, your repositories or your findings — not to advertisers, data brokers, partners or anyone else. The only service provider that receives any of it is Google, and only aggregated, de-identified report data for organizations that asked for AI-written reports (see “AI-written reports”).' },
+            { kind: 'note', text: 'We do not sell, rent, trade, share or give away any information about you, your organization, your repositories or your findings — not to advertisers, data brokers, partners or anyone else. The only service provider that receives any of it is Anthropic, and only aggregated, de-identified report data for organizations that asked for AI-written reports (see “AI-written reports”).' },
             { kind: 'p', text: 'Our only goal is to give you the best possible application security experience. We collect the minimum information required to run Artemis, use it only for that purpose, and do not build profiles about you, track you across other websites or show advertising.' },
           ],
         },
@@ -82,8 +82,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'ai-reports',
           title: 'AI-written reports',
           blocks: [
-            { kind: 'p', text: 'This applies only to organizations for which the Artemis administrators enabled AI (on request). For those organizations, when a report is generated, Artemis sends aggregated, de-identified vulnerability data to Google (Gemini API), which writes the report’s executive summary and recommendations. Google acts as our processor (service provider): it processes the data only to write that text, on our instructions. This is not a sale or sharing of your data, and Artemis uses the text for nothing else.' },
-            { kind: 'p', text: 'Sent to Google:' },
+            { kind: 'p', text: 'This applies only to organizations for which the Artemis administrators enabled AI (on request). For those organizations, when a report is generated, Artemis sends aggregated, de-identified vulnerability data to Anthropic (Claude API), which writes the report’s executive summary and recommendations. Anthropic acts as our processor (service provider): it processes the data only to write that text, on our instructions. This is not a sale or sharing of your data, and Artemis uses the text for nothing else.' },
+            { kind: 'p', text: 'Sent to Anthropic:' },
             {
               kind: 'ul',
               items: [
@@ -100,7 +100,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Names or URLs of repositories, the organization’s name, people’s names or e-mail addresses, deploy keys, tokens or tool logs',
               ],
             },
-            { kind: 'p', text: 'Artemis uses the paid Gemini API service, under Google’s terms for that service (Gemini API Additional Terms of Service and Google’s data processing terms), under which Google does not use this data to improve its products. Google may process it outside Brazil (for example in the United States); this international transfer relies on the safeguards in those terms, as permitted by the LGPD and the GDPR. Google keeps request data only for a limited time as its terms describe, for example to detect abuse.' },
+            { kind: 'p', text: 'Artemis uses the Claude API under Anthropic’s commercial terms and data processing terms, under which Anthropic does not use this data to train its models. Anthropic may process it outside Brazil (for example in the United States); this international transfer relies on the safeguards in those terms, as permitted by the LGPD and the GDPR. Anthropic keeps request data only for a limited time as its terms describe, for example to detect abuse.' },
             { kind: 'p', text: 'Reports written this way are marked “AI-generated”. Without AI enabled, or when the AI service is unavailable, no data is sent and Artemis writes the report text itself. An organization can ask the Artemis administrators to turn AI off at any time.' },
           ],
         },
@@ -172,7 +172,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'commitment',
           title: 'Nosso compromisso',
           blocks: [
-            { kind: 'note', text: 'Não vendemos, alugamos, trocamos, compartilhamos nem cedemos nenhuma informação sobre você, sua organização, seus repositórios ou seus achados — nem para anunciantes, corretores de dados, parceiros ou qualquer outra pessoa. O único prestador de serviço que recebe algo é o Google, e apenas dados agregados e desidentificados de relatórios, para organizações que pediram relatórios escritos por IA (veja “Relatórios escritos por IA”).' },
+            { kind: 'note', text: 'Não vendemos, alugamos, trocamos, compartilhamos nem cedemos nenhuma informação sobre você, sua organização, seus repositórios ou seus achados — nem para anunciantes, corretores de dados, parceiros ou qualquer outra pessoa. O único prestador de serviço que recebe algo é a Anthropic, e apenas dados agregados e desidentificados de relatórios, para organizações que pediram relatórios escritos por IA (veja “Relatórios escritos por IA”).' },
             { kind: 'p', text: 'Nosso único objetivo é oferecer a melhor experiência possível em segurança de aplicações. Coletamos o mínimo de informação necessário para o Artemis funcionar, usamos apenas para essa finalidade e não criamos perfis sobre você, não rastreamos você em outros sites e não exibimos publicidade.' },
           ],
         },
@@ -228,8 +228,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'ai-reports',
           title: 'Relatórios escritos por IA',
           blocks: [
-            { kind: 'p', text: 'Isto vale apenas para organizações em que os administradores do Artemis habilitaram a IA (mediante solicitação). Para essas organizações, quando um relatório é gerado, o Artemis envia dados de vulnerabilidades agregados e desidentificados ao Google (Gemini API), que escreve o resumo executivo e as recomendações do relatório. O Google atua como nosso operador (prestador de serviço): trata os dados apenas para escrever esse texto, conforme nossas instruções. Isso não é venda nem compartilhamento dos seus dados, e o Artemis não usa o texto para mais nada.' },
-            { kind: 'p', text: 'Enviado ao Google:' },
+            { kind: 'p', text: 'Isto vale apenas para organizações em que os administradores do Artemis habilitaram a IA (mediante solicitação). Para essas organizações, quando um relatório é gerado, o Artemis envia dados de vulnerabilidades agregados e desidentificados ao Anthropic (Claude API), que escreve o resumo executivo e as recomendações do relatório. A Anthropic atua como nossa operadora (prestador de serviço): trata os dados apenas para escrever esse texto, conforme nossas instruções. Isso não é venda nem compartilhamento dos seus dados, e o Artemis não usa o texto para mais nada.' },
+            { kind: 'p', text: 'Enviado à Anthropic:' },
             {
               kind: 'ul',
               items: [
@@ -246,7 +246,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 'Nomes ou URLs de repositórios, o nome da organização, nomes ou e-mails de pessoas, chaves de implantação, tokens ou logs das ferramentas',
               ],
             },
-            { kind: 'p', text: 'O Artemis usa o serviço pago da Gemini API, sob os termos do Google para esse serviço (Termos de Serviço Adicionais da Gemini API e termos de tratamento de dados do Google), segundo os quais o Google não usa esses dados para melhorar seus produtos. O Google pode tratá-los fora do Brasil (por exemplo, nos Estados Unidos); essa transferência internacional se apoia nas salvaguardas desses termos, como permitem a LGPD e o GDPR. O Google guarda os dados das requisições apenas por tempo limitado, como descrevem seus termos, por exemplo para detectar abusos.' },
+            { kind: 'p', text: 'O Artemis usa a API do Claude sob os termos comerciais e de tratamento de dados da Anthropic, segundo os quais a Anthropic não usa esses dados para treinar seus modelos. A Anthropic pode tratá-los fora do Brasil (por exemplo, nos Estados Unidos); essa transferência internacional se apoia nas salvaguardas desses termos, como permitem a LGPD e o GDPR. A Anthropic guarda os dados das requisições apenas por tempo limitado, como descrevem seus termos, por exemplo para detectar abusos.' },
             { kind: 'p', text: 'Relatórios escritos assim são marcados como “Gerado por IA”. Sem a IA habilitada, ou quando o serviço de IA está indisponível, nenhum dado é enviado e o próprio Artemis escreve o texto do relatório. Uma organização pode pedir aos administradores do Artemis que desliguem a IA a qualquer momento.' },
           ],
         },
@@ -391,7 +391,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Security results',
           blocks: [
             { kind: 'p', text: 'Automated analysis helps reduce risk but cannot guarantee that software is free of vulnerabilities. Findings may include false positives or miss issues; you remain responsible for reviewing them and for the security decisions you make.' },
-            { kind: 'p', text: 'Report summaries and recommendations marked “AI-generated” are written by an AI model (Google Gemini) and may be inaccurate, incomplete or out of date. Review them before sharing or acting on them; they are not professional advice.' },
+            { kind: 'p', text: 'Report summaries and recommendations marked “AI-generated” are written by an AI model (Anthropic Claude) and may be inaccurate, incomplete or out of date. Review them before sharing or acting on them; they are not professional advice.' },
           ],
         },
         {
@@ -407,7 +407,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Free service, limits and optional features',
           blocks: [
             { kind: 'p', text: 'Artemis is free: there are no paid plans and nothing is ever charged. To keep it available to everyone, each organization can run up to 25 scans per month and each account can own one organization; organizations created before this rule remain available. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month.' },
-            { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI (AI-written report summaries — see the Privacy Policy for the data sent to Google — and AI-assisted triage of findings, not available yet), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
+            { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI (AI-written report summaries — see the Privacy Policy for the data sent to Anthropic — and AI-assisted triage of findings, not available yet), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
             { kind: 'p', text: 'To manage these features and support the service, administrators see the list of organizations with their name, URL, creation date, the owner’s display name and the number of members and repositories, and can open any organization read-only (as a viewer, without members’ e-mail addresses). They also see the list of accounts (name, username, e-mail address, creation date, organizations and roles). They are not members of your organization and cannot change anything inside it. See the Privacy Policy for details.' },
           ],
         },
@@ -516,7 +516,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Resultados de segurança',
           blocks: [
             { kind: 'p', text: 'A análise automatizada ajuda a reduzir riscos, mas não garante que um software esteja livre de vulnerabilidades. Os achados podem incluir falsos positivos ou deixar de detectar problemas; você continua responsável por revisá-los e pelas decisões de segurança que tomar.' },
-            { kind: 'p', text: 'Resumos e recomendações de relatórios marcados como “Gerado por IA” são escritos por um modelo de IA (Google Gemini) e podem ser imprecisos, incompletos ou desatualizados. Revise-os antes de compartilhar ou agir com base neles; eles não são aconselhamento profissional.' },
+            { kind: 'p', text: 'Resumos e recomendações de relatórios marcados como “Gerado por IA” são escritos por um modelo de IA (Anthropic Claude) e podem ser imprecisos, incompletos ou desatualizados. Revise-os antes de compartilhar ou agir com base neles; eles não são aconselhamento profissional.' },
           ],
         },
         {
@@ -532,7 +532,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Serviço gratuito, limites e funcionalidades opcionais',
           blocks: [
             { kind: 'p', text: 'O Artemis é gratuito: não há planos pagos e nada é cobrado. Para mantê-lo disponível para todos, cada organização pode executar até 25 análises por mês e cada conta pode ser proprietária de uma organização; organizações criadas antes desta regra continuam disponíveis. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte.' },
-            { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: IA (resumos de relatórios escritos por IA — veja na Política de Privacidade os dados enviados ao Google — e triagem de achados com IA, ainda não disponível), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
+            { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: IA (resumos de relatórios escritos por IA — veja na Política de Privacidade os dados enviados à Anthropic — e triagem de achados com IA, ainda não disponível), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
             { kind: 'p', text: 'Para gerenciar essas funcionalidades e dar suporte ao serviço, os administradores veem a lista de organizações com nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios, e podem abrir qualquer organização em modo somente leitura (como leitor, sem os e-mails dos membros). Também veem a lista de contas (nome, nome de usuário, e-mail, data de criação, organizações e papéis). Eles não são membros da sua organização e não podem alterar nada nela. Veja a Política de Privacidade para mais detalhes.' },
           ],
         },
