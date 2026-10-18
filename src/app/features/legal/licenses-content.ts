@@ -47,8 +47,7 @@ export const LICENSES: Record<Lang, LegalText> = {
         id: 'artemis',
         title: 'About Artemis',
         blocks: [
-          { kind: 'p', text: `Artemis is open source under the MIT License, © 2026 leonardorscarpitta. Source code: ${FRONTEND_REPO} (web app) and ${BACKEND_REPO} (API and scanner).` },
-          { kind: 'note', text: 'Artemis is an open-source academic project (FIAP) maintained by leonardorscarpitta. It is not a company or a registered trademark, and it is not affiliated with NASA’s Artemis program or any other product named Artemis.' },
+          { kind: 'p', text: `Artemis is open source under the MIT License. Source code: ${FRONTEND_REPO} (web app) and ${BACKEND_REPO} (API and scanner).` },
         ],
       },
       {
@@ -101,8 +100,7 @@ export const LICENSES: Record<Lang, LegalText> = {
         id: 'artemis',
         title: 'Sobre o Artemis',
         blocks: [
-          { kind: 'p', text: `O Artemis é código aberto sob a Licença MIT, © 2026 leonardorscarpitta. Código-fonte: ${FRONTEND_REPO} (aplicação web) e ${BACKEND_REPO} (API e scanner).` },
-          { kind: 'note', text: 'O Artemis é um projeto acadêmico de código aberto (FIAP) mantido por leonardorscarpitta. Não é uma empresa nem marca registrada, e não tem relação com o programa Artemis da NASA nem com qualquer outro produto chamado Artemis.' },
+          { kind: 'p', text: `O Artemis é código aberto sob a Licença MIT. Código-fonte: ${FRONTEND_REPO} (aplicação web) e ${BACKEND_REPO} (API e scanner).` },
         ],
       },
       {
