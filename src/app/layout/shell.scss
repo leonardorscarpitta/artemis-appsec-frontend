@@ -303,6 +303,12 @@
   white-space: nowrap;
 }
 
+.org-menu-admin {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: var(--nav-text);
+}
+
 .org-menu a.org-menu-all {
   margin-top: 0.25rem;
   padding-top: 0.5rem;
@@ -323,6 +329,10 @@
 
 .role-tag {
   white-space: nowrap;
+}
+
+.admin-banner {
+  margin: 0 0 1rem;
 }
 
 .org-avatar {

@@ -76,6 +76,8 @@ export interface OrganizationSummary {
   permissions: Permission[];
   /** Optional features the Artemis administrators enabled for the organization. */
   features: Feature[];
+  /** Not a membership: an Artemis administrator viewing the organization read-only. */
+  adminView?: boolean;
 }
 
 /** An invitation addressed to the signed-in user's e-mail. */

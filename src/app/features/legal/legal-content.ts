@@ -82,8 +82,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'administrators',
           title: 'Platform administrators',
           blocks: [
-            { kind: 'p', text: 'Accounts with an Artemis administrator role can see the list of organizations — name, URL, creation date, the owner’s display name and the number of members and repositories — so they can enable or disable optional features (AI-assisted triage, scheduled scans, renaming the organization).' },
-            { kind: 'p', text: 'Administrators are not members of your organization and cannot see its repositories, source code, findings, pipeline runs or members’ e-mail addresses through Artemis.' },
+            { kind: 'p', text: 'Accounts with an Artemis administrator role can see the list of organizations — name, URL, creation date, the owner’s display name and the number of members and repositories — so they can enable or disable optional features (AI-assisted triage, scheduled scans, renaming the organization) and delete organizations.' },
+            { kind: 'p', text: 'To support and moderate the service, administrators can also open any organization read-only, with the same access as a viewer: its repositories and their settings, findings, pipeline runs and logs, reports, policies and members’ names and roles — not members’ e-mail addresses. They are not members of your organization and cannot make changes inside it: no scans, triage, settings or team changes.' },
           ],
         },
         {
@@ -114,7 +114,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retention and deletion',
           blocks: [
-            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When its owner deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
+            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When its owner or an Artemis administrator deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
             { kind: 'p', text: 'You can delete your account at any time from your account page at the identity service (select your name in the top bar) or by asking us. Deleting it removes your profile and memberships; if you own an organization, transfer ownership or delete the organization first. You can also ask us to delete your personal information at any time.' },
           ],
         },
@@ -201,8 +201,8 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'administrators',
           title: 'Administradores da plataforma',
           blocks: [
-            { kind: 'p', text: 'Contas com o papel de administrador do Artemis podem ver a lista de organizações — nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios — para habilitar ou desabilitar funcionalidades opcionais (triagem com IA, análises agendadas, renomear a organização).' },
-            { kind: 'p', text: 'Os administradores não são membros da sua organização e não conseguem ver, pelo Artemis, os repositórios, o código-fonte, os achados, as execuções de pipeline nem os e-mails dos membros dela.' },
+            { kind: 'p', text: 'Contas com o papel de administrador do Artemis podem ver a lista de organizações — nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios — para habilitar ou desabilitar funcionalidades opcionais (triagem com IA, análises agendadas, renomear a organização) e excluir organizações.' },
+            { kind: 'p', text: 'Para dar suporte e moderar o serviço, os administradores também podem abrir qualquer organização em modo somente leitura, com o mesmo acesso de um leitor: os repositórios e suas configurações, os achados, as execuções de pipeline e seus logs, os relatórios, as políticas e os nomes e papéis dos membros — não os e-mails dos membros. Eles não são membros da sua organização e não podem fazer alterações nela: nada de análises, triagem, configurações ou mudanças na equipe.' },
           ],
         },
         {
@@ -233,7 +233,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retenção e exclusão',
           blocks: [
-            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando o proprietário exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
+            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando o proprietário ou um administrador do Artemis exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
             { kind: 'p', text: 'Você pode excluir sua conta a qualquer momento pela página da sua conta no serviço de identidade (selecione seu nome na barra superior) ou pedindo para nós. A exclusão remove seu perfil e seus vínculos; se você for proprietário de uma organização, transfira a propriedade ou exclua a organização antes. Você também pode pedir a exclusão das suas informações pessoais a qualquer momento.' },
           ],
         },
@@ -353,7 +353,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'Artemis is free: there are no paid plans and nothing is ever charged. To keep it available to everyone, each organization can run up to 25 scans per month and each account can own one organization; organizations created before this rule remain available. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month.' },
             { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI-assisted triage (not available yet), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
-            { kind: 'p', text: 'To manage these features, administrators see the list of organizations with their name, URL, creation date, the owner’s display name and the number of members and repositories. They are not members of your organization and cannot see its repositories, code, findings, pipeline runs or members’ e-mail addresses.' },
+            { kind: 'p', text: 'To manage these features and support the service, administrators see the list of organizations with their name, URL, creation date, the owner’s display name and the number of members and repositories, and can open any organization read-only (as a viewer, without members’ e-mail addresses). They are not members of your organization and cannot change anything inside it. See the Privacy Policy for details.' },
           ],
         },
         {
@@ -367,7 +367,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'termination',
           title: 'Suspension and termination',
           blocks: [
-            { kind: 'p', text: 'You may stop using Artemis, leave or delete your organizations and delete your account at any time. We may suspend access that violates these terms, explaining the reason whenever possible.' },
+            { kind: 'p', text: 'You may stop using Artemis, leave or delete your organizations and delete your account at any time. We may suspend access that violates these terms, explaining the reason whenever possible. The Artemis administrators may delete an organization and all of its data — for example in case of abuse, long inactivity or at its owner’s request.' },
           ],
         },
         {
@@ -477,7 +477,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'O Artemis é gratuito: não há planos pagos e nada é cobrado. Para mantê-lo disponível para todos, cada organização pode executar até 25 análises por mês e cada conta pode ser proprietária de uma organização; organizações criadas antes desta regra continuam disponíveis. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte.' },
             { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: triagem com IA (ainda não disponível), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
-            { kind: 'p', text: 'Para gerenciar essas funcionalidades, os administradores veem a lista de organizações com nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios. Eles não são membros da sua organização e não conseguem ver os repositórios, o código, os achados, as execuções de pipeline nem os e-mails dos membros dela.' },
+            { kind: 'p', text: 'Para gerenciar essas funcionalidades e dar suporte ao serviço, os administradores veem a lista de organizações com nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios, e podem abrir qualquer organização em modo somente leitura (como leitor, sem os e-mails dos membros). Eles não são membros da sua organização e não podem alterar nada nela. Veja a Política de Privacidade para mais detalhes.' },
           ],
         },
         {
@@ -491,7 +491,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'termination',
           title: 'Suspensão e encerramento',
           blocks: [
-            { kind: 'p', text: 'Você pode deixar de usar o Artemis, sair das suas organizações ou excluí-las e excluir sua conta a qualquer momento. Podemos suspender acessos que violem estes termos, explicando o motivo sempre que possível.' },
+            { kind: 'p', text: 'Você pode deixar de usar o Artemis, sair das suas organizações ou excluí-las e excluir sua conta a qualquer momento. Podemos suspender acessos que violem estes termos, explicando o motivo sempre que possível. Os administradores do Artemis podem excluir uma organização e todos os seus dados — por exemplo, em caso de abuso, longa inatividade ou a pedido do proprietário.' },
           ],
         },
         {
