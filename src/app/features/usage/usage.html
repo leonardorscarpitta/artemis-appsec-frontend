@@ -47,7 +47,9 @@
         </li>
       }
     </ul>
-    <p class="muted fineprint">{{ i18n.t('feature.ask') }}</p>
+    @if (u.features.length < features.length) {
+      <p class="muted fineprint">{{ i18n.t('feature.ask') }}</p>
+    }
   </section>
 } @else {
   <app-request-state [resource]="usage" />
