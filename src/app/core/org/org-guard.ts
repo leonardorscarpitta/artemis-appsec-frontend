@@ -1,18 +1,25 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlMatcher, UrlSegment } from '@angular/router';
+import { Account } from '../auth/account';
 import { Auth } from '../auth/auth';
 import { OrgContext } from './org-context';
 
-/** Lets the user into /<slug>/… only for organizations they belong to. */
+/** Lets the user into /<slug>/… for organizations they belong to; Artemis administrators into any, read-only. */
 export const orgGuard: CanActivateFn = async (route) => {
   // authGuard handles anonymous users; memberships can only be loaded with a token.
   if (!inject(Auth).isAuthenticated()) return true;
   const router = inject(Router);
   const org = inject(OrgContext);
+  const account = inject(Account);
   const requested = route.paramMap.get('org');
   try {
     const orgs = await org.load();
     if (orgs.some((o) => o.slug === requested)) {
+      org.slug.set(requested);
+      return true;
+    }
+    if (requested && (await account.load())?.platformAdmin) {
+      await org.view(requested);
       org.slug.set(requested);
       return true;
     }

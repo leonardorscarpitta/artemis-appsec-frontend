@@ -476,7 +476,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Platform administration',
       blocks: [
         { kind: 'p', text: 'Artemis administrators (a role given in the identity provider, unrelated to the Admin role of an organization) open Platform administration from the top bar or the home page. It lists every organization — name, URL, owner, number of members and repositories, creation date — with a search box, and a switch per optional feature; each change is saved immediately.' },
-        { kind: 'note', text: 'Artemis administrators can see organizations but not their repositories, findings, pipeline runs or members’ e-mail addresses, and the role does not make them members of any organization.' },
+        { kind: 'p', text: 'Open (next to each organization) shows the organization’s pages — dashboard, vulnerabilities, repositories, pipeline runs, reports, policies, team, settings — read-only, with the permissions of a viewer. A banner says you are viewing it as an Artemis administrator, the role tag shows “Viewer · Administrator” and the organization appears in the sidebar switcher, marked “Read-only”, while it is open. Every control that changes something is locked, and members’ e-mail addresses stay hidden. If you are also a member of the organization, your own role applies instead.' },
+        { kind: 'p', text: 'Delete removes the organization permanently with everything in it: repositories, deploy keys, findings, pipeline runs, reports, policies, members, invitations and settings. To confirm, type the organization’s URL name in the dialog. It cannot be undone.' },
+        { kind: 'note', text: 'Artemis administrators can view organizations, enable optional features and delete organizations, but cannot change anything inside an organization, and the role does not make them members of any organization.' },
       ],
     },
     {
@@ -964,7 +966,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Administração da plataforma',
       blocks: [
         { kind: 'p', text: 'Os administradores do Artemis (um papel atribuído no provedor de identidade, sem relação com o papel Administrador de uma organização) abrem a Administração da plataforma pela barra superior ou pela página inicial. Ela lista todas as organizações — nome, URL, proprietário, número de membros e de repositórios, data de criação — com uma caixa de busca e um interruptor por recurso opcional; cada mudança é salva na hora.' },
-        { kind: 'note', text: 'Os administradores do Artemis podem ver as organizações, mas não os repositórios, achados, execuções de pipeline nem os e-mails dos membros delas, e o papel não os torna membros de nenhuma organização.' },
+        { kind: 'p', text: 'Abrir (ao lado de cada organização) mostra as páginas da organização — painel, vulnerabilidades, repositórios, execuções de pipeline, relatórios, políticas, equipe, configurações — em modo somente leitura, com as permissões de um leitor. Um aviso informa que você está vendo como administrador do Artemis, a etiqueta de papel mostra “Leitor · Administrador” e a organização aparece no seletor da barra lateral, marcada como “Somente leitura”, enquanto estiver aberta. Todos os controles que alteram algo ficam bloqueados, e os e-mails dos membros continuam ocultos. Se você também for membro da organização, vale o seu próprio papel.' },
+        { kind: 'p', text: 'Excluir remove a organização permanentemente com tudo o que há nela: repositórios, deploy keys, achados, execuções de pipeline, relatórios, políticas, membros, convites e configurações. Para confirmar, digite o nome de URL da organização na caixa de diálogo. Não é possível desfazer.' },
+        { kind: 'note', text: 'Os administradores do Artemis podem ver as organizações, habilitar recursos opcionais e excluir organizações, mas não podem alterar nada dentro de uma organização, e o papel não os torna membros de nenhuma organização.' },
       ],
     },
     {

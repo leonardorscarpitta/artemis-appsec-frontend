@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { apiUrl } from './api';
 import { Feature } from './usage';
 
-/** Metadata only: administrators never see an organization's repositories, findings or members. */
 export interface AdminOrganization {
   slug: string;
   name: string;
@@ -16,12 +15,22 @@ export interface AdminOrganization {
 }
 
 export const adminOrganizationsUrl = () => apiUrl('/admin/organizations');
+const adminOrganizationUrl = (slug: string) => `${adminOrganizationsUrl()}/${encodeURIComponent(slug)}`;
 
 @Service()
 export class AdminApi {
   private readonly http = inject(HttpClient);
 
+  organization(slug: string): Observable<AdminOrganization> {
+    return this.http.get<AdminOrganization>(adminOrganizationUrl(slug));
+  }
+
   setFeatures(slug: string, features: Feature[]): Observable<AdminOrganization> {
-    return this.http.put<AdminOrganization>(`${adminOrganizationsUrl()}/${encodeURIComponent(slug)}/features`, { features });
+    return this.http.put<AdminOrganization>(`${adminOrganizationUrl(slug)}/features`, { features });
+  }
+
+  /** Permanently deletes the organization and everything linked to it. */
+  deleteOrganization(slug: string): Observable<void> {
+    return this.http.delete<void>(adminOrganizationUrl(slug));
   }
 }
