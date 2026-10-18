@@ -10,7 +10,7 @@ export interface HomeContent {
   pipeline: { title: string; lead: string; phases: { name: string; stages: string[] }[]; note: string };
   faq: { title: string; items: { q: string; a: string }[] };
   cta: { title: string; lead: string; button: string };
-  footer: { tagline: string; powered: string; product: string; resources: string; docs: string; signIn: string; openSource: string; disclaimer: string };
+  footer: { tagline: string; powered: string; product: string; resources: string; docs: string; signIn: string; openSource: string };
   preview: { open: string; critical: string; avg: string; repos: string; recent: string };
 }
 
@@ -93,8 +93,7 @@ export const HOME: Record<Lang, HomeContent> = {
       resources: 'Resources',
       docs: 'Documentation',
       signIn: 'Sign in',
-      openSource: 'Artemis is open source under the MIT License',
-      disclaimer: 'An open-source academic project (FIAP) maintained by leonardorscarpitta — not a company or registered trademark, and not affiliated with NASA’s Artemis program or any other product named Artemis.',
+      openSource: 'Open source under the MIT License',
     },
     preview: { open: 'Open findings', critical: 'Critical', avg: 'Avg. CVSS', repos: 'Repositories', recent: 'Recent vulnerabilities' },
   },
@@ -176,8 +175,7 @@ export const HOME: Record<Lang, HomeContent> = {
       resources: 'Recursos',
       docs: 'Documentação',
       signIn: 'Entrar',
-      openSource: 'O Artemis é código aberto sob a Licença MIT',
-      disclaimer: 'Um projeto acadêmico de código aberto (FIAP) mantido por leonardorscarpitta — não é uma empresa nem marca registrada, e não tem relação com o programa Artemis da NASA nem com qualquer outro produto chamado Artemis.',
+      openSource: 'Código aberto sob a Licença MIT',
     },
     preview: { open: 'Achados abertos', critical: 'Críticos', avg: 'CVSS médio', repos: 'Repositórios', recent: 'Vulnerabilidades recentes' },
   },
