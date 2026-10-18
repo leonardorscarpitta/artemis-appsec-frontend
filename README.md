@@ -12,15 +12,15 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Angular-22-0b4f8a" alt="Angular 22">
   <img src="https://img.shields.io/badge/i18n-en--US%20%7C%20pt--BR-0b4f8a" alt="Languages: en-US and pt-BR">
-  <a href="https://github.com/Artemis-Core/artemis-appsec-backend"><img src="https://img.shields.io/badge/API-artemis--appsec--backend-0b4f8a" alt="API: artemis-appsec-backend"></a>
-  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-5a6474" alt="License: PolyForm Noncommercial 1.0.0">
+  <a href="https://github.com/leonardorscarpitta/artemis-appsec-backend"><img src="https://img.shields.io/badge/API-artemis--appsec--backend-0b4f8a" alt="API: artemis-appsec-backend"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5a6474" alt="License: MIT"></a>
 </p>
 
 ---
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline with self-hosted open-source scanners and reports secrets, code issues, misconfigurations and dependency vulnerabilities (CVSS from the NIST National Vulnerability Database). Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
+This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/leonardorscarpitta/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
 
 ## Naming
 
@@ -78,30 +78,30 @@ Angular 22 with standalone components, signals and lazy-loaded routes.
 | `src/environments/` | `apiUrl` and `auth` (OIDC authority, client id, scopes) per build |
 | `src/app/core/org/` | `OrgContext` (current organization slug), `orgGuard` and legacy URL redirects; `shared/org-link.ts` is the `orgLink` pipe |
 | `src/app/core/auth/` | OpenID Connect with `oidc-client-ts`: `Auth` service (login redirect, callback, profile, account URL, logout), `authGuard` and `authInterceptor` (Bearer token, re-login on 401) |
-| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`, `billing.ts`) |
+| `src/app/core/api/` | HTTP layer: `apiUrl()`, `Accept-Language` interceptor, `ProblemDetail` helpers and one typed client per backend module (`projects.ts`, `findings.ts`, `pipeline-runs.ts`, `reports.ts`, `policies.ts`, `organization.ts`, `usage.ts`, `admin.ts`) |
 | `src/app/core/domain.ts` | Shared domain types (`Severity`, `FindingStatus`, `Stack`) and helpers |
 | `src/app/layout/shell.ts` | Authenticated layout: sidebar (`groups` array), top bar, mobile drawer and icon rail |
 | `src/app/core/org/` | `OrgContext` (memberships, current organization, `can()`/`reason()`), `orgGuard`, `orgInterceptor` |
-| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `role-notice`, `scan-settings` and `pipeline-editor` (`[(stages)]`) |
+| `src/app/shared/` | Reusable components: logo, language switch, theme toggle, severity badge, `role-notice`, `scan-settings`, `pipeline-editor` (`[(stages)]`) and `paginator` (`paginate(rows, resetOn)` + `<app-paginator [pager]>`: 15 rows per page, shown only above 15 rows; back to page 1 when `resetOn` changes, clamped on reloads) |
 | `src/app/features/` | One folder per page: `home`, `login`, `organizations`, `dashboard`, `vulnerabilities`, `repositories`, `repo-settings`, `pipeline-runs`, `reports`, `onboarding`, `integrations`, `policies`, `team`, `settings`, `help` |
 
 ## Routes
 
-In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). `OrgContext` loads the user's memberships from `GET /me/organizations`; `orgGuard` only lets users into organizations they belong to (otherwise → `/organizations`) and sets the current slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page in the user's first organization. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login`, `/auth/callback` and `/organizations` are unprefixed.
+In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vulnerabilities`). `OrgContext` loads the user's memberships from `GET /me/organizations`; `orgGuard` only lets users into organizations they belong to (otherwise → `/organizations`) and sets the current slug, and `legacyPageMatcher` sends pre-organization URLs (`/vulnerabilities/...`) to the same page in the user's first organization. Build links with the `orgLink` pipe (`'/reports' | orgLink`) or `OrgContext.url()` — never hard-code the slug. The table below lists page paths relative to `/<org>`; `/`, `/docs`, `/login`, `/auth/callback`, `/organizations` and `/admin` are unprefixed.
 
 | Path | Page |
 | --- | --- |
-| `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): their organizations (role, plan) and pending invitations. "Get started" opens Keycloak's sign-up form |
+| `/` | Public home page (text in `features/home/home-content.ts`; product preview uses static sample data from `home-preview.ts`). Signed-in users also get "Your workspace" (`home-workspace.ts`): their organizations (role, usage) and pending invitations; Artemis administrators also get a "Platform administration" button. "Get started" opens Keycloak's sign-up form |
 | `/docs` | Public user guide (same content as `/help`) for visitors who are not signed in |
 | `/privacy`, `/terms` | Privacy Policy and Terms of Use (text in `features/legal/legal-content.ts`, en-US + pt-BR) |
 | `/licenses` | Third-party notices: scanner tools, licenses, source links, NVD notice and data attribution (`features/legal/licenses-content.ts`) |
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
-| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner) |
+| `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner; one Free organization per account → `free-organization-limit`) |
 | `/invite/:token` | Accepts a one-time invitation link (`POST /me/invitations/accept` `{token}`), then opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
-| `/dashboard` | Security overview with CVSS severities |
+| `/dashboard` | Security overview: KPI tiles (sparklines and deltas vs the first day of the trend period, derived client-side from the trends series; relative last-scan time), one stacked severity bar, trends for the last 30/90 days (`GET /dashboard/trends?days=&tz=<browser time zone>`: open findings by severity, new vs fixed per week, mean time to remediate, pipeline runs per day), open findings by kind and top repositories (link to `/vulnerabilities?kind=|repository=|severity=|status=`, which pre-fills the filters). Charts are hand-rolled SVG/HTML in `features/dashboard/charts/` (no chart library; `sparkline.ts` for the KPI tiles); loading uses skeletons; fills use the dashboard-scoped `--chart-*` tokens (severity hues re-stepped for adjacent marks, checked for color-vision deficiency in both themes) |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
-| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Deploy Key tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository" on the General tab → `DELETE /repositories/{name}`) |
+| `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Deploy Key tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository…" on the General tab opens a dialog with "Also delete everything linked to this repository" (unchecked = keep history → `DELETE /repositories/{name}`; checked → `?purge=true`). The list page shows "Removed repositories" (`GET /removed-repositories`, "Delete history" → `DELETE /removed-repositories/{id}`). Findings and runs of removed repositories carry `repositoryRemoved` and are shown with `shared/repo-name.ts` (“Removed repository” tag, no links, no re-run) |
 | `/pipelines`, `/pipelines/:id` | Pipeline runs and run detail (stages, logs) |
 | `/reports`, `/reports/:id` | Reports list and printable report view |
 | `/onboarding` | 4-step flow: repository (SSH URL, branch, monorepo folders) → settings → pipeline → stack (“Detect automatically” by default = `stack: null`; the API detects it on the first successful access check); then the repository's Deploy Key tab. The General tab shows the stack with “Auto-detected” / “Detecting stack…” and lets the user change it (`settings.stack`, stored as a manual choice) |
@@ -109,7 +109,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/policies` | Pipeline gates (minimum thresholds + required stages, enforced by `shared/pipeline-editor.ts` via `GET /policies`), remediation SLAs (findings carry `dueAt`/`overdue`), license policy, risk acceptances (create by finding reference or CVE; accepting from a finding asks for justification + expiry) |
 | `/team` | Members, invitations and the organization's roles-and-permissions matrix — editable by owners and admins (`GET /roles` → `editable` per role, `PUT /roles/{role}/permissions`; locked cells: owner column, `viewFindings`, `billing`, admin column for admins); after saving, `OrgContext.load(true)` refreshes `can()` |
 | `/settings` | Organization settings (general, authentication, notifications, API tokens, retention, danger zone: leave / delete) |
-| `/billing` | Plans (Free: 90 scans/month; PRO: R$ 24,99/month, 300 scans/month + AI), current subscription and this month's usage; read-only while billing is disabled on the API. The sidebar usage meter uses the same data, and the home page shows the plans from the public `/billing/plans` endpoint |
+| `/usage` | Artemis is free (no plans or payments). This month's scans against the limit (25 per organization), the reset date and which optional features (`scheduledScans`, `organizationRename`, `aiTriage`) the Artemis administrators enabled — `GET /usage`. The sidebar usage meter and the home cards use the same endpoint. `/<org>/billing` redirects here |
 | `/help` | In-app user guide |
 
 ## Styling
@@ -144,6 +144,7 @@ The catalog comes from the API (`GET /pipeline/stages`, field `available`); `cor
 
 - `shared/run-scan-button.ts` calls `POST /repositories/{name}/scans` and opens the new run; a 409 (monthly limit) is shown inline. It is used on the Repositories list and repository settings.
 - Onboarding accepts **SSH URLs only** (public repositories too — the deploy key proves the user controls the repository). The API generates a read-only ed25519 deploy key and does not queue a scan; Run scan stays disabled until access is verified; `features/repo-settings/repo-access.ts` (Deploy Key tab) shows the public key with per-provider steps (GitHub / GitLab / Bitbucket / other), the server host key (pinned or recorded on first use), **Test access** (`POST /repositories/{name}/access/checks`, polls `GET …/access` every 2 s while queued/running) and **Rotate key** (`POST …/access/key`). `ProjectSummary.access` (`public`/`ssh`) and `accessStatus` (`pending`/`verified`/`failed`) drive the list tags. The private key is never sent to the browser.
+- Scan schedule (`shared/scan-settings.ts`, onboarding + General tab): `manual` (default), `push` (shown as not available yet) or the timed `6h` / `24h` / `7d`. Timed schedules need the `scheduledScans` feature (`OrgContext.hasFeature()`, from the membership's `features`); without it the select is locked with an "Available on request" tag linking to Usage and a saved timed schedule is shown as inactive (the API answers `403 feature-not-enabled` to new ones). With it, `ProjectSummary.nextScanAt` is shown in the browser's time zone. Runs queued by the scheduler have trigger `schedule` ("Scheduled").
 - Findings have a `kind` (`vulnerability`, `secret`, `code`, `config`, `license`). Only vulnerabilities carry CVE/CVSS/package; the others carry `ruleId` and `location`. Detail URLs are `/<org>/vulnerabilities/<CVE>` (all occurrences of a CVE) or `/<org>/vulnerabilities/<finding id>` for other kinds.
 
 ## Authentication
@@ -156,6 +157,10 @@ Sign-in uses Keycloak as the OpenID Connect provider with the Artemis login them
 - `OrgContext.current()` holds the role and permission list returned by the API (`viewFindings`, `triage`, `pipelines`, `integrations`, `team`, `billing`). Gate actions with `org.can('<permission>')`; the API enforces the same matrix.
 - When a permission is missing, don't hide the feature: disable the controls (wrap forms in `<fieldset class="contents" [disabled]>`), and show `<app-role-notice permission="…" />` or a `title` with `org.reason('<permission>')` ("Your role (Viewer) can't …").
 - The shell re-creates its `<router-outlet>` when the slug changes, so pages reload their data after switching organization from the sidebar.
+- The slug is always derived from the organization name by the API (`core/org/slug.ts` mirrors it for the preview); there is no slug field to edit. Renaming (Settings → General) needs the `organizationRename` feature (`403 feature-not-enabled` otherwise; the name field is locked until the Artemis administrators enable it) and moves the page to the new `/<slug>/settings` via `OrgContext.rename()`.
+- Optional features come with each membership (`OrganizationSummary.features`); `OrgContext.hasFeature()` gates them and `OrgContext.aiLabel()` gives the AI lock text ("Available on request · coming soon" / "Enabled for your organization · coming soon"). Each account can own one organization (`409 organization-limit`).
+- **Platform administrators** (Keycloak realm role `artemis-admin`; not the organization `admin` role): `Account` (`core/auth/account.ts`) loads `GET /me` once and exposes `platformAdmin`. `/admin` (unprefixed, `authGuard` + `adminGuard`, others go to `/`) lists every organization's metadata (`GET /admin/organizations`, search by name/slug, paginated) with a switch per optional feature (`PUT /admin/organizations/{slug}/features`, saved per change). It never shows repositories, findings or members, and grants no membership. Links: top bar (hidden below 600px) and the home workspace header.
+- Runs that end before any stage runs give their monthly scan back; the run detail shows a note when `quotaRefunded` is true.
 
 ## Invitations
 
@@ -178,7 +183,7 @@ End-user docs live in the app at `/help`, with content in `src/app/features/help
 
 ## Contributing
 
-- **How to contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) (contribution terms included).
+- **How to contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) (contributions are licensed under MIT).
 - **Branches:** `main` (stable) and `dev` (integration). Create `feat/*` or `bugfix/*` branches from `dev`.
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 - **Every change** must update, in the same commit:
@@ -187,4 +192,8 @@ End-user docs live in the app at `/help`, with content in `src/app/features/help
 
 ## License
 
-Artemis is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, study, modify and share it for noncommercial purposes; commercial use (selling it, offering it as a paid service, charging for access) is reserved to the copyright holder. Contributions are welcome under the terms in [CONTRIBUTING.md](CONTRIBUTING.md).
+Artemis is fully open source under the [MIT License](LICENSE): anyone may use, copy, modify, distribute and sell it, with no restrictions beyond keeping the license notice. Contributions are welcome and are licensed under the same terms (see [CONTRIBUTING.md](CONTRIBUTING.md)). The security tools run by the scanner (Gitleaks, Semgrep CE, Trivy, Grype, Syft, Hadolint) are separate programs under their own licenses; see the in-app Third-party notices page (`/licenses`) and the backend's `scanner/THIRD_PARTY_NOTICES.md`.
+
+## About
+
+Artemis is a **fictional product** created for an academic presentation and developed by [leonardorscarpitta](https://github.com/leonardorscarpitta). The developer claims no ownership of the code or of the name: there is no Artemis company, "Artemis" is not a registered trademark, and the project is not affiliated with NASA's Artemis program or any other product named Artemis. The in-app texts (Privacy Policy, Terms of Use, footer) are written as if Artemis were a real service, for the demonstration. Anyone running their own instance is responsible for it and for the data it stores.

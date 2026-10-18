@@ -139,18 +139,9 @@ a.row:hover {
 }
 
 .slug {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-
-  span {
-    font-size: 0.85rem;
-  }
-
-  .input {
-    flex: 1;
-    min-width: 0;
-  }
+  margin: 0;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
 }
 
 .error {
@@ -177,9 +168,8 @@ a.row:hover {
     padding: 0.85rem 1rem;
   }
 
-  .plan,
   .open,
-  .slug span {
+  .slug .domain {
     display: none;
   }
 
@@ -190,4 +180,8 @@ a.row:hover {
       flex: 1;
     }
   }
+}
+
+form.locked {
+  opacity: 0.55;
 }

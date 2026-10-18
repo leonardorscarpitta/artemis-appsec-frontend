@@ -1,9 +1,7 @@
 import { NgTemplateOutlet, ViewportScroller } from '@angular/common';
-import { httpResource } from '@angular/common/http';
 import { Component, ElementRef, computed, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { PLAN_FEATURES, Plan, PlanId, formatPrice, plansUrl } from '../../core/api/billing';
 import { Auth } from '../../core/auth/auth';
 import { I18n } from '../../core/i18n';
 import { OrgContext, landingUrl } from '../../core/org/org-context';
@@ -26,8 +24,6 @@ export class Home {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(Auth);
   protected readonly c = computed(() => HOME[this.i18n.lang()]);
-  protected readonly plans = httpResource<Plan[]>(() => plansUrl());
-  protected readonly planFeatures = PLAN_FEATURES;
 
   protected readonly preview = HOME_PREVIEW;
   private readonly org = inject(OrgContext);
@@ -55,21 +51,5 @@ export class Home {
 
   protected register(): void {
     this.auth.register().catch((error) => console.error('Could not reach the identity provider', error));
-  }
-
-  protected planName(id: PlanId): string {
-    return this.i18n.t(`billing.plan.${id}`);
-  }
-
-  protected tagline(id: PlanId): string {
-    return this.i18n.t(`billing.plan.${id}.tagline`);
-  }
-
-  protected price(plan: Plan): string {
-    return formatPrice(plan, this.i18n.lang());
-  }
-
-  protected scans(plan: Plan): string {
-    return this.i18n.t('billing.f.scans').replace('{n}', String(plan.monthlyScanLimit));
   }
 }

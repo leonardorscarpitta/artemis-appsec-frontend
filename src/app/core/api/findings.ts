@@ -28,6 +28,8 @@ export interface FindingSummary {
   location: FindingLocation | null;
   cve: string | null;
   repository: string;
+  /** The repository was removed and this finding is kept as history. */
+  repositoryRemoved: boolean;
   packageName: string | null;
   packageGroup: string | null;
   installedVersion: string | null;
@@ -84,6 +86,14 @@ export interface DashboardSummary {
   recent: FindingSummary[];
   /** Open findings past their remediation SLA. */
   overdueFindings: number;
+  byKind: { kind: FindingKind; count: number }[];
+  /** Top 5 repositories by open findings. */
+  topRepositories: { repository: string; total: number; critical: number; high: number; medium: number; low: number }[];
+}
+
+export interface BulkStatusResult {
+  updated: number;
+  skipped: number;
 }
 
 export const findingsUrl = () => apiUrl('/findings');
@@ -128,6 +138,11 @@ export class FindingsApi {
   }
 
   /** Accepting a risk needs a justification (note, 10+ characters) and an expiry date (yyyy-MM-dd). */
+  /** Same change for several findings; those that can't take it are skipped. */
+  changeStatuses(ids: string[], status: FindingStatus, note?: string, expiresAt?: string): Observable<BulkStatusResult> {
+    return this.http.post<BulkStatusResult>(`${findingsUrl()}/status`, { ids, status, note: note ?? null, expiresAt: expiresAt ?? null });
+  }
+
   changeStatus(id: string, status: FindingStatus, note?: string, expiresAt?: string): Observable<FindingDetails> {
     return this.http.post<FindingDetails>(`${findingUrl(id)}/status`, { status, note: note ?? null, expiresAt: expiresAt ?? null });
   }

@@ -4,15 +4,7 @@ Thanks for your interest! Issues, ideas and pull requests are welcome.
 
 ## License of contributions
 
-Artemis is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may use, study, modify and share it for **noncommercial purposes**. Commercial use — including selling it, offering it as a paid service or charging for access — is reserved to the copyright holder.
-
-By submitting a contribution (a pull request, patch, or any other material) you agree that:
-
-1. The contribution is your original work, or you otherwise have the right to submit it.
-2. You grant Artemis-Core (the licensor) a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, reproduce, modify, distribute and sublicense your contribution, **including for commercial purposes and under other license terms**.
-3. Everyone else receives your contribution under the same PolyForm Noncommercial License 1.0.0 as the rest of the project.
-
-If you cannot agree to these terms, please open an issue describing the change instead of a pull request.
+Artemis is open source under the [MIT License](LICENSE). By submitting a contribution (a pull request, patch or any other material) you confirm that it is your own work, or that you otherwise have the right to submit it, and you agree that it is licensed under the same MIT License as the rest of the project.
 
 ## How to contribute
 
@@ -27,4 +19,4 @@ Other rules:
 - Keep changes focused; don't mix refactors with features.
 - Update the README when structure, routes, endpoints or conventions change.
 - User-facing changes must update the in-app guide (`src/app/features/help/help-content.ts`) in **both** languages (en-US and pt-BR).
-- Never commit secrets (`.env`, `authelia/secrets/` and similar are git-ignored).
+- Never commit secrets (`.env`, `keycloak/secrets/` and similar are git-ignored).

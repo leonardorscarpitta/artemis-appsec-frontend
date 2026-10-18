@@ -7,6 +7,7 @@ import { MyInvitation, OrganizationApi, myInvitationsUrl } from '../../core/api/
 import { Auth } from '../../core/auth/auth';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { OrgContext } from '../../core/org/org-context';
+import { slugify } from '../../core/org/slug';
 import { LangSwitch } from '../../shared/lang-switch';
 import { Logo } from '../../shared/logo';
 import { ThemeToggle } from '../../shared/theme-toggle';
@@ -17,17 +18,6 @@ const CREATE_ERRORS: Record<string, TranslationKey> = {
   'slug-reserved': 'orgs.error.slugReserved',
   'organization-limit': 'orgs.error.limit',
 };
-
-export function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40)
-    .replace(/-+$/, '');
-}
 
 /** Organization picker: the user's organizations, invitations addressed to them, and creating a new one. */
 @Component({
@@ -48,8 +38,9 @@ export class Organizations {
   protected readonly loadFailed = signal(false);
 
   protected readonly name = signal('');
-  protected readonly slug = signal('');
-  private slugEdited = false;
+  protected readonly slug = computed(() => slugify(this.name()));
+  /** Each account can own one organization. */
+  protected readonly owned = computed(() => this.org.organizations()?.find((o) => o.role === 'owner') ?? null);
   protected readonly creating = signal(false);
   protected readonly createError = signal<string | null>(null);
   protected readonly busyInvitation = signal<string | null>(null);
@@ -69,26 +60,20 @@ export class Organizations {
     return this.i18n.t(`team.role.${role}` as TranslationKey);
   }
 
-  protected planLabel(plan: string): string {
-    return this.i18n.t(`nav.plan.${plan}` as TranslationKey);
-  }
-
   protected setName(value: string): void {
     this.name.set(value);
-    if (!this.slugEdited) this.slug.set(slugify(value));
-  }
-
-  protected setSlug(value: string): void {
-    this.slugEdited = true;
-    this.slug.set(value.toLowerCase());
   }
 
   protected create(event: Event): void {
     event.preventDefault();
     if (!(event.target as HTMLFormElement).reportValidity()) return;
+    if (this.slug().length < 3) {
+      this.createError.set(this.i18n.t('orgs.error.shortName'));
+      return;
+    }
     this.creating.set(true);
     this.createError.set(null);
-    this.api.createOrganization(this.name().trim(), this.slug()).subscribe({
+    this.api.createOrganization(this.name().trim()).subscribe({
       next: (created) => {
         this.org.upsert(created);
         void this.router.navigate(['/', created.slug, 'onboarding']);

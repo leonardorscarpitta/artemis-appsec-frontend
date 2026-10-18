@@ -11,15 +11,12 @@
       <h1>
         {{ repo.name }}
         @if (repo.folders.length) {
-          <span class="tag">{{ i18n.t('mono.tag') }}</span>
+          <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ i18n.t('mono.tag') }}</span>
         } @else {
           @if (repo.stackSource === 'pending') {
             <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
           } @else {
-            <span class="tag">{{ repo.stack }}</span>
-            @if (repo.stackSource === 'detected') {
-              <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
-            }
+            <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ repo.stack }}</span>
           }
         }
       </h1>
@@ -85,7 +82,7 @@
         }
         <app-monorepo-folders [folders]="settings().folders" (foldersChange)="setFolders($event)" [showErrors]="showErrors()" />
         <hr />
-        <app-scan-settings [(settings)]="settings" />
+        <app-scan-settings [(settings)]="settings" [savedSchedule]="repo.schedule" [nextScanAt]="repo.nextScanAt" />
       }
       @case ('pipeline') {
         <app-pipeline-editor [(stages)]="pipeline" />
@@ -101,17 +98,35 @@
         <h2 id="remove-title">{{ i18n.t('rs.remove.title') }}</h2>
         <p class="muted">{{ i18n.t('rs.remove.desc') }}</p>
       </div>
-      <div class="field">
-        <label for="confirm-repo">{{ i18n.t('rs.remove.confirm') }}: <strong class="mono">{{ repo.name }}</strong></label>
-        <input id="confirm-repo" class="input mono" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
-      </div>
-      <button type="button" class="btn danger" [disabled]="removing() || confirmName() !== repo.name" (click)="remove()">
-        {{ i18n.t('rs.remove.button') }}
-      </button>
-      @if (removeError(); as message) {
-        <p class="error" role="alert">{{ message }}</p>
-      }
+      <button type="button" class="btn danger" (click)="openRemove(removeDialog)">{{ i18n.t('rs.remove.open') }}</button>
     </section>
+
+    <dialog #removeDialog class="remove-dialog" aria-labelledby="remove-dialog-title" (close)="closeRemove()">
+      <form method="dialog" (submit)="$event.preventDefault(); remove()">
+        <h2 id="remove-dialog-title">{{ i18n.t('rs.remove.title') }}: <span class="mono">{{ repo.name }}</span></h2>
+        <p>{{ i18n.t('rs.remove.always') }}</p>
+        <label class="purge">
+          <input type="checkbox" [checked]="purge()" (change)="setPurge($event)" />
+          <span>{{ i18n.t('rs.remove.purge') }}</span>
+        </label>
+        <p class="outcome" [class.destructive]="purge()" aria-live="polite">
+          {{ i18n.t(purge() ? 'rs.remove.purgeOutcome' : 'rs.remove.keepOutcome') }}
+        </p>
+        <div class="field">
+          <label for="confirm-repo">{{ i18n.t('rs.remove.confirm') }}: <strong class="mono">{{ repo.name }}</strong></label>
+          <input id="confirm-repo" class="input mono" autocomplete="off" [value]="confirmName()" (input)="setConfirmName($event)" />
+        </div>
+        @if (removeError(); as message) {
+          <p class="error" role="alert">{{ message }}</p>
+        }
+        <div class="dialog-actions">
+          <button type="button" class="btn" (click)="removeDialog.close()">{{ i18n.t('rs.cancel') }}</button>
+          <button type="submit" class="btn danger" [disabled]="removing() || confirmName() !== repo.name">
+            {{ i18n.t(purge() ? 'rs.remove.buttonPurge' : 'rs.remove.button') }}
+          </button>
+        </div>
+      </form>
+    </dialog>
   }
 
   @if (canEdit() && tab() !== 'access') {

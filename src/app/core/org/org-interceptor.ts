@@ -5,7 +5,7 @@ import { catchError, throwError } from 'rxjs';
 import { apiPath, problemCode } from '../api/api';
 import { ORG_HEADER, OrgContext } from './org-context';
 
-const UNSCOPED = /^\/(me|organizations)(\/|$|\?)/;
+const UNSCOPED = /^\/(me|organizations|admin)(\/|$|\?)/;
 
 /** Scopes API calls to the organization in the URL and reacts when the membership changed meanwhile. */
 export const orgInterceptor: HttpInterceptorFn = (req, next) => {

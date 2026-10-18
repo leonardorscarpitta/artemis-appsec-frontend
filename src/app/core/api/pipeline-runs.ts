@@ -12,6 +12,8 @@ export type StageStatus = 'passed' | 'failed' | 'warning' | 'running' | 'pending
 export interface RunView {
   number: number;
   repository: string;
+  /** The repository was removed and this run is kept as history (it cannot be re-run). */
+  repositoryRemoved: boolean;
   branch: string;
   commit: string;
   message: string;
@@ -25,6 +27,8 @@ export interface RunView {
   failedByPolicy: boolean;
   /** Monorepo folders this run scans; empty for the whole repository. */
   folders: string[];
+  /** The run ended before scanning anything, so it did not use a monthly scan. */
+  quotaRefunded: boolean;
 }
 
 export interface StageRunView {

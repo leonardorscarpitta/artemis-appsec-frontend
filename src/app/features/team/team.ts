@@ -18,13 +18,14 @@ import { I18n } from '../../core/i18n';
 import { OrgContext } from '../../core/org/org-context';
 import { RequestState } from '../../shared/request-state';
 import { LOCK_ICON, RoleNotice } from '../../shared/role-notice';
+import { Paginator, paginate } from '../../shared/paginator';
 import { forkJoin } from 'rxjs';
 
 const PERMISSIONS: Permission[] = ['viewFindings', 'triage', 'pipelines', 'integrations', 'team', 'billing'];
 
 @Component({
   selector: 'app-team',
-  imports: [DatePipe, RequestState, RoleNotice],
+  imports: [DatePipe, RequestState, RoleNotice, Paginator],
   templateUrl: './team.html',
   styleUrl: './team.scss',
 })
@@ -38,6 +39,8 @@ export class Team {
 
   protected readonly members = httpResource<Member[]>(() => membersUrl(), { defaultValue: [] });
   protected readonly invitations = httpResource<Invitation[]>(() => invitationsUrl(), { defaultValue: [] });
+  protected readonly memberPager = paginate(this.members.value);
+  protected readonly invitationPager = paginate(this.invitations.value);
   private readonly roleInfo = httpResource<RoleInfo[]>(() => rolesUrl(), { defaultValue: [] });
 
   protected readonly roles = computed(() => this.roleInfo.value().map((r) => r.role));

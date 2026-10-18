@@ -72,16 +72,70 @@
 } @else if (results.hasValue() || rows().length) {
 <div class="summary" [attr.aria-busy]="results.isLoading()">
   <p aria-live="polite"><strong>{{ rows().length }}</strong> {{ i18n.t('vuln.results') }}</p>
-  @if (hasFilters()) {
-    <button type="button" class="btn ghost" (click)="clear()">{{ i18n.t('vuln.clear') }}</button>
-  }
+  <div class="summary-actions">
+    @if (hasFilters()) {
+      <button type="button" class="btn ghost" (click)="clear()">{{ i18n.t('vuln.clear') }}</button>
+    }
+    @if (org.can('triage') && rows().length) {
+      <button type="button" class="btn" [class.primary]="selecting()" [attr.aria-pressed]="selecting()" (click)="toggleSelecting()">
+        {{ i18n.t(selecting() ? 'vuln.bulk.finish' : 'vuln.bulk.select') }}
+      </button>
+    }
+  </div>
 </div>
+
+@if (bulkMessage(); as message) {
+  <p class="info-notice bulk-message" role="status">{{ message }}</p>
+}
+
+@if (selecting()) {
+  <section class="card bulk-bar" [attr.aria-label]="i18n.t('vuln.bulk.label')">
+    <p class="bulk-count" aria-live="polite">
+      <strong>{{ selected().length }}</strong> {{ i18n.t('vuln.bulk.selected') }}
+    </p>
+    <div class="bulk-actions" role="group" [attr.aria-label]="i18n.t('vuln.actions')">
+      @for (a of actions; track a) {
+        <button type="button" class="btn" [disabled]="saving() || !applicable(a)" (click)="bulkApply(a)">
+          {{ actionLabel(a) }}
+          @if (selected().length) {
+            <span class="count">{{ applicable(a) }}</span>
+          }
+        </button>
+      }
+    </div>
+    @if (accepting()) {
+      <form class="accept-form" (submit)="$event.preventDefault(); confirmAccept(justification.value, expires.value)">
+        <p class="muted">{{ i18n.t('vuln.bulk.acceptDesc').replace('{n}', '' + applicable('accepted')) }}</p>
+        <div class="field">
+          <label for="bulk-justification">{{ i18n.t('policies.exceptions.justification') }}</label>
+          <textarea #justification id="bulk-justification" class="input" rows="2" minlength="10" maxlength="1000" required></textarea>
+        </div>
+        <div class="field">
+          <label for="bulk-expires">{{ i18n.t('policies.exceptions.expires') }}</label>
+          <input #expires id="bulk-expires" class="input" type="date" required [min]="tomorrow" [max]="maxExpiry" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn ghost" (click)="accepting.set(false)">{{ i18n.t('rs.cancel') }}</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">{{ i18n.t('vuln.accept.confirm') }}</button>
+        </div>
+      </form>
+    }
+    @if (bulkError(); as error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
+  </section>
+}
 
 <section class="card table-card" [class.loading]="results.isLoading()">
   @if (rows().length) {
     <table class="table stack">
       <thead>
         <tr>
+          @if (selecting()) {
+            <th scope="col" class="select-cell">
+              <input type="checkbox" [checked]="allSelected()" [indeterminate]="someSelected()" (change)="toggleAll()" [attr.aria-label]="i18n.t('vuln.bulk.all')" />
+            </th>
+          }
           <th scope="col">{{ i18n.t('col.finding') }}</th>
           <th scope="col">{{ i18n.t('col.where') }}</th>
           <th scope="col">{{ i18n.t('col.repository') }}</th>
@@ -91,14 +145,19 @@
         </tr>
       </thead>
       <tbody>
-        @for (f of rows(); track f.id) {
-          <tr>
+        @for (f of pager.items(); track f.id) {
+          <tr [class.selected]="selecting() && isSelected(f.id)">
+            @if (selecting()) {
+              <td class="select-cell">
+                <input type="checkbox" [checked]="isSelected(f.id)" (change)="toggle(f.id)" [attr.aria-label]="i18n.t('vuln.bulk.one') + ' ' + findingIdentifier(f)" />
+              </td>
+            }
             <td class="primary-cell">
               <a class="mono cve" [routerLink]="['/vulnerabilities', findingRoute(f)] | orgLink">{{ findingIdentifier(f) }}</a>
               <span class="title"><span class="tag kind">{{ kindLabel(f.kind) }}</span> {{ f.title }}</span>
             </td>
             <td class="mono where" [attr.data-label]="i18n.t('col.where')">{{ packageLabel(f) }}</td>
-            <td [attr.data-label]="i18n.t('col.repository')">{{ f.repository }}</td>
+            <td [attr.data-label]="i18n.t('col.repository')"><app-repo-name [name]="f.repository" [removed]="f.repositoryRemoved" /></td>
             <td [attr.data-label]="i18n.t('col.severity')"><app-severity-badge [cvss]="f.cvss" [level]="f.severity" /></td>
             <td [attr.data-label]="i18n.t('col.status')">
               <app-status-label [status]="f.status" />
@@ -111,6 +170,7 @@
         }
       </tbody>
     </table>
+    <app-paginator [pager]="pager" />
   } @else {
     <div class="empty">
       <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">

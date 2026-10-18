@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
-import { problemMessage } from '../../core/api/api';
+import { problemCode, problemMessage } from '../../core/api/api';
 import {
   ApiToken,
   NotificationChannel,
@@ -20,17 +20,25 @@ import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
 import { Unavailable } from '../../shared/unavailable';
+import { Paginator, paginate } from '../../shared/paginator';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
+import { slugify } from '../../core/org/slug';
 
 type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'danger';
 type RetentionField = keyof OrganizationSettings['retention'];
+
+const SAVE_ERRORS: Record<string, TranslationKey> = {
+  'feature-not-enabled': 'settings.renameLocked',
+  'slug-taken': 'orgs.error.slugTaken',
+  'slug-reserved': 'orgs.error.slugReserved',
+};
 
 const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'pipelines:write'];
 
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState, RoleNotice, Unavailable],
+  imports: [DatePipe, RequestState, RoleNotice, Unavailable, Paginator],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -53,6 +61,13 @@ export class Settings {
 
   protected readonly remote = httpResource<OrganizationSettings>(() => organizationSettingsUrl());
   protected readonly form = linkedSignal(() => this.remote.value());
+  // Renaming changes the slug (and every URL), so the Artemis administrators enable it per organization.
+  protected readonly canRename = computed(() => this.org.hasFeature('organizationRename'));
+  protected readonly slugPreview = computed(() => {
+    const f = this.form();
+    if (!f) return '';
+    return f.general.name.trim() === this.remote.value()?.general.name ? f.general.slug : slugify(f.general.name);
+  });
 
   protected readonly tabs: Tab[] = ['general', 'auth', 'notifications', 'tokens', 'retention', 'danger'];
   protected readonly tab = signal<Tab>('general');
@@ -74,6 +89,7 @@ export class Settings {
 
   protected readonly scopes = SCOPES;
   protected readonly tokens = httpResource<ApiToken[]>(() => apiTokensUrl(), { defaultValue: [] });
+  protected readonly tokenPager = paginate(this.tokens.value);
   protected readonly creatingToken = signal(false);
   protected readonly newToken = signal<string | null>(null);
   protected readonly copied = signal(false);
@@ -159,7 +175,8 @@ export class Settings {
       },
       error: (err) => {
         this.saving.set(false);
-        this.saveError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+        const key = SAVE_ERRORS[problemCode(err) ?? ''];
+        this.saveError.set(key ? this.i18n.t(key) : (problemMessage(err) ?? this.i18n.t('api.saveError')));
       },
     });
   }
@@ -238,7 +255,11 @@ export class Settings {
       },
       error: (err) => {
         this.transferring.set(false);
-        this.transferError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+        this.transferError.set(
+          problemCode(err) === 'organization-limit'
+            ? this.i18n.t('settings.transferLimit')
+            : (problemMessage(err) ?? this.i18n.t('api.saveError')),
+        );
       },
     });
   }

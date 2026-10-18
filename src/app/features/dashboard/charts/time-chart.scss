@@ -1,0 +1,165 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.plot {
+  position: relative;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  touch-action: pan-y;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  svg {
+    display: block;
+    overflow: visible;
+  }
+}
+
+.grid,
+.axis {
+  stroke: var(--border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.axis {
+  stroke: var(--border-strong);
+}
+
+.tick {
+  fill: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.area {
+  fill-opacity: 0.88;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.crosshair {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.hover-band {
+  fill: var(--surface-hover);
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 9rem;
+  margin-left: 12px;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 14%);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  white-space: nowrap;
+
+  &.flip {
+    transform: translateX(calc(-100% - 24px));
+  }
+
+  .when {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  strong {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .key {
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  .total {
+    margin-top: 0.15rem;
+    padding-top: 0.2rem;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.data {
+  font-size: 0.8rem;
+
+  summary {
+    width: fit-content;
+    color: var(--primary);
+    cursor: pointer;
+  }
+
+  .table-scroll {
+    max-height: 260px;
+    margin-top: 0.5rem;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+
+  th[scope='row'] {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tooltip {
+    transition: left 0.08s ease;
+  }
+}

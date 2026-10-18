@@ -17,6 +17,9 @@
   @if (group.items.length) {
   <section class="group" [attr.aria-labelledby]="'cat-' + group.category">
     <h2 [id]="'cat-' + group.category">{{ group.label }}</h2>
+    @if (group.category === 'vulnData') {
+      <p class="muted group-intro">{{ sources().intro }}</p>
+    }
     <ul class="grid">
       @for (item of group.items; track item.id) {
         <li class="card integration" [class]="item.id === 'nvd' ? item.status : 'unavailable'">
@@ -35,6 +38,10 @@
 
           @if (item.id === 'nvd') {
             <dl class="meta">
+              <div>
+                <dt>{{ sources().usedBy }}</dt>
+                <dd>{{ sources().nvdUsedBy }}</dd>
+              </div>
               <div>
                 <dt>{{ i18n.t('int.lastSync') }}</dt>
                 <dd class="mono">{{ (item.lastSyncAt | date: 'yyyy-MM-dd HH:mm') ?? '—' }}</dd>
@@ -90,7 +97,36 @@
           }
         </li>
       }
+      @if (group.category === 'vulnData') {
+        @for (src of sources().sources; track src.name) {
+          <li class="card integration connected">
+            <div class="head">
+              <span class="mono-icon" aria-hidden="true">{{ src.shortCode }}</span>
+              <div class="title">
+                <h3>
+                  @if (src.url.startsWith('/')) {
+                    <a [routerLink]="src.url">{{ src.name }}</a>
+                  } @else {
+                    <a [href]="src.url" target="_blank" rel="noopener noreferrer">{{ src.name }}</a>
+                  }
+                </h3>
+                <span class="status">{{ sources().status }}</span>
+              </div>
+            </div>
+            <p class="muted">{{ src.provides }}</p>
+            <dl class="meta">
+              <div>
+                <dt>{{ sources().usedBy }}</dt>
+                <dd>{{ src.usedBy }}</dd>
+              </div>
+            </dl>
+          </li>
+        }
+      }
     </ul>
+    @if (group.category === 'vulnData') {
+      <p class="muted group-note">{{ sources().privacy }}</p>
+    }
   </section>
   }
 }
@@ -121,7 +157,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (key of keys.value(); track key.id) {
+        @for (key of keyPager.items(); track key.id) {
           <tr>
             <td class="primary-cell"><strong>{{ key.name }}</strong></td>
             <td [attr.data-label]="i18n.t('int.keys.type')">
@@ -155,6 +191,7 @@
         }
       </tbody>
     </table>
+    <app-paginator [pager]="keyPager" />
   } @else {
     <p class="muted empty">{{ i18n.t('int.keys.empty') }}</p>
   }

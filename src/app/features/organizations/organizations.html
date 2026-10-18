@@ -31,7 +31,6 @@
                   <span class="mono muted">/{{ o.slug }}</span>
                 </span>
                 <span class="tag">{{ roleLabel(o.role) }}</span>
-                <span class="tag plan">{{ planLabel(o.plan) }}</span>
                 <span class="open">{{ i18n.t('orgs.open') }} →</span>
               </a>
             </li>
@@ -95,7 +94,13 @@
   <section class="card form-card" aria-labelledby="orgs-create">
     <h2 id="orgs-create">{{ i18n.t('orgs.create') }}</h2>
     <p class="muted">{{ i18n.t('orgs.createDesc') }}</p>
-    <form (submit)="create($event)" novalidate>
+    @if (owned(); as mine) {
+      <p class="warning-notice" role="note">
+        <strong>{{ i18n.t('home.ws.limitTitle') }}</strong>
+        {{ i18n.t('home.ws.limitDesc').replace('{name}', mine.name) }}
+      </p>
+    }
+    <form (submit)="create($event)" novalidate [attr.inert]="owned() ? '' : null" [class.locked]="owned()">
       <div class="field">
         <label for="org-name">{{ i18n.t('orgs.name') }}</label>
         <input
@@ -111,20 +116,9 @@
       </div>
       <div class="field">
         <label for="org-slug">{{ i18n.t('orgs.slug') }}</label>
-        <div class="slug">
-          <span class="mono muted" aria-hidden="true">artemisappsec.papopromines.com.br/</span>
-          <input
-            id="org-slug"
-            class="input mono"
-            required
-            minlength="3"
-            maxlength="40"
-            pattern="[a-z0-9](?:[a-z0-9\-]{1,38}[a-z0-9])"
-            aria-describedby="org-slug-hint"
-            [value]="slug()"
-            (input)="setSlug($any($event.target).value)"
-          />
-        </div>
+        <p class="slug">
+          <span class="mono muted domain" aria-hidden="true">artemisappsec.papopromines.com.br/</span><output id="org-slug" class="mono" aria-describedby="org-slug-hint">{{ slug() || '…' }}</output>
+        </p>
         <small id="org-slug-hint" class="muted">{{ i18n.t('orgs.slugHint') }}</small>
       </div>
       @if (createError(); as message) {
@@ -132,7 +126,7 @@
       }
       <p class="hint">{{ i18n.t('orgs.ownerHint') }}</p>
       <div>
-        <button type="submit" class="btn primary" [disabled]="creating()">{{ i18n.t('orgs.createButton') }}</button>
+        <button type="submit" class="btn primary" [disabled]="creating() || !!owned()">{{ i18n.t('orgs.createButton') }}</button>
       </div>
     </form>
   </section>

@@ -1,0 +1,158 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(6rem, 38%) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 32px;
+  padding: 0 0.4rem;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--surface-hover);
+
+    .tooltip {
+      display: flex;
+    }
+
+    .name {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+  }
+}
+
+.muted .name,
+.muted .value {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.name {
+  overflow: hidden;
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.mono {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.seg {
+  height: 14px;
+  min-width: 2px;
+
+  &:last-of-type {
+    border-radius: 0 4px 4px 0;
+  }
+}
+
+.value {
+  margin-left: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 38%;
+  z-index: 2;
+  display: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 14%);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  white-space: nowrap;
+
+  .when {
+    color: var(--text);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  strong {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .key {
+    width: 10px;
+    height: 2px;
+    border-radius: 1px;
+  }
+}
+
+@media (max-width: 599px) {
+  .bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+    padding: 0.35rem 0.4rem;
+  }
+
+  .tooltip {
+    left: 0.4rem;
+  }
+}

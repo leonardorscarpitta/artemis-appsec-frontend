@@ -170,7 +170,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (e of acceptances.value(); track e.id) {
+          @for (e of acceptancePager.items(); track e.id) {
             <tr>
               <td class="primary-cell">
                 @if (e.findingId) {
@@ -196,6 +196,7 @@
           }
         </tbody>
       </table>
+      <app-paginator [pager]="acceptancePager" />
     } @else {
       <p class="empty muted">{{ i18n.t('policies.exceptions.empty') }}</p>
     }

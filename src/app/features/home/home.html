@@ -170,33 +170,22 @@
         <h2 id="pricing-title">{{ c().pricing.title }}</h2>
         <p>{{ c().pricing.lead }}</p>
       </header>
-      @if (plans.value(); as list) {
-        <div class="pricing">
-          @for (plan of list; track plan.id) {
-            <article class="price-card" [class.highlight]="plan.id === 'pro'" [attr.aria-labelledby]="'price-' + plan.id">
-              <h3 [id]="'price-' + plan.id">{{ planName(plan.id) }}</h3>
-              <p class="tagline">{{ tagline(plan.id) }}</p>
-              <p class="amount"><strong>{{ price(plan) }}</strong> <span>/ {{ i18n.t('billing.month') }}</span></p>
-              <ul>
-                <li><strong>{{ scans(plan) }}</strong></li>
-                @for (f of planFeatures[plan.id]; track f) {
-                  <li>{{ i18n.t(f) }}</li>
-                }
-              </ul>
-              @if (plan.id === 'free') {
-                @if (auth.isAuthenticated()) {
-                  <a class="btn primary" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
-                } @else {
-                  <button type="button" class="btn primary" (click)="register()">{{ c().pricing.freeCta }}</button>
-                }
-              } @else {
-                <button type="button" class="btn" disabled>{{ i18n.t('billing.comingSoon') }}</button>
-              }
-            </article>
+      <div class="pricing">
+        <article class="price-card highlight" aria-labelledby="price-free">
+          <h3 id="price-free">{{ c().pricing.card }}</h3>
+          <ul>
+            @for (item of c().pricing.included; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+          @if (auth.isAuthenticated()) {
+            <a class="btn primary" [routerLink]="appLink()">{{ i18n.t('nav.openApp') }}</a>
+          } @else {
+            <button type="button" class="btn primary" (click)="register()">{{ c().pricing.freeCta }}</button>
           }
-        </div>
-        <p class="note">{{ c().pricing.note }}</p>
-      }
+        </article>
+      </div>
+      <p class="note">{{ c().pricing.note }}</p>
     </div>
   </section>
 
@@ -258,7 +247,9 @@
     </nav>
   </div>
   <div class="container legal">
-    <span>© 2026 Artemis. {{ c().footer.rights }}</span>
+    <span>
+      © 2026 Artemis · <a routerLink="/licenses">{{ c().footer.openSource }}</a>
+    </span>
     <span>artemisappsec.papopromines.com.br</span>
   </div>
 </footer>

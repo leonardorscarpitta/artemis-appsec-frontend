@@ -4,8 +4,19 @@
       <div>
         <p class="eyebrow">{{ i18n.t('home.ws.eyebrow') }}</p>
         <h2 id="ws-title">{{ i18n.t('home.ws.welcome') }}, {{ firstName() }}</h2>
+        @if (org.organizations(); as orgs) {
+          @if (orgs.length) {
+            <p class="muted ws-sub">{{ i18n.t(orgs.length === 1 ? 'home.ws.countOne' : 'home.ws.countMany').replace('{n}', '' + orgs.length) }}</p>
+          }
+        }
       </div>
-      <a class="text-link" routerLink="/organizations">{{ i18n.t('home.ws.manage') }} →</a>
+      <nav class="ws-actions">
+        <a class="btn" routerLink="/docs">{{ i18n.t('home.ws.docs') }}</a>
+        <a class="btn" routerLink="/organizations">{{ i18n.t('home.ws.manage') }}</a>
+        @if (account.platformAdmin()) {
+          <a class="btn" routerLink="/admin">{{ i18n.t('nav.admin') }}</a>
+        }
+      </nav>
     </header>
 
     @if (pending().length) {
@@ -19,34 +30,26 @@
       @if (orgs.length) {
         <ul class="orgs">
           @for (o of orgs; track o.slug) {
-            <li class="card org">
-              <a class="org-main" [routerLink]="['/', o.slug, 'dashboard']">
-                <span class="org-avatar" aria-hidden="true">{{ o.name.slice(0, 2).toUpperCase() }}</span>
-                <span class="org-text">
-                  <strong>{{ o.name }}</strong>
-                  <span class="mono muted">/{{ o.slug }}</span>
-                </span>
-                <span class="tags">
-                  <span class="tag">{{ roleLabel(o.role) }}</span>
-                  <span class="tag">{{ planLabel(o.plan) }}</span>
-                </span>
-              </a>
-              <nav class="org-links" [attr.aria-label]="o.name">
-                <a [routerLink]="['/', o.slug, 'dashboard']">{{ i18n.t('nav.dashboard') }}</a>
-                <a [routerLink]="['/', o.slug, 'vulnerabilities']">{{ i18n.t('nav.vulnerabilities') }}</a>
-                <a [routerLink]="['/', o.slug, 'repositories']">{{ i18n.t('nav.repositories') }}</a>
-                <a [routerLink]="['/', o.slug, 'pipelines']">{{ i18n.t('nav.pipelines') }}</a>
-              </nav>
-            </li>
+            <li><app-home-org-card [org]="o" /></li>
           }
           <li>
-            <a class="card create" routerLink="/organizations">
-              <span class="plus" aria-hidden="true">+</span>
-              <span>
-                <strong>{{ i18n.t('orgs.create') }}</strong>
-                <span class="muted">{{ i18n.t('home.ws.createDesc') }}</span>
-              </span>
-            </a>
+            @if (owned(); as mine) {
+              <div class="card create limit" role="note">
+                <span class="plus lock" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" [attr.d]="lock" /></svg></span>
+                <span>
+                  <strong>{{ i18n.t('home.ws.limitTitle') }}</strong>
+                  <span class="muted">{{ i18n.t('home.ws.limitDesc').replace('{name}', mine.name) }}</span>
+                </span>
+              </div>
+            } @else {
+              <a class="card create" routerLink="/organizations">
+                <span class="plus" aria-hidden="true">+</span>
+                <span>
+                  <strong>{{ i18n.t('orgs.create') }}</strong>
+                  <span class="muted">{{ i18n.t('home.ws.createDesc') }}</span>
+                </span>
+              </a>
+            }
           </li>
         </ul>
       } @else {

@@ -12,6 +12,7 @@ import { ScanSettings } from '../../shared/scan-settings';
 import { OrgLink } from '../../shared/org-link';
 import { RunScanButton } from '../../shared/run-scan-button';
 import { RoleNotice } from '../../shared/role-notice';
+import { StackSourceIcon } from '../../shared/stack-source';
 import { MonorepoFolders, STACKS, foldersValid, normalizeFolder } from '../../shared/monorepo-folders';
 import { Stack } from '../../core/domain';
 import { RepoAccess } from './repo-access';
@@ -20,7 +21,7 @@ type Tab = 'general' | 'pipeline' | 'access';
 
 @Component({
   selector: 'app-repo-settings',
-  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders, RepoAccess],
+  imports: [RouterLink, ScanSettings, PipelineEditor, RequestState, OrgLink, RunScanButton, RoleNotice, MonorepoFolders, RepoAccess, StackSourceIcon],
   templateUrl: './repo-settings.html',
   styleUrl: './repo-settings.scss',
 })
@@ -55,6 +56,21 @@ export class RepoSettings {
   protected readonly confirmName = signal('');
   protected readonly removing = signal(false);
   protected readonly removeError = signal<string | null>(null);
+  protected readonly purge = signal(false);
+
+  protected openRemove(dialog: HTMLDialogElement): void {
+    dialog.showModal();
+  }
+
+  protected closeRemove(): void {
+    this.purge.set(false);
+    this.confirmName.set('');
+    this.removeError.set(null);
+  }
+
+  protected setPurge(event: Event): void {
+    this.purge.set((event.target as HTMLInputElement).checked);
+  }
 
   protected setConfirmName(event: Event): void {
     this.confirmName.set((event.target as HTMLInputElement).value.trim());
@@ -64,7 +80,7 @@ export class RepoSettings {
   protected remove(): void {
     this.removing.set(true);
     this.removeError.set(null);
-    this.api.remove(this.name()).subscribe({
+    this.api.remove(this.name(), this.purge()).subscribe({
       next: () => void this.router.navigateByUrl(this.org.url('/repositories')),
       error: (err) => {
         this.removing.set(false);

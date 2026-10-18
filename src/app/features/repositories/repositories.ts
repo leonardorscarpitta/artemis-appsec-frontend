@@ -1,8 +1,17 @@
 import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProjectFolder, ProjectSummary, ScanSchedule, repositoriesUrl } from '../../core/api/projects';
+import { problemMessage } from '../../core/api/api';
+import {
+  ProjectFolder,
+  ProjectSummary,
+  ProjectsApi,
+  RemovedRepository,
+  ScanSchedule,
+  removedRepositoriesUrl,
+  repositoriesUrl,
+} from '../../core/api/projects';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { OrgLink } from '../../shared/org-link';
@@ -11,8 +20,11 @@ import { OrgContext } from '../../core/org/org-context';
 import { OrgSummary } from '../../core/org/org-summary';
 import { NoRepositories } from '../../shared/no-repositories';
 import { RoleNotice } from '../../shared/role-notice';
+import { StackSourceIcon } from '../../shared/stack-source';
+import { Paginator, paginate } from '../../shared/paginator';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
+  manual: 'ob.settings.interval.manual',
   push: 'ob.settings.interval.push',
   '6h': 'ob.settings.interval.6h',
   '24h': 'ob.settings.interval.24h',
@@ -21,7 +33,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
 
 @Component({
   selector: 'app-repositories',
-  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories],
+  imports: [RouterLink, DatePipe, RequestState, OrgLink, RunScanButton, RoleNotice, NoRepositories, StackSourceIcon, Paginator],
   template: `
     <header class="page-header">
       <div>
@@ -56,7 +68,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
           </tr>
         </thead>
         <tbody>
-          @for (repo of repositories.value(); track repo.id) {
+          @for (repo of repoPager.items(); track repo.id) {
             <tr>
               <td class="primary-cell">
                 <a class="repo-link" [routerLink]="['/repositories', repo.name] | orgLink" [queryParams]="{ tab: 'general' }"><strong>{{ repo.name }}</strong></a>
@@ -74,15 +86,12 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
               </td>
               <td [attr.data-label]="i18n.t('col.stack')">
                 @if (repo.folders.length) {
-                  <span class="tag" [title]="folderSummary(repo.folders)">{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
+                  <span class="tag" [title]="folderSummary(repo.folders)"><app-stack-source [source]="repo.stackSource" />{{ i18n.t('mono.tag') }} · {{ repo.folders.length }}</span>
                 } @else {
                   @if (repo.stackSource === 'pending') {
                     <span class="tag pending">{{ i18n.t('repo.stackPending') }}</span>
                   } @else {
-                    <span class="tag">{{ repo.stack }}</span>
-                    @if (repo.stackSource === 'detected') {
-                      <span class="tag auto" [title]="i18n.t('rs.stackDetectedHint')">{{ i18n.t('repo.stackDetected') }}</span>
-                    }
+                    <span class="tag"><app-stack-source [source]="repo.stackSource" />{{ repo.stack }}</span>
                   }
                 }
               </td>
@@ -99,8 +108,44 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
           }
         </tbody>
       </table>
+      <app-paginator [pager]="repoPager" />
     </div>
     }
+    }
+
+    @if (removed.value()?.length) {
+      <section class="card table-card removed" aria-labelledby="removed-title">
+        <div class="removed-head">
+          <h2 id="removed-title">{{ i18n.t('repo.removed.title') }}</h2>
+          <p class="muted">{{ i18n.t('repo.removed.desc') }}</p>
+        </div>
+        @if (purgeError(); as message) {
+          <p class="error" role="alert">{{ message }}</p>
+        }
+        <table class="table stack">
+          <thead>
+            <tr>
+              <th scope="col">{{ i18n.t('col.repository') }}</th>
+              <th scope="col">{{ i18n.t('repo.removed.at') }}</th>
+              <th scope="col"><span class="sr-only">{{ i18n.t('repo.removed.purge') }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of removedPager.items(); track r.id) {
+              <tr>
+                <td class="primary-cell"><strong>{{ r.name }}</strong></td>
+                <td class="muted mono" [attr.data-label]="i18n.t('repo.removed.at')">{{ r.removedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+                <td class="num actions" data-label="">
+                  <button type="button" class="btn danger" [disabled]="purging() || !org.can('pipelines')" [title]="org.can('pipelines') ? '' : org.reason('pipelines')" (click)="purge(r)">
+                    {{ i18n.t('repo.removed.purge') }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-paginator [pager]="removedPager" />
+      </section>
     }
   `,
   styles: `
@@ -134,8 +179,7 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
       background: var(--sev-critical-bg);
     }
 
-    .tag.pending,
-    .tag.auto {
+    .tag.pending {
       color: var(--primary);
       background: var(--primary-soft);
     }
@@ -143,6 +187,32 @@ const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
     .tag.ok {
       color: var(--sev-low);
       background: var(--sev-low-bg);
+    }
+
+    .removed {
+      margin-top: 1.5rem;
+    }
+
+    .removed-head {
+      padding: 1rem 1.25rem 0;
+
+      h2 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .removed .error {
+      padding: 0 1.25rem;
+    }
+
+    .btn.danger {
+      color: var(--sev-critical);
+      border-color: var(--sev-critical);
     }
 
     .url {
@@ -188,6 +258,28 @@ export class Repositories {
   protected readonly org = inject(OrgContext);
   protected readonly repositories = httpResource<ProjectSummary[]>(() => repositoriesUrl());
   protected readonly scheduleLabels = SCHEDULE_LABELS;
+  private readonly api = inject(ProjectsApi);
+  protected readonly removed = httpResource<RemovedRepository[]>(() => removedRepositoriesUrl());
+  protected readonly repoPager = paginate(() => this.repositories.value() ?? []);
+  protected readonly removedPager = paginate(() => this.removed.value() ?? []);
+  protected readonly purging = signal(false);
+  protected readonly purgeError = signal<string | null>(null);
+
+  protected purge(repository: RemovedRepository): void {
+    if (!confirm(this.i18n.t('repo.removed.purgeConfirm').replace('{name}', repository.name))) return;
+    this.purging.set(true);
+    this.purgeError.set(null);
+    this.api.purgeRemoved(repository.id).subscribe({
+      next: () => {
+        this.purging.set(false);
+        this.removed.reload();
+      },
+      error: (err) => {
+        this.purging.set(false);
+        this.purgeError.set(problemMessage(err) ?? this.i18n.t('api.saveError'));
+      },
+    });
+  }
 
   protected folderPaths(folders: ProjectFolder[]): string[] {
     return folders.map((f) => f.path);

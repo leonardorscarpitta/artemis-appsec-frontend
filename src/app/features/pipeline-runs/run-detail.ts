@@ -11,10 +11,11 @@ import { RequestState } from '../../shared/request-state';
 import { RunStatusBadge } from './run-status';
 import { OrgLink } from '../../shared/org-link';
 import { OrgContext } from '../../core/org/org-context';
+import { RepoName } from '../../shared/repo-name';
 
 @Component({
   selector: 'app-run-detail',
-  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink],
+  imports: [RouterLink, DatePipe, RunStatusBadge, RequestState, OrgLink, RepoName],
   templateUrl: './run-detail.html',
   styleUrl: './run-detail.scss',
 })
