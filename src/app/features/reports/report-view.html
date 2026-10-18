@@ -35,6 +35,9 @@
       <p>{{ detail.summary }}</p>
       @if (detail.narrative === 'ai') {
         <p class="ai-disclaimer">{{ i18n.t('reports.ai.disclaimer') }}</p>
+        @if (detail.textLanguage) {
+          <p class="ai-disclaimer">{{ i18n.t(detail.textLanguage === 'pt-BR' ? 'reports.ai.writtenPt' : 'reports.ai.writtenEn') }}</p>
+        }
       } @else if (detail.aiNotice) {
         <p class="ai-disclaimer">{{ i18n.t(detail.aiNotice === 'limit' ? 'reports.ai.limit' : 'reports.ai.unavailable') }}</p>
       }

@@ -64,6 +64,8 @@ export interface ReportContent {
   recommendations: string[];
   narrative: ReportNarrative | null;
   aiNotice: ReportAiNotice | null;
+  /** Set when the AI text is written in the organization's language rather than the reader's. */
+  textLanguage: 'en-US' | 'pt-BR' | null;
 }
 
 export interface ReportDetails {
