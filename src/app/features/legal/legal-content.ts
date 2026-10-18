@@ -88,7 +88,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               kind: 'ul',
               items: [
                 'The report type and the length of its period; counts of findings detected, fixed and open, mean time to remediate, SLA compliance, open findings by severity and by kind, and how many are past their deadline; the number of open findings per OWASP Top 10 category',
-                'For up to 15 top risks: the public CVE or the scanner rule id, the finding title (not for secrets), severity, CVSS score, CWE, package name, installed and fixed versions, kind and age in days',
+                'For up to 8 top risks: the public CVE or the scanner rule id, the finding title (not for secrets), severity, CVSS score, CWE, package name, installed and fixed versions, kind and age in days',
               ],
             },
             { kind: 'p', text: 'Never sent:' },
@@ -234,7 +234,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
               kind: 'ul',
               items: [
                 'O tipo do relatório e a duração do período; contagens de achados detectados, corrigidos e abertos, tempo médio de correção, conformidade com o SLA, achados abertos por severidade e por tipo, e quantos passaram do prazo; o número de achados abertos por categoria do OWASP Top 10',
-                'Para até 15 principais riscos: o CVE público ou o id da regra do scanner, o título do achado (exceto para segredos), severidade, nota CVSS, CWE, nome do pacote, versões instalada e corrigida, tipo e idade em dias',
+                'Para até 8 principais riscos: o CVE público ou o id da regra do scanner, o título do achado (exceto para segredos), severidade, nota CVSS, CWE, nome do pacote, versões instalada e corrigida, tipo e idade em dias',
               ],
             },
             { kind: 'p', text: 'Nunca enviado:' },
