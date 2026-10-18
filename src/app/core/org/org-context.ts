@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { AdminApi } from '../api/admin';
 import { OrganizationSummary, Permission, myOrganizationsUrl } from '../api/organization';
 import { Feature } from '../api/usage';
 import { I18n, TranslationKey } from '../i18n';
@@ -10,17 +11,31 @@ export const ORG_HEADER = 'X-Artemis-Organization';
 
 /**
  * The organizations the signed-in user belongs to and the one in the URL (/<slug>/<page>),
- * with the user's role and permissions in it.
+ * with the user's role and permissions in it. Artemis administrators can also open an organization they are not a
+ * member of: it becomes the `viewed` entry, read-only (viewer, `viewFindings` only, enforced by the API too).
  */
 @Service()
 export class OrgContext {
   private readonly http = inject(HttpClient);
   private readonly i18n = inject(I18n);
+  private readonly adminApi = inject(AdminApi);
   private loading: Promise<OrganizationSummary[]> | null = null;
 
   readonly slug = signal<string | null>(null);
   readonly organizations = signal<OrganizationSummary[] | null>(null);
-  readonly current = computed(() => this.organizations()?.find((o) => o.slug === this.slug()) ?? null);
+  private readonly viewed = signal<OrganizationSummary | null>(null);
+  readonly current = computed(() => {
+    const slug = this.slug();
+    const viewed = this.viewed();
+    return this.organizations()?.find((o) => o.slug === slug) ?? (viewed?.slug === slug ? viewed : null);
+  });
+  readonly adminView = computed(() => this.current()?.adminView ?? false);
+  /** The organization switcher: the memberships, plus the organization viewed as administrator while it is open. */
+  readonly switcher = computed(() => {
+    const current = this.current();
+    const orgs = this.organizations() ?? [];
+    return current?.adminView ? [...orgs, current] : orgs;
+  });
 
   /** Loads the user's memberships once; `refresh` fetches them again. */
   load(refresh = false): Promise<OrganizationSummary[]> {
@@ -33,6 +48,19 @@ export class OrgContext {
       })
       .finally(() => (this.loading = null));
     return this.loading;
+  }
+
+  /** Opens an organization read-only as an Artemis administrator (the API decides whether the caller is one). */
+  async view(slug: string): Promise<void> {
+    const org = await firstValueFrom(this.adminApi.organization(slug));
+    this.viewed.set({
+      slug: org.slug,
+      name: org.name,
+      role: 'viewer',
+      permissions: ['viewFindings'],
+      features: org.features,
+      adminView: true,
+    });
   }
 
   can(permission: Permission): boolean {
@@ -64,6 +92,7 @@ export class OrgContext {
 
   remove(slug: string): void {
     this.organizations.update((orgs) => orgs?.filter((o) => o.slug !== slug) ?? null);
+    if (this.viewed()?.slug === slug) this.viewed.set(null);
     if (this.slug() === slug) this.slug.set(null);
   }
 
@@ -76,6 +105,7 @@ export class OrgContext {
 
   clear(): void {
     this.organizations.set(null);
+    this.viewed.set(null);
     this.slug.set(null);
   }
 

@@ -103,7 +103,9 @@ export class Shell {
   private readonly usageResource = httpResource<UsageOverview>(() => (this.org.slug() ? usageUrl() : undefined));
   protected readonly roleLabel = computed(() => {
     const role = this.org.current()?.role;
-    return role ? this.i18n.t(`team.role.${role}`) : '';
+    if (!role) return '';
+    const label = this.i18n.t(`team.role.${role}`);
+    return this.org.adminView() ? `${label} · ${this.i18n.t('adminView.role')}` : label;
   });
   protected readonly usage = computed(() => {
     const usage = this.usageResource.value();

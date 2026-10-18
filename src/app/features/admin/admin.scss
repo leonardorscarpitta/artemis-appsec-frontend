@@ -79,6 +79,73 @@
   }
 }
 
+.actions {
+  white-space: nowrap;
+
+  .btn + .btn {
+    margin-left: 0.4rem;
+  }
+}
+
+.btn.danger-outline {
+  border-color: var(--sev-critical);
+  color: var(--sev-critical);
+}
+
+.btn.danger {
+  background: var(--sev-critical);
+  border-color: var(--sev-critical);
+  color: var(--surface);
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.92);
+  }
+}
+
+.delete-dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+
+  &::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    overflow-wrap: anywhere;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .outcome {
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--sev-critical-bg);
+    color: var(--sev-critical);
+    font-size: 0.9rem;
+  }
+
+  .dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
 .empty {
   padding: 1.25rem;
 }

@@ -41,6 +41,7 @@
               <th scope="col" class="num">{{ i18n.t('admin.col.repositories') }}</th>
               <th scope="col">{{ i18n.t('admin.col.created') }}</th>
               <th scope="col">{{ i18n.t('admin.col.features') }}</th>
+              <th scope="col"><span class="sr-only">{{ i18n.t('admin.col.actions') }}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -79,6 +80,19 @@
                     }
                   }
                 </td>
+                <td class="actions" [attr.data-label]="i18n.t('admin.col.actions')">
+                  <a class="btn" [routerLink]="['/', o.slug, 'dashboard']" [attr.aria-label]="i18n.t('admin.open') + ' · ' + o.name">
+                    {{ i18n.t('admin.open') }}
+                  </a>
+                  <button
+                    type="button"
+                    class="btn danger-outline"
+                    [attr.aria-label]="i18n.t('admin.delete') + ' · ' + o.name"
+                    (click)="openDelete(o, deleteDialog)"
+                  >
+                    {{ i18n.t('admin.delete') }}
+                  </button>
+                </td>
               </tr>
             }
           </tbody>
@@ -92,3 +106,25 @@
     }
   </section>
 </main>
+
+<dialog #deleteDialog class="delete-dialog" aria-labelledby="delete-dialog-title" (close)="closeDelete()">
+  @if (deleting(); as o) {
+    <form method="dialog" (submit)="$event.preventDefault(); confirmDelete(deleteDialog)">
+      <h2 id="delete-dialog-title">{{ i18n.t('admin.deleteTitle') }}: <span class="mono">{{ o.name }}</span></h2>
+      <p class="outcome">{{ i18n.t('admin.deleteOutcome') }}</p>
+      <div class="field">
+        <label for="confirm-slug">{{ i18n.t('admin.deleteConfirm') }}: <strong class="mono">{{ o.slug }}</strong></label>
+        <input id="confirm-slug" class="input mono" autocomplete="off" [value]="confirmSlug()" (input)="setConfirmSlug($event)" />
+      </div>
+      @if (deleteError(); as message) {
+        <p class="feedback error" role="alert">{{ message }}</p>
+      }
+      <div class="dialog-actions">
+        <button type="button" class="btn" (click)="deleteDialog.close()">{{ i18n.t('admin.cancel') }}</button>
+        <button type="submit" class="btn danger" [disabled]="busy() === o.slug || confirmSlug() !== o.slug">
+          {{ i18n.t('admin.deleteButton') }}
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

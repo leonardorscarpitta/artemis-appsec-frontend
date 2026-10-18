@@ -345,7 +345,7 @@
           }
         </div>
       }
-      @if (!isOwner()) {
+      @if (!isOwner() && !org.adminView()) {
         <div class="danger-box">
           <div>
             <h2>{{ i18n.t('settings.leave.title') }}</h2>
