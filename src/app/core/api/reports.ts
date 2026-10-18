@@ -6,7 +6,12 @@ import { apiUrl } from './api';
 
 export type ReportType = 'summary' | 'compliance';
 export type ReportAuthor = 'schedule' | 'user';
-export type ReportStatus = 'ready' | 'generating';
+export type ReportStatus = 'ready' | 'generating' | 'failed';
+/** Who wrote the summary and recommendations. */
+export type ReportNarrative = 'ai' | 'artemis';
+/** Why AI text was not used although the organization has AI: provider unavailable or daily limit reached. */
+export type ReportAiNotice = 'unavailable' | 'limit';
+export type ReportError = 'generation-failed' | 'too-many-attempts';
 export type ReportPeriod = 'week' | 'month' | 'quarter';
 
 export interface ReportSummary {
@@ -20,6 +25,8 @@ export interface ReportSummary {
   generatedAt: string;
   generatedBy: ReportAuthor;
   status: ReportStatus;
+  error: ReportError | null;
+  narrative: ReportNarrative | null;
 }
 
 export interface TrendPoint {
@@ -29,10 +36,16 @@ export interface TrendPoint {
 }
 
 export interface TopRisk {
+  /** CVE, or the rule id of findings without one. */
   cve: string;
   repository: string;
-  cvss: number;
+  cvss: number | null;
   ageDays: number;
+  title: string | null;
+  severity: Severity | null;
+  kind: string | null;
+  packageName: string | null;
+  fixedVersion: string | null;
 }
 
 export interface OwaspCategory {
@@ -49,6 +62,8 @@ export interface ReportContent {
   topRisks: TopRisk[];
   owasp: OwaspCategory[];
   recommendations: string[];
+  narrative: ReportNarrative | null;
+  aiNotice: ReportAiNotice | null;
 }
 
 export interface ReportDetails {
@@ -72,5 +87,9 @@ export class ReportsApi {
 
   generate(body: GenerateReport): Observable<ReportSummary> {
     return this.http.post<ReportSummary>(reportsUrl(), body);
+  }
+
+  retry(id: string): Observable<ReportSummary> {
+    return this.http.post<ReportSummary>(`${reportUrl(id)}/retry`, {});
   }
 }

@@ -69,6 +69,22 @@ a.title {
   &.generating {
     color: var(--text-muted);
   }
+
+  &.failed {
+    color: var(--sev-critical);
+  }
+}
+
+.retry {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.ai-tag {
+  margin-left: 0.4rem;
+  color: var(--primary);
+  background: var(--primary-soft);
 }
 
 @media (max-width: 899px) {
@@ -88,15 +104,15 @@ a.title {
   font-size: 0.875rem;
 }
 
-.unavailable-note {
+.ai-note {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   margin: 0 0 1rem;
-  padding: 0.8rem 1rem;
-  border-left: 3px solid var(--primary);
-  border-radius: var(--radius-sm);
-  background: var(--primary-soft);
-  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+
+  &.enabled svg {
+    color: var(--primary);
+  }
 }

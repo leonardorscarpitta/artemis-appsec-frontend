@@ -23,8 +23,21 @@
   @if (content(); as detail) {
   <div class="report">
     <section class="card summary" aria-labelledby="summary-title">
-      <h2 id="summary-title">{{ i18n.t('reports.summary.title') }}</h2>
+      <div class="summary-header">
+        <h2 id="summary-title">{{ i18n.t('reports.summary.title') }}</h2>
+        @if (detail.narrative === 'ai') {
+          <span class="tag ai-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="sparkle" /></svg>
+            {{ i18n.t('reports.ai.badge') }}
+          </span>
+        }
+      </div>
       <p>{{ detail.summary }}</p>
+      @if (detail.narrative === 'ai') {
+        <p class="ai-disclaimer">{{ i18n.t('reports.ai.disclaimer') }}</p>
+      } @else if (detail.aiNotice) {
+        <p class="ai-disclaimer">{{ i18n.t(detail.aiNotice === 'limit' ? 'reports.ai.limit' : 'reports.ai.unavailable') }}</p>
+      }
     </section>
 
     <dl class="kpis">
@@ -82,22 +95,43 @@
       <table class="table stack">
         <thead>
           <tr>
-            <th scope="col">{{ i18n.t('col.cve') }}</th>
+            <th scope="col">{{ i18n.t('reports.risks.id') }}</th>
             <th scope="col">{{ i18n.t('col.repository') }}</th>
+            <th scope="col">{{ i18n.t('col.package') }}</th>
             <th scope="col">{{ i18n.t('col.cvss') }}</th>
             <th scope="col" class="num">{{ i18n.t('reports.risks.age') }}</th>
           </tr>
         </thead>
         <tbody>
-          @for (risk of detail.topRisks; track risk.cve) {
+          @for (risk of detail.topRisks; track $index) {
             <tr>
               <td class="primary-cell">
-                <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + risk.cve" target="_blank" rel="noopener">{{ risk.cve }}</a>
+                @if (isCve(risk.cve)) {
+                  <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + risk.cve" target="_blank" rel="noopener">{{ risk.cve }}</a>
+                } @else {
+                  <span class="mono">{{ risk.cve }}</span>
+                }
+                @if (risk.title) {
+                  <span class="risk-title">{{ risk.title }}</span>
+                }
               </td>
               <td [attr.data-label]="i18n.t('col.repository')">{{ risk.repository }}</td>
-              <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="risk.cvss" /></td>
+              <td [attr.data-label]="i18n.t('col.package')">
+                @if (risk.packageName) {
+                  <span class="mono">{{ risk.packageName }}</span>
+                  @if (risk.fixedVersion) {
+                    <span class="muted fix">{{ i18n.t('reports.risks.fix') }} {{ risk.fixedVersion }}</span>
+                  }
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="risk.cvss" [level]="risk.severity" /></td>
               <td class="num" [attr.data-label]="i18n.t('reports.risks.age')">{{ risk.ageDays }} {{ i18n.t(risk.ageDays === 1 ? 'reports.day' : 'reports.days') }}</td>
             </tr>
+          }
+          @empty {
+            <tr><td colspan="5" class="muted">{{ i18n.t('reports.risks.none') }}</td></tr>
           }
         </tbody>
       </table>
@@ -145,7 +179,13 @@
         <tbody>
           @for (o of detail.owasp; track o.id) {
             <tr [class.zero]="!o.findings">
-              <th scope="row"><span class="mono code">{{ o.id }}</span> {{ o.name }}</th>
+              <th scope="row">
+                @if (o.id === 'OTHER') {
+                  {{ i18n.t('reports.owasp.other') }}
+                } @else {
+                  <span class="mono code">{{ o.id }}</span> {{ o.name }}
+                }
+              </th>
               <td class="num">
                 <span class="bar" aria-hidden="true"><span [style.width.%]="(o.findings / owaspMax()) * 100"></span></span>
                 {{ o.findings }}
@@ -156,6 +196,16 @@
       </table>
     </section>
   </div>
+  } @else if (report.status === 'failed') {
+    <div class="card failed" role="alert">
+      <p>{{ i18n.t('reports.failedNote') }} {{ errorLabel(report.error) }}</p>
+      @if (org.can('triage')) {
+        <button type="button" class="btn primary" [disabled]="retrying()" (click)="retry()">{{ i18n.t('reports.retry') }}</button>
+      }
+      @if (retryError(); as error) {
+        <p class="error">{{ error }}</p>
+      }
+    </div>
   } @else {
     <p class="card generating" role="status">{{ i18n.t('reports.generatingNote') }}</p>
   }
