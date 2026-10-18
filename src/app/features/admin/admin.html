@@ -17,94 +17,109 @@
 
   <p class="info-notice" role="note">{{ i18n.t('admin.privacy') }}</p>
 
-  <section class="card table-card" aria-labelledby="admin-orgs">
-    <div class="card-header">
-      <h2 id="admin-orgs">{{ i18n.t('admin.organizations') }}</h2>
-      <input
-        class="input search"
-        type="search"
-        [attr.aria-label]="i18n.t('admin.search')"
-        [placeholder]="i18n.t('admin.search')"
-        [value]="query()"
-        (input)="search($event)"
-      />
-    </div>
+  <div class="tabs" role="tablist" [attr.aria-label]="i18n.t('admin.tabs')">
+    <button type="button" role="tab" id="tab-organizations" aria-controls="admin-panel" [attr.aria-selected]="tab() === 'organizations'" (click)="tab.set('organizations')">
+      {{ i18n.t('admin.organizations') }}
+    </button>
+    <button type="button" role="tab" id="tab-users" aria-controls="admin-panel" [attr.aria-selected]="tab() === 'users'" (click)="tab.set('users')">
+      {{ i18n.t('admin.users') }}
+    </button>
+  </div>
 
-    @if (organizations.hasValue()) {
-      @if (filtered().length) {
-        <table class="table stack">
-          <thead>
-            <tr>
-              <th scope="col">{{ i18n.t('admin.col.organization') }}</th>
-              <th scope="col">{{ i18n.t('admin.col.owner') }}</th>
-              <th scope="col" class="num">{{ i18n.t('admin.col.members') }}</th>
-              <th scope="col" class="num">{{ i18n.t('admin.col.repositories') }}</th>
-              <th scope="col">{{ i18n.t('admin.col.created') }}</th>
-              <th scope="col">{{ i18n.t('admin.col.features') }}</th>
-              <th scope="col"><span class="sr-only">{{ i18n.t('admin.col.actions') }}</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (o of pager.items(); track o.slug) {
-              <tr>
-                <td [attr.data-label]="i18n.t('admin.col.organization')">
-                  <span class="org">
-                    <strong>{{ o.name }}</strong>
-                    <span class="mono muted">/{{ o.slug }}</span>
-                  </span>
-                </td>
-                <td [attr.data-label]="i18n.t('admin.col.owner')">{{ o.ownerName ?? '—' }}</td>
-                <td class="num" [attr.data-label]="i18n.t('admin.col.members')">{{ o.memberCount }}</td>
-                <td class="num" [attr.data-label]="i18n.t('admin.col.repositories')">{{ o.repositoryCount }}</td>
-                <td [attr.data-label]="i18n.t('admin.col.created')">{{ o.createdAt | date: 'yyyy-MM-dd' }}</td>
-                <td [attr.data-label]="i18n.t('admin.col.features')">
-                  <div class="features">
-                    @for (f of features; track f) {
-                      <label class="feature">
-                        <button
-                          type="button"
-                          role="switch"
-                          class="switch"
-                          [attr.aria-checked]="o.features.includes(f)"
-                          [attr.aria-label]="featureName(f) + ' · ' + o.name"
-                          [disabled]="busy() === o.slug"
-                          (click)="toggle(o, f)"
-                        ></button>
-                        <span>{{ featureName(f) }}</span>
-                      </label>
-                    }
-                  </div>
-                  @if (message(); as m) {
-                    @if (m.slug === o.slug) {
-                      <p class="feedback" [class.error]="!m.ok" [attr.role]="m.ok ? 'status' : 'alert'">{{ m.text }}</p>
-                    }
-                  }
-                </td>
-                <td class="actions" [attr.data-label]="i18n.t('admin.col.actions')">
-                  <a class="btn" [routerLink]="['/', o.slug, 'dashboard']" [attr.aria-label]="i18n.t('admin.open') + ' · ' + o.name">
-                    {{ i18n.t('admin.open') }}
-                  </a>
-                  <button
-                    type="button"
-                    class="btn danger-outline"
-                    [attr.aria-label]="i18n.t('admin.delete') + ' · ' + o.name"
-                    (click)="openDelete(o, deleteDialog)"
-                  >
-                    {{ i18n.t('admin.delete') }}
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <app-paginator [pager]="pager" />
-      } @else {
-        <p class="empty muted">{{ i18n.t('admin.empty') }}</p>
-      }
+  <div id="admin-panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()">
+    @if (tab() === 'users') {
+      <app-admin-users />
     } @else {
-      <app-request-state [resource]="organizations" />
+      <section class="card table-card" aria-labelledby="admin-orgs">
+        <div class="card-header">
+          <h2 id="admin-orgs">{{ i18n.t('admin.organizations') }}</h2>
+          <input
+            class="input search"
+            type="search"
+            [attr.aria-label]="i18n.t('admin.search')"
+            [placeholder]="i18n.t('admin.search')"
+            [value]="query()"
+            (input)="search($event)"
+          />
+        </div>
+
+        @if (organizations.hasValue()) {
+          @if (filtered().length) {
+            <table class="table stack">
+              <thead>
+                <tr>
+                  <th scope="col">{{ i18n.t('admin.col.organization') }}</th>
+                  <th scope="col">{{ i18n.t('admin.col.owner') }}</th>
+                  <th scope="col" class="num">{{ i18n.t('admin.col.members') }}</th>
+                  <th scope="col" class="num">{{ i18n.t('admin.col.repositories') }}</th>
+                  <th scope="col">{{ i18n.t('admin.col.created') }}</th>
+                  <th scope="col">{{ i18n.t('admin.col.features') }}</th>
+                  <th scope="col"><span class="sr-only">{{ i18n.t('admin.col.actions') }}</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (o of pager.items(); track o.slug) {
+                  <tr>
+                    <td [attr.data-label]="i18n.t('admin.col.organization')">
+                      <span class="org">
+                        <strong>{{ o.name }}</strong>
+                        <span class="mono muted">/{{ o.slug }}</span>
+                      </span>
+                    </td>
+                    <td [attr.data-label]="i18n.t('admin.col.owner')">{{ o.ownerName ?? '—' }}</td>
+                    <td class="num" [attr.data-label]="i18n.t('admin.col.members')">{{ o.memberCount }}</td>
+                    <td class="num" [attr.data-label]="i18n.t('admin.col.repositories')">{{ o.repositoryCount }}</td>
+                    <td [attr.data-label]="i18n.t('admin.col.created')">{{ o.createdAt | date: 'yyyy-MM-dd' }}</td>
+                    <td [attr.data-label]="i18n.t('admin.col.features')">
+                      <div class="features">
+                        @for (f of features; track f) {
+                          <label class="feature">
+                            <button
+                              type="button"
+                              role="switch"
+                              class="switch"
+                              [attr.aria-checked]="o.features.includes(f)"
+                              [attr.aria-label]="featureName(f) + ' · ' + o.name"
+                              [disabled]="busy() === o.slug"
+                              (click)="toggle(o, f)"
+                            ></button>
+                            <span>{{ featureName(f) }}</span>
+                          </label>
+                        }
+                      </div>
+                      @if (message(); as m) {
+                        @if (m.slug === o.slug) {
+                          <p class="feedback" [class.error]="!m.ok" [attr.role]="m.ok ? 'status' : 'alert'">{{ m.text }}</p>
+                        }
+                      }
+                    </td>
+                    <td class="actions" [attr.data-label]="i18n.t('admin.col.actions')">
+                      <a class="btn" [routerLink]="['/', o.slug, 'dashboard']" [attr.aria-label]="i18n.t('admin.open') + ' · ' + o.name">
+                        {{ i18n.t('admin.open') }}
+                      </a>
+                      <button
+                        type="button"
+                        class="btn danger-outline"
+                        [attr.aria-label]="i18n.t('admin.delete') + ' · ' + o.name"
+                        (click)="openDelete(o, deleteDialog)"
+                      >
+                        {{ i18n.t('admin.delete') }}
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <app-paginator [pager]="pager" />
+          } @else {
+            <p class="empty muted">{{ i18n.t('admin.empty') }}</p>
+          }
+        } @else {
+          <app-request-state [resource]="organizations" />
+        }
+        </section>
     }
-  </section>
+  </div>
 </main>
 
 <dialog #deleteDialog class="delete-dialog" aria-labelledby="delete-dialog-title" (close)="closeDelete()">
