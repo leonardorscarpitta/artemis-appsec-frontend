@@ -11,7 +11,8 @@ export interface LegalText {
 }
 
 const CONTACT = 'privacy@artemisappsec.papopromines.com.br';
-const UPDATED = '2026-10-17';
+const UPDATED = '2026-10-18';
+const REPOSITORY = 'https://github.com/leonardorscarpitta/artemis-appsec-frontend';
 
 export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
   privacy: {
@@ -30,6 +31,14 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           ],
         },
         {
+          id: 'controller',
+          title: 'Who is responsible',
+          blocks: [
+            { kind: 'p', text: `Artemis is an open-source academic project (FIAP) maintained by leonardorscarpitta, an individual developer — not a company. He is the data controller for the service at artemisappsec.papopromines.com.br, and “we” in this policy means him. Contact: ${CONTACT}.` },
+            { kind: 'p', text: 'Artemis is open source under the MIT License, so anyone can run their own copy. This policy covers only artemisappsec.papopromines.com.br: whoever runs another instance is the controller of the data in it and is responsible for it.' },
+          ],
+        },
+        {
           id: 'data-we-process',
           title: 'Information we process',
           blocks: [
@@ -45,11 +54,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Repository addresses, branches, scanned commit and SSH deploy keys', 'To read your code and run the security pipeline you configured. Artemis generates one read-only deploy key per repository (public or private — every repository needs one); its private key is encrypted at rest, never shown or sent to anyone, and only handed to the isolated scanner while it clones. We never ask for your passwords or personal keys.'],
                 ['Findings, pipeline runs, logs, reports, policies and risk acceptances', 'To show the security posture of your projects and their history.'],
                 ['API tokens', 'Stored only as a one-way hash plus the last four characters, so nobody — including us — can read them back.'],
-                ['Your organization’s plan (Free or PRO) and since when', 'To provide the features included in your plan.'],
+                ['The optional features enabled for your organization and the number of scans it used this month', 'To apply the usage limits and provide the features the Artemis administrators enabled for your organization.'],
                 ['Language, theme and session in your browser’s local storage', 'To remember your preferences and keep you signed in. This stays on your device.'],
               ],
             },
-            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts. The app’s pages, scripts and fonts are served from Artemis’s own servers, so your browser does not contact third parties (such as font or CDN providers) while you use it. Artemis does not collect or store payment information: payments are not enabled yet, and when they are, this policy will be updated before anything changes.' },
+            { kind: 'p', text: 'We do not use advertising cookies, analytics trackers or third-party tracking scripts. The app’s pages, scripts and fonts are served from Artemis’s own servers, so your browser does not contact third parties (such as font or CDN providers) while you use it. Artemis is free: there are no paid plans, and it does not collect or store any payment information.' },
           ],
         },
         {
@@ -67,6 +76,14 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Public vulnerability data',
           blocks: [
             { kind: 'p', text: 'To match dependencies against known vulnerabilities, the scanner downloads public vulnerability databases (published by the Trivy and Grype projects from sources such as the NIST National Vulnerability Database and the GitHub Advisory Database) and checks your dependencies locally. These downloads are the same for everyone and send no information about you, your organization or your code. Scanner telemetry and update checks are turned off.' },
+          ],
+        },
+        {
+          id: 'administrators',
+          title: 'Platform administrators',
+          blocks: [
+            { kind: 'p', text: 'Accounts with an Artemis administrator role can see the list of organizations — name, URL, creation date, the owner’s display name and the number of members and repositories — so they can enable or disable optional features (AI-assisted triage, scheduled scans, renaming the organization).' },
+            { kind: 'p', text: 'Administrators are not members of your organization and cannot see its repositories, source code, findings, pipeline runs or members’ e-mail addresses through Artemis.' },
           ],
         },
         {
@@ -133,6 +150,14 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           ],
         },
         {
+          id: 'controller',
+          title: 'Quem é o responsável',
+          blocks: [
+            { kind: 'p', text: `O Artemis é um projeto acadêmico de código aberto (FIAP) mantido por leonardorscarpitta, um desenvolvedor pessoa física — não uma empresa. Ele é o controlador dos dados do serviço em artemisappsec.papopromines.com.br, e “nós” nesta política se refere a ele. Contato: ${CONTACT}.` },
+            { kind: 'p', text: 'O Artemis é código aberto sob a Licença MIT, então qualquer pessoa pode rodar a sua própria cópia. Esta política cobre apenas artemisappsec.papopromines.com.br: quem roda outra instância é o controlador dos dados dela e responde por ela.' },
+          ],
+        },
+        {
           id: 'data-we-process',
           title: 'Informações que tratamos',
           blocks: [
@@ -148,11 +173,11 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Endereços de repositórios, branches, commit analisado e deploy keys SSH', 'Para ler seu código e executar o pipeline de segurança que você configurou. O Artemis gera uma deploy key somente leitura por repositório (público ou privado — todo repositório precisa de uma); a chave privada fica criptografada, nunca é exibida nem enviada a ninguém e só é entregue ao scanner isolado durante o clone. Nunca pedimos suas senhas ou chaves pessoais.'],
                 ['Achados, execuções de pipeline, logs, relatórios, políticas e aceitações de risco', 'Para mostrar a postura de segurança dos seus projetos e o histórico.'],
                 ['Tokens de API', 'Armazenados apenas como hash irreversível e os quatro últimos caracteres, para que ninguém — nem nós — consiga lê-los novamente.'],
-                ['O plano da sua organização (Free ou PRO) e desde quando', 'Para oferecer as funcionalidades incluídas no seu plano.'],
+                ['As funcionalidades opcionais habilitadas para a sua organização e o número de análises usadas no mês', 'Para aplicar os limites de uso e oferecer as funcionalidades que os administradores do Artemis habilitaram para a sua organização.'],
                 ['Idioma, tema e sessão no armazenamento local do navegador', 'Para lembrar suas preferências e manter você conectado. Isso fica no seu dispositivo.'],
               ],
             },
-            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros. As páginas, os scripts e as fontes do aplicativo são servidos pelos servidores do próprio Artemis, então seu navegador não contata terceiros (como provedores de fontes ou CDNs) enquanto você o usa. O Artemis não coleta nem armazena dados de pagamento: os pagamentos ainda não estão habilitados e, quando estiverem, esta política será atualizada antes de qualquer mudança.' },
+            { kind: 'p', text: 'Não usamos cookies de publicidade, ferramentas de analytics nem scripts de rastreamento de terceiros. As páginas, os scripts e as fontes do aplicativo são servidos pelos servidores do próprio Artemis, então seu navegador não contata terceiros (como provedores de fontes ou CDNs) enquanto você o usa. O Artemis é gratuito: não há planos pagos, e ele não coleta nem armazena nenhum dado de pagamento.' },
           ],
         },
         {
@@ -170,6 +195,14 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Dados públicos de vulnerabilidades',
           blocks: [
             { kind: 'p', text: 'Para comparar dependências com vulnerabilidades conhecidas, o scanner baixa bancos públicos de vulnerabilidades (publicados pelos projetos Trivy e Grype a partir de fontes como a National Vulnerability Database do NIST e o GitHub Advisory Database) e verifica suas dependências localmente. Esses downloads são iguais para todos e não enviam nenhuma informação sobre você, sua organização ou seu código. A telemetria e as verificações de atualização dos scanners ficam desligadas.' },
+          ],
+        },
+        {
+          id: 'administrators',
+          title: 'Administradores da plataforma',
+          blocks: [
+            { kind: 'p', text: 'Contas com o papel de administrador do Artemis podem ver a lista de organizações — nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios — para habilitar ou desabilitar funcionalidades opcionais (triagem com IA, análises agendadas, renomear a organização).' },
+            { kind: 'p', text: 'Os administradores não são membros da sua organização e não conseguem ver, pelo Artemis, os repositórios, o código-fonte, os achados, as execuções de pipeline nem os e-mails dos membros dela.' },
           ],
         },
         {
@@ -241,6 +274,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'The service',
           blocks: [
             { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as secret scanning, SAST and dependency scanning) and reports the findings. Features may change as the product evolves.' },
+            { kind: 'p', text: 'The service at artemisappsec.papopromines.com.br is provided free of charge by leonardorscarpitta, an individual who maintains Artemis as an open-source academic project (FIAP) — not a company. “Artemis” is not a registered trademark, and the project is not affiliated with NASA’s Artemis program or any other product named Artemis.' },
             { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). Repositories are only cloned over SSH with a read-only deploy key generated by Artemis, which you add to repositories you control; container images are pulled only from public registries, and dynamic analysis is not available yet.' },
           ],
         },
@@ -309,23 +343,24 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'license',
           title: 'Software license',
           blocks: [
-            { kind: 'p', text: 'The Artemis source code is available under the PolyForm Noncommercial License 1.0.0. You may use, study and modify it for noncommercial purposes; commercial use — such as reselling it or offering it as a paid service — is reserved to the copyright holder.' },
+            { kind: 'p', text: `Artemis is open source under the MIT License (${REPOSITORY}). You may use, copy, modify and distribute it, including commercially, under the terms of that license.` },
+            { kind: 'p', text: 'These Terms apply only to the service at artemisappsec.papopromines.com.br. Whoever runs their own copy of Artemis is responsible for that instance, its users and the data in it.' },
           ],
         },
         {
-          id: 'payments',
-          title: 'Plans and payments',
+          id: 'limits',
+          title: 'Free service, limits and optional features',
           blocks: [
-            { kind: 'p', text: 'Artemis offers two plans: Free (R$ 0, up to 25 scans per month) and PRO (R$ 24,99 per month, in Brazilian reais, up to 300 scans per month), which adds renaming the organization and AI-assisted triage. On the Free plan each account can own one organization; organizations created before this rule remain available. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month. Billing is not enabled yet, so every organization currently uses the Free plan.' },
-            { kind: 'p', text: 'On the PRO plan you can schedule scans of a repository (every 6 hours, 24 hours or 7 days). Scheduled scans are started by Artemis on your behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
-            { kind: 'p', text: 'When payments become available, prices and conditions will always be shown before any charge, nothing will be charged without your explicit agreement, and you will be able to cancel or switch back to Free at any time.' },
+            { kind: 'p', text: 'Artemis is free: there are no paid plans and nothing is ever charged. To keep it available to everyone, each organization can run up to 25 scans per month and each account can own one organization; organizations created before this rule remain available. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month.' },
+            { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI-assisted triage (not available yet), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
+            { kind: 'p', text: 'To manage these features, administrators see the list of organizations with their name, URL, creation date, the owner’s display name and the number of members and repositories. They are not members of your organization and cannot see its repositories, code, findings, pipeline runs or members’ e-mail addresses.' },
           ],
         },
         {
           id: 'liability',
           title: 'Availability and liability',
           blocks: [
-            { kind: 'p', text: 'We work to keep Artemis available and secure, but the service is provided “as is”, without warranties of uninterrupted operation. To the extent permitted by law, we are not liable for indirect damages, loss of profits or data resulting from the use of the service.' },
+            { kind: 'p', text: 'We work to keep Artemis available and secure, but the service is provided free of charge and “as is”, without warranties of uninterrupted operation. To the extent permitted by law, we are not liable for indirect damages, loss of profits or data resulting from the use of the service.' },
           ],
         },
         {
@@ -363,6 +398,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'O serviço',
           blocks: [
             { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como varredura de segredos, SAST e análise de dependências) e reporta os achados. As funcionalidades podem mudar conforme o produto evolui.' },
+            { kind: 'p', text: 'O serviço em artemisappsec.papopromines.com.br é oferecido gratuitamente por leonardorscarpitta, pessoa física que mantém o Artemis como projeto acadêmico de código aberto (FIAP) — não uma empresa. “Artemis” não é marca registrada, e o projeto não tem relação com o programa Artemis da NASA nem com qualquer outro produto chamado Artemis.' },
             { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Os repositórios são clonados apenas via SSH com uma deploy key somente leitura gerada pelo Artemis, que você adiciona a repositórios que controla; imagens de contêiner são baixadas apenas de registries públicos, e a análise dinâmica ainda não está disponível.' },
           ],
         },
@@ -431,23 +467,24 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'license',
           title: 'Licença do software',
           blocks: [
-            { kind: 'p', text: 'O código-fonte do Artemis está disponível sob a PolyForm Noncommercial License 1.0.0. Você pode usá-lo, estudá-lo e modificá-lo para fins não comerciais; o uso comercial — como revendê-lo ou oferecê-lo como serviço pago — é reservado ao titular dos direitos autorais.' },
+            { kind: 'p', text: `O Artemis é código aberto sob a Licença MIT (${REPOSITORY}). Você pode usá-lo, copiá-lo, modificá-lo e distribuí-lo, inclusive comercialmente, nos termos dessa licença.` },
+            { kind: 'p', text: 'Estes Termos valem apenas para o serviço em artemisappsec.papopromines.com.br. Quem roda a sua própria cópia do Artemis é responsável por essa instância, pelos usuários dela e pelos dados que ela guarda.' },
           ],
         },
         {
-          id: 'payments',
-          title: 'Planos e pagamentos',
+          id: 'limits',
+          title: 'Serviço gratuito, limites e funcionalidades opcionais',
           blocks: [
-            { kind: 'p', text: 'O Artemis oferece dois planos: Free (R$ 0, até 25 análises por mês) e PRO (R$ 24,99 por mês, até 300 análises por mês), que adiciona renomear a organização e triagem com IA. No plano Free cada conta pode ser proprietária de uma organização; organizações criadas antes desta regra continuam disponíveis. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte. A cobrança ainda não está habilitada, então todas as organizações usam atualmente o plano Free.' },
-            { kind: 'p', text: 'No plano PRO você pode agendar análises de um repositório (a cada 6 horas, 24 horas ou 7 dias). As análises agendadas são iniciadas pelo Artemis em seu nome, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
-            { kind: 'p', text: 'Quando os pagamentos estiverem disponíveis, preços e condições serão sempre exibidos antes de qualquer cobrança, nada será cobrado sem a sua concordância expressa e você poderá cancelar ou voltar ao Free a qualquer momento.' },
+            { kind: 'p', text: 'O Artemis é gratuito: não há planos pagos e nada é cobrado. Para mantê-lo disponível para todos, cada organização pode executar até 25 análises por mês e cada conta pode ser proprietária de uma organização; organizações criadas antes desta regra continuam disponíveis. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte.' },
+            { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: triagem com IA (ainda não disponível), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
+            { kind: 'p', text: 'Para gerenciar essas funcionalidades, os administradores veem a lista de organizações com nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios. Eles não são membros da sua organização e não conseguem ver os repositórios, o código, os achados, as execuções de pipeline nem os e-mails dos membros dela.' },
           ],
         },
         {
           id: 'liability',
           title: 'Disponibilidade e responsabilidade',
           blocks: [
-            { kind: 'p', text: 'Trabalhamos para manter o Artemis disponível e seguro, mas o serviço é fornecido “no estado em que se encontra”, sem garantia de funcionamento ininterrupto. Na medida permitida pela lei, não nos responsabilizamos por danos indiretos, lucros cessantes ou perda de dados decorrentes do uso do serviço.' },
+            { kind: 'p', text: 'Trabalhamos para manter o Artemis disponível e seguro, mas o serviço é fornecido gratuitamente e “no estado em que se encontra”, sem garantia de funcionamento ininterrupto. Na medida permitida pela lei, não nos responsabilizamos por danos indiretos, lucros cessantes ou perda de dados decorrentes do uso do serviço.' },
           ],
         },
         {

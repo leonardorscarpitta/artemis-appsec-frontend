@@ -12,15 +12,15 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Angular-22-0b4f8a" alt="Angular 22">
   <img src="https://img.shields.io/badge/i18n-en--US%20%7C%20pt--BR-0b4f8a" alt="Languages: en-US and pt-BR">
-  <a href="https://github.com/Artemis-Core/artemis-appsec-backend"><img src="https://img.shields.io/badge/API-artemis--appsec--backend-0b4f8a" alt="API: artemis-appsec-backend"></a>
-  <img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-5a6474" alt="License: PolyForm Noncommercial 1.0.0">
+  <a href="https://github.com/leonardorscarpitta/artemis-appsec-backend"><img src="https://img.shields.io/badge/API-artemis--appsec--backend-0b4f8a" alt="API: artemis-appsec-backend"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-5a6474" alt="License: MIT"></a>
 </p>
 
 ---
 
 Artemis is a SAST platform: it connects to Git repositories, runs a configurable DevSecOps pipeline with self-hosted open-source scanners and reports secrets, code issues, misconfigurations and dependency vulnerabilities (CVSS from the NIST National Vulnerability Database). Supported stacks are React, Angular and Java + Spring.
 
-This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/Artemis-Core/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
+This repository is the frontend; the API lives in the [artemis-appsec-backend](https://github.com/leonardorscarpitta/artemis-appsec-backend) repository. Every authenticated screen reads and writes through the API; only the public home page uses static sample data.
 
 ## Naming
 
@@ -181,7 +181,7 @@ End-user docs live in the app at `/help`, with content in `src/app/features/help
 
 ## Contributing
 
-- **How to contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) (contribution terms included).
+- **How to contribute:** see [CONTRIBUTING.md](CONTRIBUTING.md) (contributions are licensed under MIT).
 - **Branches:** `main` (stable) and `dev` (integration). Create `feat/*` or `bugfix/*` branches from `dev`.
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 - **Every change** must update, in the same commit:
@@ -190,4 +190,8 @@ End-user docs live in the app at `/help`, with content in `src/app/features/help
 
 ## License
 
-Artemis is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, study, modify and share it for noncommercial purposes; commercial use (selling it, offering it as a paid service, charging for access) is reserved to the copyright holder. Contributions are welcome under the terms in [CONTRIBUTING.md](CONTRIBUTING.md).
+Artemis is open source under the [MIT License](LICENSE) — Copyright (c) 2026 leonardorscarpitta. Contributions are welcome and are licensed under the same terms (see [CONTRIBUTING.md](CONTRIBUTING.md)). The security tools run by the scanner (Gitleaks, Semgrep CE, Trivy, Grype, Syft, Hadolint) are separate programs under their own licenses; see the in-app Third-party notices page (`/licenses`) and the backend's `scanner/THIRD_PARTY_NOTICES.md`.
+
+## About
+
+Artemis is an open-source academic project (FIAP) maintained by [leonardorscarpitta](https://github.com/leonardorscarpitta). It is not a company or a registered trademark, and it is not affiliated with NASA's Artemis program or any other product named Artemis. Anyone running their own instance is responsible for it and for the data it stores.

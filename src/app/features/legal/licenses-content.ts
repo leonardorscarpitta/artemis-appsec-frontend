@@ -4,7 +4,9 @@ import { LegalText } from './legal-content';
 /** Required verbatim by the NVD terms of use. */
 export const NVD_NOTICE = 'This product uses data from the NVD API but is not endorsed or certified by the NVD.';
 
-const UPDATED = '2026-10-16';
+const UPDATED = '2026-10-18';
+const FRONTEND_REPO = 'https://github.com/leonardorscarpitta/artemis-appsec-frontend';
+const BACKEND_REPO = 'https://github.com/leonardorscarpitta/artemis-appsec-backend';
 
 const SCANNERS = [
   ['Gitleaks', 'Secret scanning', 'MIT', 'https://github.com/gitleaks/gitleaks'],
@@ -41,6 +43,14 @@ export const LICENSES: Record<Lang, LegalText> = {
       'Artemis is powered by open-source security tools and vulnerability data. This page credits them and explains how they are used.',
     updated: `Last updated: ${UPDATED}`,
     sections: [
+      {
+        id: 'artemis',
+        title: 'About Artemis',
+        blocks: [
+          { kind: 'p', text: `Artemis is open source under the MIT License, © 2026 leonardorscarpitta. Source code: ${FRONTEND_REPO} (web app) and ${BACKEND_REPO} (API and scanner).` },
+          { kind: 'note', text: 'Artemis is an open-source academic project (FIAP) maintained by leonardorscarpitta. It is not a company or a registered trademark, and it is not affiliated with NASA’s Artemis program or any other product named Artemis.' },
+        ],
+      },
       {
         id: 'scanners',
         title: 'Security tools',
@@ -87,6 +97,14 @@ export const LICENSES: Record<Lang, LegalText> = {
       'O Artemis usa ferramentas de segurança de código aberto e dados públicos de vulnerabilidades. Esta página dá os créditos e explica como são usados.',
     updated: `Última atualização: ${UPDATED}`,
     sections: [
+      {
+        id: 'artemis',
+        title: 'Sobre o Artemis',
+        blocks: [
+          { kind: 'p', text: `O Artemis é código aberto sob a Licença MIT, © 2026 leonardorscarpitta. Código-fonte: ${FRONTEND_REPO} (aplicação web) e ${BACKEND_REPO} (API e scanner).` },
+          { kind: 'note', text: 'O Artemis é um projeto acadêmico de código aberto (FIAP) mantido por leonardorscarpitta. Não é uma empresa nem marca registrada, e não tem relação com o programa Artemis da NASA nem com qualquer outro produto chamado Artemis.' },
+        ],
+      },
       {
         id: 'scanners',
         title: 'Ferramentas de segurança',

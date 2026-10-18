@@ -1,7 +1,13 @@
 {
   "name": "artemisappsec-frontend",
   "version": "0.0.0",
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "MIT",
+  "author": "leonardorscarpitta",
+  "homepage": "https://github.com/leonardorscarpitta/artemis-appsec-frontend",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leonardorscarpitta/artemis-appsec-frontend.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
