@@ -42,9 +42,17 @@ export interface StageRunView {
   log: string[];
 }
 
+/** An SBOM stored by the run's SBOM stage; {@code folder} is empty for the whole repository. */
+export interface SbomView {
+  folder: string;
+  components: number;
+  sizeBytes: number;
+}
+
 export interface RunDetails {
   run: RunView;
   stages: StageRunView[];
+  sboms: SbomView[];
 }
 
 /** Aggregates over the last 7 days. */
@@ -81,6 +89,17 @@ export class PipelineRunsApi {
   cancel(number: number): Observable<RunDetails> {
     return this.http.post<RunDetails>(`${runUrl(number)}/cancel`, null);
   }
+
+  /** The stored CycloneDX JSON SBOM (fetched with the auth and organization headers). */
+  sbom(number: number, folder: string): Observable<Blob> {
+    return this.http.get(`${runUrl(number)}/sbom`, { params: folder ? { folder } : {}, responseType: 'blob' });
+  }
+}
+
+/** Same name as the API's Content-Disposition: `<repository>-run-<n>[-<folder>]-sbom.cdx.json`. */
+export function sbomFilename(repository: string, number: number, folder: string): string {
+  const name = `${repository}-run-${number}${folder ? `-${folder}` : ''}-sbom`;
+  return `${name.replace(/[^A-Za-z0-9._-]+/g, '-')}.cdx.json`;
 }
 
 export function formatDuration(seconds: number): string {

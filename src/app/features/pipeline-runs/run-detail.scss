@@ -171,6 +171,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+.sbom-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  .btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+  }
+}
+
 .failed-by {
   margin-top: 0.4rem;
   font-size: 0.85rem;

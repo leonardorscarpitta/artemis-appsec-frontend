@@ -3,7 +3,7 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
-import { PipelineRunsApi, RunDetails, RunTrigger, StageStatus, formatDuration, runUrl } from '../../core/api/pipeline-runs';
+import { PipelineRunsApi, RunDetails, RunTrigger, SbomView, StageStatus, formatDuration, runUrl, sbomFilename } from '../../core/api/pipeline-runs';
 import { I18n } from '../../core/i18n';
 import { Severity } from '../../core/domain';
 import { PHASES, Phase, StageId } from '../../core/pipeline';
@@ -37,6 +37,8 @@ export class RunDetail {
   protected readonly message = signal('');
   protected readonly error = signal('');
   protected readonly duration = formatDuration;
+  protected readonly sboms = computed(() => this.details.value()?.sboms ?? []);
+  protected readonly downloading = signal<string | null>(null);
 
   protected readonly live = computed(() => this.run()?.status === 'running' || this.run()?.status === 'queued');
   // Stages report only when they finish, and the scanner runs them in order: the first pending one is in progress.
@@ -102,6 +104,31 @@ export class RunDetail {
         error: (err) => this.fail(err),
       }),
     );
+  }
+
+  protected downloadSbom(number: number, repository: string, sbom: SbomView): void {
+    this.downloading.set(sbom.folder);
+    this.error.set('');
+    this.api.sbom(number, sbom.folder).subscribe({
+      next: (blob) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = sbomFilename(repository, number, sbom.folder);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        this.downloading.set(null);
+      },
+      error: (err) => {
+        this.downloading.set(null);
+        this.error.set(problemMessage(err) ?? this.i18n.t('runs.sbomError'));
+      },
+    });
+  }
+
+  protected sbomLabel(sbom: SbomView): string {
+    const count = this.i18n.t(sbom.components === 1 ? 'runs.sbomComponent' : 'runs.sbomComponents')
+      .replace('{n}', sbom.components.toLocaleString(this.i18n.lang()));
+    return sbom.folder ? `${sbom.folder} · ${count}` : count;
   }
 
   protected stageName(id: StageId): string {

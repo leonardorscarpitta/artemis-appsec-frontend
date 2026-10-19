@@ -197,7 +197,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key, after first checking that the key still has access — if it was removed, the run stops right away, the repository shows “Authentication error” and scans stay locked until “Test access” succeeds again (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
             'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
-            'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
+            'The code copy is deleted. Findings, short tool logs and the SBOM (the list of dependencies, CycloneDX JSON) are kept with the run.',
           ],
         },
         {
@@ -327,6 +327,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         },
         { kind: 'p', text: 'While a run is queued or running, its page updates by itself: a progress panel shows which step is running (for example "Step 3 of 7 — Dependency scanning"), the current stage is highlighted with a spinner and finished stages fill in as they complete. The Pipeline runs list also refreshes while any run is in progress.' },
         { kind: 'p', text: 'Select "View log" on a stage to read the tool output; logs of failed stages open automatically. Select the number of findings to go to Vulnerabilities. Use "Re-run" to start the pipeline again or "Cancel run" to stop a queued or running pipeline.' },
+        { kind: 'p', text: 'When the SBOM generation stage ran, select "Download SBOM (CycloneDX JSON)" under it to save the software bill of materials of that scan (for a monorepo, one per scanned folder, labelled with the folder and its number of components). SBOMs larger than 20 MB are not stored (the stage log says so). The SBOM is kept until the run, the repository’s history or the organization is deleted; older runs have none.' },
         { kind: 'p', text: '"Re-run" creates a new run of the same commit, triggered manually by you, using the repository\'s current pipeline settings — so it includes any stage you enabled or disabled since the original run — and opens it. Cancelling marks the stages that had not finished as skipped. Only queued or running pipelines can be cancelled.' },
       ],
     },
@@ -690,7 +691,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório, depois de verificar que a chave ainda tem acesso — se ela foi removida, a execução para na hora, o repositório aparece como “Erro de autenticação” e as análises ficam bloqueadas até o “Testar acesso” funcionar de novo (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
             'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
-            'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
+            'A cópia do código é apagada. Ficam com a execução os achados, logs curtos das ferramentas e o SBOM (a lista de dependências, em CycloneDX JSON).',
           ],
         },
         {
@@ -820,6 +821,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         },
         { kind: 'p', text: 'Enquanto uma execução está na fila ou em andamento, a página dela se atualiza sozinha: um painel de progresso mostra qual etapa está rodando (por exemplo "Etapa 3 de 7 — Análise de dependências"), a etapa atual fica destacada com um indicador animado e as etapas concluídas são preenchidas conforme terminam. A lista de execuções de pipeline também se atualiza enquanto houver alguma em andamento.' },
         { kind: 'p', text: 'Selecione "Ver log" em uma etapa para ler a saída da ferramenta; os logs de etapas com falha abrem automaticamente. Selecione a quantidade de achados para ir até Vulnerabilidades. Use "Executar novamente" para iniciar o pipeline de novo ou "Cancelar execução" para interromper um pipeline na fila ou em execução.' },
+        { kind: 'p', text: 'Quando a etapa de geração de SBOM rodou, selecione "Baixar SBOM (CycloneDX JSON)" abaixo dela para salvar a lista de materiais de software daquela análise (em um monorepo, uma por pasta analisada, identificada pela pasta e pelo número de componentes). SBOMs maiores que 20 MB não são guardados (o log da etapa avisa). O SBOM fica guardado até a execução, o histórico do repositório ou a organização ser excluído; execuções antigas não têm SBOM.' },
         { kind: 'p', text: '"Executar novamente" cria uma nova execução do mesmo commit, disparada manualmente por você, usando as configurações atuais de pipeline do repositório — ou seja, inclui as etapas que você ativou ou desativou desde a execução original — e a abre. Cancelar marca como ignoradas as etapas que ainda não tinham terminado. Apenas pipelines na fila ou em execução podem ser cancelados.' },
       ],
     },

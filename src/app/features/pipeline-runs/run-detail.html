@@ -137,6 +137,18 @@
                 </span>
               </div>
 
+              @if (stage.id === 'sbom' && sboms().length) {
+                <div class="sbom-downloads">
+                  @for (sbom of sboms(); track sbom.folder) {
+                    <button type="button" class="btn" [disabled]="downloading() !== null" (click)="downloadSbom(run.number, run.repository, sbom)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 16 7 11l1.4-1.4 2.6 2.6V4h2v8.2l2.6-2.6L17 11zm-6 4q-.8 0-1.4-.6T4 18v-3h2v3h12v-3h2v3q0 .8-.6 1.4T18 20z" /></svg>
+                      {{ i18n.t('runs.sbomDownload') }}
+                      <span class="muted">({{ sbomLabel(sbom) }})</span>
+                    </button>
+                  }
+                </div>
+              }
+
               @if (stage.failedBy) {
                 <p class="failed-by">
                   <strong>{{ i18n.t('runs.failedBy') }}</strong> {{ failLabel(stage.failedBy) }}
