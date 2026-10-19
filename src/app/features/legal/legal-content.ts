@@ -67,7 +67,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Your source code',
           blocks: [
             { kind: 'p', text: 'Scans run on Artemis’s own infrastructure — we do not send your code to any third-party scanning service. For each scan, the repository is cloned (read-only, latest commit of the chosen branch) into an isolated scanner that has no access to our database, and the open-source tools listed on the Third-party notices page analyze it there.' },
-            { kind: 'p', text: 'The copy of your code exists only while the scan runs and is deleted as soon as it finishes. We keep only the results: findings, short tool logs and reports. Source code is not used for any other purpose, sold or shared, and results belong to your organization. The same applies to container images you ask us to scan: we pull them from their registry into the isolated scanner, never build or run them, and delete them after the scan; the registry sees only an anonymous download from our servers.' },
+            { kind: 'p', text: 'The copy of your code exists only while the scan runs and is deleted as soon as it finishes. We keep only the results: findings, short tool logs, reports and the list of dependencies (software bill of materials, SBOM) of each scan, which is stored with the run until the run, the repository or the organization is deleted. Source code is not used for any other purpose, sold or shared, and results belong to your organization. The same applies to container images you ask us to scan: we pull them from their registry into the isolated scanner, never build or run them, and delete them after the scan; the registry sees only an anonymous download from our servers.' },
             { kind: 'p', text: 'Secrets found in your code are redacted by the scanner before anything is stored: Artemis records the rule, file and line, never the secret itself. Logs are limited in size and secret-looking values are masked.' },
             { kind: 'p', text: 'Every repository is cloned over SSH with its own read-only deploy key, which is written to the scanner’s temporary memory only for the clone and deleted right after. Deploy keys are deleted when you rotate them, revoke them or remove the repository.' },
           ],
@@ -151,7 +151,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retention and deletion',
           blocks: [
-            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When its owner or an Artemis administrator deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
+            { kind: 'p', text: 'Findings history, pipeline logs and reports are kept while the organization exists. When its owner or an Artemis administrator deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
             { kind: 'p', text: 'You can delete your account at any time from your account page at the identity service (select your name in the top bar) or by asking us. Deleting it removes your profile and memberships; if you own an organization, transfer ownership or delete the organization first. You can also ask us to delete your personal information at any time.' },
           ],
         },
@@ -223,7 +223,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Seu código-fonte',
           blocks: [
             { kind: 'p', text: 'As análises rodam na infraestrutura do próprio Artemis — não enviamos seu código para nenhum serviço de análise de terceiros. Em cada análise, o repositório é clonado (somente leitura, último commit da branch escolhida) em um scanner isolado, sem acesso ao nosso banco de dados, e as ferramentas de código aberto listadas na página Avisos de terceiros o analisam lá.' },
-            { kind: 'p', text: 'A cópia do seu código existe apenas enquanto a análise roda e é apagada assim que ela termina. Guardamos somente os resultados: achados, logs curtos das ferramentas e relatórios. O código-fonte não é usado para nenhuma outra finalidade, vendido ou compartilhado, e os resultados pertencem à sua organização. O mesmo vale para as imagens de contêiner que você pede para analisar: nós as baixamos do registry para o scanner isolado, nunca as construímos nem executamos, e as apagamos após a análise; o registry vê apenas um download anônimo vindo dos nossos servidores.' },
+            { kind: 'p', text: 'A cópia do seu código existe apenas enquanto a análise roda e é apagada assim que ela termina. Guardamos somente os resultados: achados, logs curtos das ferramentas, relatórios e a lista de dependências (lista de materiais de software, SBOM) de cada análise, que fica guardada com a execução até a execução, o repositório ou a organização ser excluído. O código-fonte não é usado para nenhuma outra finalidade, vendido ou compartilhado, e os resultados pertencem à sua organização. O mesmo vale para as imagens de contêiner que você pede para analisar: nós as baixamos do registry para o scanner isolado, nunca as construímos nem executamos, e as apagamos após a análise; o registry vê apenas um download anônimo vindo dos nossos servidores.' },
             { kind: 'p', text: 'Segredos encontrados no seu código são ocultados pelo scanner antes de qualquer armazenamento: o Artemis registra a regra, o arquivo e a linha, nunca o segredo em si. Os logs têm tamanho limitado e valores que parecem segredos são mascarados.' },
             { kind: 'p', text: 'Todo repositório é clonado via SSH com a sua própria deploy key somente leitura, que é gravada na memória temporária do scanner só para o clone e apagada logo depois. As deploy keys são apagadas quando você as troca, revoga ou remove o repositório.' },
           ],
@@ -307,7 +307,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retenção e exclusão',
           blocks: [
-            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando o proprietário ou um administrador do Artemis exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
+            { kind: 'p', text: 'O histórico de achados, os logs de pipeline e os relatórios são mantidos enquanto a organização existir. Quando o proprietário ou um administrador do Artemis exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
             { kind: 'p', text: 'Você pode excluir sua conta a qualquer momento pela página da sua conta no serviço de identidade (selecione seu nome na barra superior) ou pedindo para nós. A exclusão remove seu perfil e seus vínculos; se você for proprietário de uma organização, transfira a propriedade ou exclua a organização antes. Você também pode pedir a exclusão das suas informações pessoais a qualquer momento.' },
           ],
         },
@@ -349,7 +349,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as secret scanning, SAST and dependency scanning) and reports the findings. Features may change as the product evolves.' },
             { kind: 'p', text: 'The service at artemisappsec.papopromines.com.br is provided free of charge.' },
-            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). Repositories are only cloned over SSH with a read-only deploy key generated by Artemis, which you add to repositories you control; container images are pulled only from public registries, and dynamic analysis is not available yet.' },
+            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). Repositories are only cloned over SSH with a read-only deploy key generated by Artemis, which you add to repositories you control; container images are pulled only from public registries.' },
           ],
         },
         {
@@ -389,7 +389,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Use Artemis — including dynamic analysis (DAST) — against systems you are not authorized to test.',
+                'Use Artemis against systems you are not authorized to test.',
                 'Try to access other organizations’ data, bypass security controls or disrupt the service.',
                 'Upload private keys, passwords or other secrets you are not supposed to share.',
                 'Use the service to develop or distribute malware or to break the law.',
@@ -474,7 +474,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como varredura de segredos, SAST e análise de dependências) e reporta os achados. As funcionalidades podem mudar conforme o produto evolui.' },
             { kind: 'p', text: 'O serviço em artemisappsec.papopromines.com.br é oferecido gratuitamente.' },
-            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Os repositórios são clonados apenas via SSH com uma deploy key somente leitura gerada pelo Artemis, que você adiciona a repositórios que controla; imagens de contêiner são baixadas apenas de registries públicos, e a análise dinâmica ainda não está disponível.' },
+            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Os repositórios são clonados apenas via SSH com uma deploy key somente leitura gerada pelo Artemis, que você adiciona a repositórios que controla; imagens de contêiner são baixadas apenas de registries públicos.' },
           ],
         },
         {
@@ -514,7 +514,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Usar o Artemis — inclusive a análise dinâmica (DAST) — contra sistemas que não está autorizado a testar.',
+                'Usar o Artemis contra sistemas que não está autorizado a testar.',
                 'Tentar acessar dados de outras organizações, contornar controles de segurança ou prejudicar o serviço.',
                 'Enviar chaves privadas, senhas ou outros segredos que não deveria compartilhar.',
                 'Usar o serviço para desenvolver ou distribuir malware ou para infringir a lei.',

@@ -72,11 +72,6 @@ export class OrgContext {
     return this.current()?.features.includes(feature) ?? false;
   }
 
-  /** Label of the (not yet implemented) AI features: locked unless enabled for the organization. */
-  aiLabel(): TranslationKey {
-    return this.hasFeature('aiTriage') ? 'ob.settings.aiEnabled' : 'ob.settings.aiLocked';
-  }
-
   /** Why the current role cannot do something, e.g. "Your role (Viewer) can't run scans." */
   reason(permission: Permission): string {
     const role = this.current()?.role;

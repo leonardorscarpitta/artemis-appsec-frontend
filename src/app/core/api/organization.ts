@@ -125,31 +125,12 @@ export interface OrganizationSettings {
   updatedAt: string;
 }
 
-export type TokenScope = 'findings:read' | 'scans:write' | 'reports:read' | 'pipelines:write';
-
-export interface ApiToken {
-  id: string;
-  name: string;
-  scopes: TokenScope[];
-  hint: string;
-  createdAt: string;
-  expiresAt: string;
-  lastUsedAt: string | null;
-  expired: boolean;
-}
-
-export interface CreatedApiToken {
-  token: ApiToken;
-  secret: string;
-}
-
 export const integrationsUrl = () => apiUrl('/integrations');
 export const deployKeysUrl = () => apiUrl('/deploy-keys');
 export const membersUrl = () => apiUrl('/members');
 export const invitationsUrl = () => apiUrl('/invitations');
 export const rolesUrl = () => apiUrl('/roles');
 export const organizationSettingsUrl = () => apiUrl('/organization/settings');
-export const apiTokensUrl = () => apiUrl('/api-tokens');
 export const myOrganizationsUrl = () => apiUrl('/me/organizations');
 export const myInvitationsUrl = () => apiUrl('/me/invitations');
 
@@ -234,13 +215,5 @@ export class OrganizationApi {
 
   transferOwnership(memberId: string): Observable<void> {
     return this.http.post<void>(`${membersUrl()}/transfer-ownership`, { memberId });
-  }
-
-  createToken(name: string, scopes: TokenScope[], expiresInDays: number): Observable<CreatedApiToken> {
-    return this.http.post<CreatedApiToken>(apiTokensUrl(), { name, scopes, expiresInDays });
-  }
-
-  revokeToken(id: string): Observable<void> {
-    return this.http.delete<void>(`${apiTokensUrl()}/${id}`);
   }
 }
