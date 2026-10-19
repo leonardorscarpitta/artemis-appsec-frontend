@@ -1,6 +1,6 @@
 # Production image: builds the SPA and serves it with nginx (non-root) and strict security headers.
 # The API (/api/v1) and the identity provider are served by the reverse proxy in front of this container.
-FROM node:22-alpine AS build
+FROM node:22.23-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -15,7 +15,7 @@ RUN node -e " \
       const conf = fs.readFileSync('nginx/security-headers.conf', 'utf8').replaceAll('__SCRIPT_HASHES__', hashes.join(' ')); \
       fs.writeFileSync('security-headers.conf', conf);"
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.30-alpine
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/security-headers.conf /etc/nginx/artemis/security-headers.conf
 COPY --from=build /app/dist/artemisappsec/browser /usr/share/nginx/html
