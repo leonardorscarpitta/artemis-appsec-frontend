@@ -25,7 +25,7 @@ import { Paginator, paginate } from '../../shared/paginator';
 
 const SCHEDULE_LABELS: Record<ScanSchedule, TranslationKey> = {
   manual: 'ob.settings.interval.manual',
-  push: 'ob.settings.interval.push',
+  push: 'ob.settings.interval.manual',
   '6h': 'ob.settings.interval.6h',
   '24h': 'ob.settings.interval.24h',
   '7d': 'ob.settings.interval.7d',

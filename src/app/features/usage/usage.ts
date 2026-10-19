@@ -31,4 +31,8 @@ export class Usage {
   protected description(feature: Feature): string {
     return this.i18n.t(`feature.${feature}.desc`);
   }
+
+  protected granted(feature: Feature): string {
+    return this.i18n.t(`feature.granted.${feature}`);
+  }
 }

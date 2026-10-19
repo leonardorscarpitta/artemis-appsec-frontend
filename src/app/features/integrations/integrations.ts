@@ -7,7 +7,6 @@ import { problemMessage } from '../../core/api/api';
 import {
   DeployKey,
   Integration,
-  IntegrationCategory,
   IntegrationId,
   IntegrationStatus,
   OrganizationApi,
@@ -18,16 +17,13 @@ import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
-import { Unavailable } from '../../shared/unavailable';
 import { OrgLink } from '../../shared/org-link';
 import { Paginator, paginate } from '../../shared/paginator';
 import { VULN_DATA_SOURCES } from './vuln-data-sources';
 
-const CATEGORIES: IntegrationCategory[] = ['scm', 'ci', 'notifications', 'issues', 'vulnData'];
-
 @Component({
   selector: 'app-integrations',
-  imports: [DatePipe, RequestState, RoleNotice, RouterLink, OrgLink, Unavailable, Paginator],
+  imports: [DatePipe, RequestState, RoleNotice, RouterLink, OrgLink, Paginator],
   templateUrl: './integrations.html',
   styleUrl: './integrations.scss',
 })
@@ -48,17 +44,7 @@ export class Integrations {
   protected readonly error = signal<string | null>(null);
   protected readonly keyError = signal<string | null>(null);
 
-  protected readonly groups = computed(() =>
-    CATEGORIES.map((category) => ({
-      category,
-      label: this.i18n.t(`int.cat.${category}`),
-      items: this.integrations.value().filter((i) => i.category === category),
-    })),
-  );
-
-  protected desc(item: Integration): string {
-    return this.i18n.t(`int.desc.${item.id}`);
-  }
+  protected readonly nvd = computed(() => this.integrations.value().filter((i) => i.id === 'nvd'));
 
   protected statusLabel(status: IntegrationStatus): string {
     return this.i18n.t(`int.status.${status}`);

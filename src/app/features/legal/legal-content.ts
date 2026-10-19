@@ -151,7 +151,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retention and deletion',
           blocks: [
-            { kind: 'p', text: 'Your organization decides how long findings history and pipeline logs are kept (Organization settings → Data retention). When its owner or an Artemis administrator deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
+            { kind: 'p', text: 'Findings history, pipeline logs and reports are kept while the organization exists. When its owner or an Artemis administrator deletes an organization, all of its data is deleted with it. When a repository is removed, its deploy key is deleted right away; its findings, pipeline runs and logs, reports and risk acceptances are kept as part of the organization’s history unless the person removing it chooses to delete them too, and stay until they are deleted later (Repositories → Removed repositories) or the organization is deleted. If you leave an organization, your access ends immediately; the findings history and changes you made stay with the organization, which owns that information. Pending invitations expire after 7 days.' },
             { kind: 'p', text: 'You can delete your account at any time from your account page at the identity service (select your name in the top bar) or by asking us. Deleting it removes your profile and memberships; if you own an organization, transfer ownership or delete the organization first. You can also ask us to delete your personal information at any time.' },
           ],
         },
@@ -307,7 +307,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'retention',
           title: 'Retenção e exclusão',
           blocks: [
-            { kind: 'p', text: 'Sua organização decide por quanto tempo o histórico de achados e os logs de pipeline são mantidos (Configurações da organização → Retenção de dados). Quando o proprietário ou um administrador do Artemis exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
+            { kind: 'p', text: 'O histórico de achados, os logs de pipeline e os relatórios são mantidos enquanto a organização existir. Quando o proprietário ou um administrador do Artemis exclui uma organização, todos os dados dela são excluídos junto. Quando um repositório é removido, sua deploy key é apagada na hora; seus achados, execuções de pipeline e logs, relatórios e aceites de risco são mantidos como parte do histórico da organização, a menos que quem o remove escolha apagá-los também, e ficam até serem apagados depois (Repositórios → Repositórios removidos) ou até a organização ser excluída. Se você sair de uma organização, seu acesso termina na hora; o histórico de achados e as alterações que você fez permanecem com a organização, que é dona dessas informações. Convites pendentes expiram em 7 dias.' },
             { kind: 'p', text: 'Você pode excluir sua conta a qualquer momento pela página da sua conta no serviço de identidade (selecione seu nome na barra superior) ou pedindo para nós. A exclusão remove seu perfil e seus vínculos; se você for proprietário de uma organização, transfira a propriedade ou exclua a organização antes. Você também pode pedir a exclusão das suas informações pessoais a qualquer momento.' },
           ],
         },
@@ -349,7 +349,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'Artemis is an application security testing platform: it connects to your repositories, runs the security pipeline you configure (such as secret scanning, SAST and dependency scanning) and reports the findings. Features may change as the product evolves.' },
             { kind: 'p', text: 'The service at artemisappsec.papopromines.com.br is provided free of charge.' },
-            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). Repositories are only cloned over SSH with a read-only deploy key generated by Artemis, which you add to repositories you control; container images are pulled only from public registries, and dynamic analysis is not available yet.' },
+            { kind: 'p', text: 'Scans are performed on Artemis’s own infrastructure by third-party open-source tools, each used unmodified and under its own license (see Third-party notices). Repositories are only cloned over SSH with a read-only deploy key generated by Artemis, which you add to repositories you control; container images are pulled only from public registries.' },
           ],
         },
         {
@@ -389,7 +389,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Use Artemis — including dynamic analysis (DAST) — against systems you are not authorized to test.',
+                'Use Artemis against systems you are not authorized to test.',
                 'Try to access other organizations’ data, bypass security controls or disrupt the service.',
                 'Upload private keys, passwords or other secrets you are not supposed to share.',
                 'Use the service to develop or distribute malware or to break the law.',
@@ -474,7 +474,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           blocks: [
             { kind: 'p', text: 'O Artemis é uma plataforma de testes de segurança de aplicações: conecta-se aos seus repositórios, executa o pipeline de segurança que você configura (como varredura de segredos, SAST e análise de dependências) e reporta os achados. As funcionalidades podem mudar conforme o produto evolui.' },
             { kind: 'p', text: 'O serviço em artemisappsec.papopromines.com.br é oferecido gratuitamente.' },
-            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Os repositórios são clonados apenas via SSH com uma deploy key somente leitura gerada pelo Artemis, que você adiciona a repositórios que controla; imagens de contêiner são baixadas apenas de registries públicos, e a análise dinâmica ainda não está disponível.' },
+            { kind: 'p', text: 'As análises são feitas na infraestrutura do próprio Artemis por ferramentas de código aberto de terceiros, cada uma usada sem modificações e sob a sua própria licença (veja Avisos de terceiros). Os repositórios são clonados apenas via SSH com uma deploy key somente leitura gerada pelo Artemis, que você adiciona a repositórios que controla; imagens de contêiner são baixadas apenas de registries públicos.' },
           ],
         },
         {
@@ -514,7 +514,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'Usar o Artemis — inclusive a análise dinâmica (DAST) — contra sistemas que não está autorizado a testar.',
+                'Usar o Artemis contra sistemas que não está autorizado a testar.',
                 'Tentar acessar dados de outras organizações, contornar controles de segurança ou prejudicar o serviço.',
                 'Enviar chaves privadas, senhas ou outros segredos que não deveria compartilhar.',
                 'Usar o serviço para desenvolver ou distribuir malware ou para infringir a lei.',

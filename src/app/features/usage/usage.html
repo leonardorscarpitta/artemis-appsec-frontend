@@ -35,6 +35,9 @@
           <div>
             <strong>{{ name(f) }}</strong>
             <span class="muted">{{ description(f) }}</span>
+            @if (on) {
+              <span class="granted">{{ granted(f) }}</span>
+            }
           </div>
           @if (on) {
             <span class="tag enabled">{{ i18n.t('usage.enabled') }}</span>

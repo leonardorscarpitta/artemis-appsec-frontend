@@ -6,7 +6,7 @@ import { Stack } from '../domain';
 import { apiUrl } from './api';
 import { RunDetails } from './pipeline-runs';
 
-/** `6h`, `24h` and `7d` are timed schedules (PRO); `push` needs webhooks (not available yet). */
+/** `6h`, `24h` and `7d` are timed schedules (granted per organization); `push` is a legacy value that never runs. */
 export type ScanSchedule = 'manual' | 'push' | '6h' | '24h' | '7d';
 export type AutomaticAction = 'issue' | 'email' | 'block';
 export type DockerfileMode = 'recommended' | 'custom';
