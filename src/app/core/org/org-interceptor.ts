@@ -14,7 +14,7 @@ export const orgInterceptor: HttpInterceptorFn = (req, next) => {
   const org = inject(OrgContext);
   const router = inject(Router);
   const slug = org.slug();
-  if (!slug || UNSCOPED.test(path)) return next(req);
+  if (!slug || UNSCOPED.test(path) || req.headers.has(ORG_HEADER)) return next(req);
   return next(req.clone({ setHeaders: { [ORG_HEADER]: slug } })).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse) {

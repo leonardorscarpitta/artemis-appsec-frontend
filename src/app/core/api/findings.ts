@@ -65,6 +65,18 @@ export interface FindingDetails {
   related: FindingSummary[];
 }
 
+/** AI explanation of a finding, cached per organization (same CVE and package version share one). */
+export interface FindingInsight {
+  impact: string;
+  exploitable: string;
+  priority: 'high' | 'medium' | 'low';
+  fix: string;
+  /** Language the text was written in (the organization's language when generated). */
+  language: string;
+  model: string;
+  createdAt: string;
+}
+
 export interface FindingFilters {
   q?: string;
   kind?: FindingKind | '';
@@ -98,6 +110,7 @@ export interface BulkStatusResult {
 
 export const findingsUrl = () => apiUrl('/findings');
 export const findingUrl = (id: string) => apiUrl(`/findings/${encodeURIComponent(id)}`);
+export const insightUrl = (id: string) => `${findingUrl(id)}/insight`;
 export const dashboardUrl = () => apiUrl('/dashboard/summary');
 
 /** Drops empty filters so they are not sent as query parameters. */
@@ -141,6 +154,11 @@ export class FindingsApi {
   /** Same change for several findings; those that can't take it are skipped. */
   changeStatuses(ids: string[], status: FindingStatus, note?: string, expiresAt?: string): Observable<BulkStatusResult> {
     return this.http.post<BulkStatusResult>(`${findingsUrl()}/status`, { ids, status, note: note ?? null, expiresAt: expiresAt ?? null });
+  }
+
+  /** Returns the cached explanation or generates one (triage permission, aiTriage feature). */
+  explain(id: string): Observable<FindingInsight> {
+    return this.http.post<FindingInsight>(insightUrl(id), null);
   }
 
   changeStatus(id: string, status: FindingStatus, note?: string, expiresAt?: string): Observable<FindingDetails> {

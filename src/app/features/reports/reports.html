@@ -9,8 +9,7 @@
       class="btn primary"
       aria-controls="new-report"
       [attr.aria-expanded]="formOpen()"
-      disabled
-      [title]="i18n.t('unavailable.reports')"
+      [disabled]="!canGenerate()"
       (click)="toggleForm()"
     >
       {{ i18n.t('reports.generate') }}
@@ -22,7 +21,12 @@
 <app-no-repositories />
 } @else {
 
-<p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.reports') }}</p>
+<app-role-notice permission="triage" />
+
+<p class="ai-note" [class.enabled]="aiEnabled()">
+  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="aiEnabled() ? sparkle : lock" /></svg>
+  {{ i18n.t(aiEnabled() ? 'reports.ai.noteEnabled' : 'reports.ai.noteLocked') }}
+</p>
 
 @if (formOpen()) {
   <form id="new-report" class="card form" (submit)="$event.preventDefault(); generate()">
@@ -65,6 +69,10 @@
   </form>
 }
 
+@if (retryError(); as error) {
+  <p class="error" role="alert">{{ error }}</p>
+}
+
 <p class="queued" aria-live="polite">
   @if (queued()) {
     {{ i18n.t('reports.form.queued') }}
@@ -92,6 +100,9 @@
           <td class="primary-cell">
             @if (report.status === 'ready') {
               <a class="title" [routerLink]="['/reports', report.id] | orgLink">{{ report.title }}</a>
+              @if (report.narrative === 'ai') {
+                <span class="tag ai-tag">{{ i18n.t('reports.ai.badge') }}</span>
+              }
             } @else {
               <span class="title">{{ report.title }}</span>
             }
@@ -104,7 +115,12 @@
           <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
           <td [attr.data-label]="i18n.t('reports.col.generatedBy')">{{ authorLabel(report.generatedBy) }}</td>
           <td [attr.data-label]="i18n.t('reports.col.status')">
-            <span [class]="'status ' + report.status">{{ statusLabel(report.status) }}</span>
+            <span [class]="'status ' + report.status" [attr.title]="report.error ? errorLabel(report.error) : null">{{ statusLabel(report.status) }}</span>
+            @if (report.status === 'failed' && canGenerate()) {
+              <button type="button" class="btn retry" [disabled]="retrying() === report.id" (click)="retry(report.id)">
+                {{ i18n.t('reports.retry') }}
+              </button>
+            }
           </td>
         </tr>
       }

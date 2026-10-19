@@ -11,7 +11,7 @@ export interface LegalText {
 }
 
 const CONTACT = 'privacy@artemisappsec.papopromines.com.br';
-const UPDATED = '2026-10-18';
+const UPDATED = '2026-10-19';
 const REPOSITORY = 'https://github.com/leonardorscarpitta/artemis-appsec-frontend';
 
 export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
@@ -26,7 +26,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'commitment',
           title: 'Our commitment',
           blocks: [
-            { kind: 'note', text: 'We do not sell, rent, trade, share or give away any information about you, your organization, your repositories or your findings — not to advertisers, data brokers, partners or anyone else.' },
+            { kind: 'note', text: 'We do not sell, rent, trade, share or give away any information about you, your organization, your repositories or your findings — not to advertisers, data brokers, partners or anyone else. The only service provider that receives any of it is Anthropic, and only de-identified report and finding data for organizations that asked for AI (see “AI-written reports and explanations”).' },
             { kind: 'p', text: 'Our only goal is to give you the best possible application security experience. We collect the minimum information required to run Artemis, use it only for that purpose, and do not build profiles about you, track you across other websites or show advertising.' },
           ],
         },
@@ -49,6 +49,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Your account: name, username, e-mail address and whether it is verified. It is kept by our identity service (Keycloak, running on Artemis’s own infrastructure); your password is stored there only as a salted one-way hash and Artemis itself never receives it', 'To create your account, sign you in, protect it (password rules, temporary lockout after repeated failed attempts, optional two-factor authentication) and show who you are.'],
                 ['The date you accepted the Terms of Use and this Privacy Policy when registering', 'To record your consent, as the law requires.'],
                 ['Password-reset messages', 'Sent only to your address, when you ask to recover your account. We never send marketing e-mails.'],
+                ['Security events of the identity service: sign-ins, failed sign-ins, sign-outs and account changes, with the username, IP address, time and the application used; changes that administrators make to accounts are recorded too', 'To detect and investigate attacks on accounts and misuse of administrator access. Kept for 90 days, then deleted automatically.'],
                 ['Memberships: the organizations you belong to, your role in each, your last activity, and invitations (invited e-mail, role, who invited and when it expires)', 'To apply your permissions, keep each organization’s data separate and let you join organizations you are invited to.'],
                 ['Organization settings and who owns each organization', 'To run each organization’s workspace and let its owner control it.'],
                 ['Repository addresses, branches, scanned commit and SSH deploy keys', 'To read your code and run the security pipeline you configured. Artemis generates one read-only deploy key per repository (public or private — every repository needs one); its private key is encrypted at rest, never shown or sent to anyone, and only handed to the isolated scanner while it clones. We never ask for your passwords or personal keys.'],
@@ -79,11 +80,46 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           ],
         },
         {
+          id: 'ai-reports',
+          title: 'AI-written reports and explanations',
+          blocks: [
+            { kind: 'p', text: 'This applies only to organizations for which the Artemis administrators enabled AI (on request). For those organizations, when a report is generated, Artemis sends aggregated, de-identified vulnerability data to Anthropic (Claude API), which writes the report’s executive summary and recommendations. Anthropic acts as our processor (service provider): it processes the data only to write that text, on our instructions. This is not a sale or sharing of your data, and Artemis uses the text for nothing else.' },
+            { kind: 'p', text: 'Sent to Anthropic:' },
+            {
+              kind: 'ul',
+              items: [
+                'The report type and the length of its period; counts of findings detected, fixed and open, mean time to remediate, SLA compliance, open findings by severity and by kind, and how many are past their deadline; the number of open findings per OWASP Top 10 category',
+                'For up to 8 top risks: the public CVE or the scanner rule id, the finding title (not for secrets), severity, CVSS score, CWE, package name, installed and fixed versions, kind and age in days',
+              ],
+            },
+            { kind: 'p', text: 'Never sent:' },
+            {
+              kind: 'ul',
+              items: [
+                'Source code, file names, paths or lines',
+                'Secret values or what a secret rule matched (secrets are identified only by the rule id)',
+                'Names or URLs of repositories, the organization’s name, people’s names or e-mail addresses, deploy keys, tokens or tool logs',
+              ],
+            },
+            { kind: 'p', text: 'AI explanations of findings: in the same organizations, a member whose role has the triage permission can ask for a short AI explanation of one finding (impact, when it can be exploited, priority and fix) by clicking “Explain with AI”. Nothing is sent automatically. The explanation is saved in Artemis for the organization and reused for every occurrence of the same CVE in the same package version (or the same rule), so the data is sent at most once per finding type; it is never shared with other organizations. For each explanation Artemis sends:' },
+            {
+              kind: 'ul',
+              items: [
+                'The kind of finding, the public CVE or the scanner rule id, the finding title and the scanner description (shortened; neither for secrets), severity, CVSS score and vector, CWE, package name, ecosystem, installed and fixed versions, the organization’s language',
+                'The technology stack of the repository (for example “Java + Spring”), not its name',
+              ],
+            },
+            { kind: 'p', text: 'The “Never sent” list above applies to explanations too.' },
+            { kind: 'p', text: 'Artemis uses the Claude API under Anthropic’s commercial terms and data processing terms, under which Anthropic does not use this data to train its models. Anthropic may process it outside Brazil (for example in the United States); this international transfer relies on the safeguards in those terms, as permitted by the LGPD and the GDPR. Anthropic keeps request data only for a limited time as its terms describe, for example to detect abuse.' },
+            { kind: 'p', text: 'Reports and explanations written this way are marked “AI-generated”. Without AI enabled, or when the AI service is unavailable, no data is sent and Artemis writes the report text itself. An organization can ask the Artemis administrators to turn AI off at any time.' },
+          ],
+        },
+        {
           id: 'administrators',
           title: 'Platform administrators',
           blocks: [
             { kind: 'p', text: 'Accounts with an Artemis administrator role can see the list of organizations — name, URL, creation date, the owner’s display name and the number of members and repositories — so they can enable or disable optional features (AI-assisted triage, scheduled scans, renaming the organization) and delete organizations.' },
-            { kind: 'p', text: 'To support and moderate the service, administrators can also open any organization read-only, with the same access as a viewer: its repositories and their settings, findings, pipeline runs and logs, reports, policies and members’ names and roles — not members’ e-mail addresses. They are not members of your organization and cannot make changes inside it: no scans, triage, settings or team changes.' },
+            { kind: 'p', text: 'To support and moderate the service, administrators can also open any organization read-only, with the same access as a viewer: its repositories and their settings, findings, pipeline runs and logs, reports, policies and members’ names and roles — not members’ e-mail addresses. They are not members of your organization and cannot make changes inside it: no scans, triage, settings or team changes. Each time an administrator opens an organization this way, it is recorded in our server logs (the administrator’s username, the organization and the time).' },
             { kind: 'p', text: 'Administrators can also see the list of accounts — name, username, e-mail address, creation date and the organizations each account belongs to with its role — and can delete an account, for example in case of abuse or at the account holder’s request. Deleting an account removes it from our identity provider (ending its sessions) and removes its memberships; the organization data it contributed stays with each organization. Accounts that own an organization, and other administrators, cannot be deleted this way. A deleted account can register again later as a new account.' },
           ],
         },
@@ -146,7 +182,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           id: 'commitment',
           title: 'Nosso compromisso',
           blocks: [
-            { kind: 'note', text: 'Não vendemos, alugamos, trocamos, compartilhamos nem cedemos nenhuma informação sobre você, sua organização, seus repositórios ou seus achados — nem para anunciantes, corretores de dados, parceiros ou qualquer outra pessoa.' },
+            { kind: 'note', text: 'Não vendemos, alugamos, trocamos, compartilhamos nem cedemos nenhuma informação sobre você, sua organização, seus repositórios ou seus achados — nem para anunciantes, corretores de dados, parceiros ou qualquer outra pessoa. O único prestador de serviço que recebe algo é a Anthropic, e apenas dados desidentificados de relatórios e de achados, para organizações que pediram IA (veja “Relatórios e explicações escritos por IA”).' },
             { kind: 'p', text: 'Nosso único objetivo é oferecer a melhor experiência possível em segurança de aplicações. Coletamos o mínimo de informação necessário para o Artemis funcionar, usamos apenas para essa finalidade e não criamos perfis sobre você, não rastreamos você em outros sites e não exibimos publicidade.' },
           ],
         },
@@ -169,6 +205,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
                 ['Sua conta: nome, usuário, e-mail e se ele foi verificado. Ela fica no nosso serviço de identidade (Keycloak, rodando na infraestrutura do próprio Artemis); sua senha é guardada lá apenas como hash irreversível com salt e o Artemis em si nunca a recebe', 'Para criar sua conta, fazer seu login, protegê-la (regras de senha, bloqueio temporário após tentativas erradas repetidas, verificação em duas etapas opcional) e mostrar quem você é.'],
                 ['A data em que você aceitou os Termos de Uso e esta Política de Privacidade no cadastro', 'Para registrar o seu consentimento, como a lei exige.'],
                 ['Mensagens de redefinição de senha', 'Enviadas apenas ao seu endereço, quando você pede para recuperar a conta. Nunca enviamos e-mails de marketing.'],
+                ['Eventos de segurança do serviço de identidade: logins, tentativas de login com erro, saídas e alterações de conta, com o nome de usuário, endereço IP, horário e a aplicação usada; as alterações que administradores fazem em contas também são registradas', 'Para detectar e investigar ataques a contas e o uso indevido do acesso de administrador. Mantidos por 90 dias e então apagados automaticamente.'],
                 ['Vínculos: as organizações de que você participa, seu papel em cada uma, sua última atividade e convites (e-mail convidado, papel, quem convidou e quando expira)', 'Para aplicar suas permissões, manter os dados de cada organização separados e permitir que você entre nas organizações para as quais foi convidado.'],
                 ['Configurações da organização e quem é o proprietário de cada uma', 'Para manter o espaço de trabalho de cada organização e permitir que o proprietário a controle.'],
                 ['Endereços de repositórios, branches, commit analisado e deploy keys SSH', 'Para ler seu código e executar o pipeline de segurança que você configurou. O Artemis gera uma deploy key somente leitura por repositório (público ou privado — todo repositório precisa de uma); a chave privada fica criptografada, nunca é exibida nem enviada a ninguém e só é entregue ao scanner isolado durante o clone. Nunca pedimos suas senhas ou chaves pessoais.'],
@@ -199,11 +236,46 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           ],
         },
         {
+          id: 'ai-reports',
+          title: 'Relatórios e explicações escritos por IA',
+          blocks: [
+            { kind: 'p', text: 'Isto vale apenas para organizações em que os administradores do Artemis habilitaram a IA (mediante solicitação). Para essas organizações, quando um relatório é gerado, o Artemis envia dados de vulnerabilidades agregados e desidentificados ao Anthropic (Claude API), que escreve o resumo executivo e as recomendações do relatório. A Anthropic atua como nossa operadora (prestador de serviço): trata os dados apenas para escrever esse texto, conforme nossas instruções. Isso não é venda nem compartilhamento dos seus dados, e o Artemis não usa o texto para mais nada.' },
+            { kind: 'p', text: 'Enviado à Anthropic:' },
+            {
+              kind: 'ul',
+              items: [
+                'O tipo do relatório e a duração do período; contagens de achados detectados, corrigidos e abertos, tempo médio de correção, conformidade com o SLA, achados abertos por severidade e por tipo, e quantos passaram do prazo; o número de achados abertos por categoria do OWASP Top 10',
+                'Para até 8 principais riscos: o CVE público ou o id da regra do scanner, o título do achado (exceto para segredos), severidade, nota CVSS, CWE, nome do pacote, versões instalada e corrigida, tipo e idade em dias',
+              ],
+            },
+            { kind: 'p', text: 'Nunca enviado:' },
+            {
+              kind: 'ul',
+              items: [
+                'Código-fonte, nomes, caminhos ou linhas de arquivos',
+                'Valores de segredos ou o que uma regra de segredos encontrou (segredos são identificados apenas pelo id da regra)',
+                'Nomes ou URLs de repositórios, o nome da organização, nomes ou e-mails de pessoas, chaves de implantação, tokens ou logs das ferramentas',
+              ],
+            },
+            { kind: 'p', text: 'Explicações de achados por IA: nessas mesmas organizações, um membro cujo papel tem a permissão de triagem pode pedir uma explicação curta de um achado por IA (impacto, quando pode ser explorado, prioridade e correção) clicando em “Explicar com IA”. Nada é enviado automaticamente. A explicação fica salva no Artemis para a organização e é reutilizada em todas as ocorrências do mesmo CVE na mesma versão do pacote (ou da mesma regra), então os dados são enviados no máximo uma vez por tipo de achado; ela nunca é compartilhada com outras organizações. Para cada explicação o Artemis envia:' },
+            {
+              kind: 'ul',
+              items: [
+                'O tipo do achado, o CVE público ou o id da regra do scanner, o título do achado e a descrição do scanner (encurtada; nenhum dos dois para segredos), severidade, nota e vetor CVSS, CWE, nome do pacote, ecossistema, versões instalada e corrigida, o idioma da organização',
+                'A stack de tecnologia do repositório (por exemplo, “Java + Spring”), não o nome dele',
+              ],
+            },
+            { kind: 'p', text: 'A lista “Nunca enviado” acima também vale para as explicações.' },
+            { kind: 'p', text: 'O Artemis usa a API do Claude sob os termos comerciais e de tratamento de dados da Anthropic, segundo os quais a Anthropic não usa esses dados para treinar seus modelos. A Anthropic pode tratá-los fora do Brasil (por exemplo, nos Estados Unidos); essa transferência internacional se apoia nas salvaguardas desses termos, como permitem a LGPD e o GDPR. A Anthropic guarda os dados das requisições apenas por tempo limitado, como descrevem seus termos, por exemplo para detectar abusos.' },
+            { kind: 'p', text: 'Relatórios e explicações escritos assim são marcados como “Gerado por IA”. Sem a IA habilitada, ou quando o serviço de IA está indisponível, nenhum dado é enviado e o próprio Artemis escreve o texto do relatório. Uma organização pode pedir aos administradores do Artemis que desliguem a IA a qualquer momento.' },
+          ],
+        },
+        {
           id: 'administrators',
           title: 'Administradores da plataforma',
           blocks: [
             { kind: 'p', text: 'Contas com o papel de administrador do Artemis podem ver a lista de organizações — nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios — para habilitar ou desabilitar funcionalidades opcionais (triagem com IA, análises agendadas, renomear a organização) e excluir organizações.' },
-            { kind: 'p', text: 'Para dar suporte e moderar o serviço, os administradores também podem abrir qualquer organização em modo somente leitura, com o mesmo acesso de um leitor: os repositórios e suas configurações, os achados, as execuções de pipeline e seus logs, os relatórios, as políticas e os nomes e papéis dos membros — não os e-mails dos membros. Eles não são membros da sua organização e não podem fazer alterações nela: nada de análises, triagem, configurações ou mudanças na equipe.' },
+            { kind: 'p', text: 'Para dar suporte e moderar o serviço, os administradores também podem abrir qualquer organização em modo somente leitura, com o mesmo acesso de um leitor: os repositórios e suas configurações, os achados, as execuções de pipeline e seus logs, os relatórios, as políticas e os nomes e papéis dos membros — não os e-mails dos membros. Eles não são membros da sua organização e não podem fazer alterações nela: nada de análises, triagem, configurações ou mudanças na equipe. Cada vez que um administrador abre uma organização dessa forma, isso fica registrado nos logs do nosso servidor (o nome de usuário do administrador, a organização e o horário).' },
             { kind: 'p', text: 'Os administradores também podem ver a lista de contas — nome, nome de usuário, endereço de e-mail, data de criação e as organizações de que cada conta participa com o respectivo papel — e podem excluir uma conta, por exemplo em caso de abuso ou a pedido do titular. Excluir uma conta a remove do nosso provedor de identidade (encerrando suas sessões) e remove suas participações; os dados de organização que ela produziu permanecem com cada organização. Contas que são proprietárias de uma organização e outros administradores não podem ser excluídos dessa forma. Uma conta excluída pode se cadastrar novamente depois, como uma nova conta.' },
           ],
         },
@@ -339,6 +411,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Security results',
           blocks: [
             { kind: 'p', text: 'Automated analysis helps reduce risk but cannot guarantee that software is free of vulnerabilities. Findings may include false positives or miss issues; you remain responsible for reviewing them and for the security decisions you make.' },
+            { kind: 'p', text: 'Report summaries and recommendations and finding explanations marked “AI-generated” are written by an AI model (Anthropic Claude) and may be inaccurate, incomplete or out of date. Review them before sharing or acting on them; they are not professional advice.' },
           ],
         },
         {
@@ -354,7 +427,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Free service, limits and optional features',
           blocks: [
             { kind: 'p', text: 'Artemis is free: there are no paid plans and nothing is ever charged. To keep it available to everyone, each organization can run up to 25 scans per month and each account can own one organization; organizations created before this rule remain available. Each pipeline run counts as one scan, except runs that end before any stage runs (for example when the repository cannot be accessed or cloned); once the monthly limit is reached, new runs are refused until the next calendar month.' },
-            { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI-assisted triage (not available yet), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
+            { kind: 'p', text: 'The Artemis administrators may enable optional features for an organization, and turn them off again: AI (AI-written report summaries — see the Privacy Policy for the data sent to Anthropic — and AI explanations of findings, on request), scheduled scans and renaming the organization. Scheduled scans (every 6 hours, 24 hours or 7 days) are started by Artemis on your organization’s behalf with your repository settings and count toward the monthly scan limit like any other run; when the limit is reached they are skipped. Only schedule repositories you are authorized to scan.' },
             { kind: 'p', text: 'To manage these features and support the service, administrators see the list of organizations with their name, URL, creation date, the owner’s display name and the number of members and repositories, and can open any organization read-only (as a viewer, without members’ e-mail addresses). They also see the list of accounts (name, username, e-mail address, creation date, organizations and roles). They are not members of your organization and cannot change anything inside it. See the Privacy Policy for details.' },
           ],
         },
@@ -463,6 +536,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Resultados de segurança',
           blocks: [
             { kind: 'p', text: 'A análise automatizada ajuda a reduzir riscos, mas não garante que um software esteja livre de vulnerabilidades. Os achados podem incluir falsos positivos ou deixar de detectar problemas; você continua responsável por revisá-los e pelas decisões de segurança que tomar.' },
+            { kind: 'p', text: 'Resumos e recomendações de relatórios e explicações de achados marcados como “Gerado por IA” são escritos por um modelo de IA (Anthropic Claude) e podem ser imprecisos, incompletos ou desatualizados. Revise-os antes de compartilhar ou agir com base neles; eles não são aconselhamento profissional.' },
           ],
         },
         {
@@ -478,7 +552,7 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
           title: 'Serviço gratuito, limites e funcionalidades opcionais',
           blocks: [
             { kind: 'p', text: 'O Artemis é gratuito: não há planos pagos e nada é cobrado. Para mantê-lo disponível para todos, cada organização pode executar até 25 análises por mês e cada conta pode ser proprietária de uma organização; organizações criadas antes desta regra continuam disponíveis. Cada execução de pipeline conta como uma análise, exceto execuções que terminam antes de qualquer etapa rodar (por exemplo, quando o repositório não pode ser acessado ou clonado); ao atingir o limite mensal, novas execuções são recusadas até o mês seguinte.' },
-            { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: triagem com IA (ainda não disponível), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
+            { kind: 'p', text: 'Os administradores do Artemis podem habilitar funcionalidades opcionais para uma organização, e desabilitá-las depois: IA (resumos de relatórios escritos por IA — veja na Política de Privacidade os dados enviados à Anthropic — e explicações de achados por IA, mediante solicitação), análises agendadas e renomear a organização. As análises agendadas (a cada 6 horas, 24 horas ou 7 dias) são iniciadas pelo Artemis em nome da sua organização, com as configurações do repositório, e contam no limite mensal de análises como qualquer outra execução; ao atingir o limite, elas são puladas. Agende apenas repositórios que você está autorizado a analisar.' },
             { kind: 'p', text: 'Para gerenciar essas funcionalidades e dar suporte ao serviço, os administradores veem a lista de organizações com nome, URL, data de criação, nome de exibição do proprietário e número de membros e de repositórios, e podem abrir qualquer organização em modo somente leitura (como leitor, sem os e-mails dos membros). Também veem a lista de contas (nome, nome de usuário, e-mail, data de criação, organizações e papéis). Eles não são membros da sua organização e não podem alterar nada nela. Veja a Política de Privacidade para mais detalhes.' },
           ],
         },
