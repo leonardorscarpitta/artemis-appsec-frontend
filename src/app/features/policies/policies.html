@@ -27,26 +27,28 @@
       </thead>
       <tbody>
         @for (gate of p.stages; track gate.stage) {
-          <tr>
-            <td class="primary-cell"><strong [id]="'gate-' + gate.stage">{{ stageName(gate.stage) }}</strong></td>
-            <td [attr.data-label]="i18n.t('pipe.failOn')">
-              @if (gate.failOn; as failOn) {
-                <select class="input" [attr.aria-labelledby]="'gate-' + gate.stage" (change)="setFailOn(gate.stage, $event)">
-                  @for (t of thresholds; track t) {
-                    <option [value]="t" [selected]="t === failOn">{{ failLabel(t) }}</option>
-                  }
-                </select>
-              } @else {
-                <span class="muted">{{ i18n.t('pipe.reportOnly') }}</span>
-              }
-            </td>
-            <td [attr.data-label]="i18n.t('policies.required')">
-              <label class="check">
-                <input type="checkbox" [checked]="gate.required" [disabled]="!available(gate.stage)" [title]="available(gate.stage) ? '' : i18n.t('pipe.unavailable')" (change)="toggleRequired(gate.stage)" />
-                <span class="sr-only">{{ i18n.t('policies.required') }}: {{ stageName(gate.stage) }}</span>
-              </label>
-            </td>
-          </tr>
+          @if (available(gate.stage)) {
+            <tr>
+              <td class="primary-cell"><strong [id]="'gate-' + gate.stage">{{ stageName(gate.stage) }}</strong></td>
+              <td [attr.data-label]="i18n.t('pipe.failOn')">
+                @if (gate.failOn; as failOn) {
+                  <select class="input" [attr.aria-labelledby]="'gate-' + gate.stage" (change)="setFailOn(gate.stage, $event)">
+                    @for (t of thresholds; track t) {
+                      <option [value]="t" [selected]="t === failOn">{{ failLabel(t) }}</option>
+                    }
+                  </select>
+                } @else {
+                  <span class="muted">{{ i18n.t('pipe.reportOnly') }}</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('policies.required')">
+                <label class="check">
+                  <input type="checkbox" [checked]="gate.required" (change)="toggleRequired(gate.stage)" />
+                  <span class="sr-only">{{ i18n.t('policies.required') }}: {{ stageName(gate.stage) }}</span>
+                </label>
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>

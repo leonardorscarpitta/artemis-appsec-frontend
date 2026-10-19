@@ -60,6 +60,8 @@ export class PipelineEditor {
   protected readonly provider = signal<CiProvider>('github');
   protected readonly copied = signal(false);
 
+  // Stages the runner cannot execute (e.g. DAST) are not offered.
+  protected readonly visible = computed(() => this.stages().filter((s) => s.available !== false));
   protected readonly activePreset = computed(() => matchingPreset(this.stages()));
   protected readonly enabledCount = computed(() => this.stages().filter((s) => s.enabled).length);
   protected readonly minutes = computed(() =>
@@ -90,7 +92,7 @@ export class PipelineEditor {
   }
 
   protected byPhase(phase: Phase): PipelineStage[] {
-    return this.stages().filter((s) => s.phase === phase);
+    return this.visible().filter((s) => s.phase === phase);
   }
 
   protected setPreset(preset: Preset): void {

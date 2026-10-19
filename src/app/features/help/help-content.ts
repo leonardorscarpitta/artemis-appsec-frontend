@@ -120,7 +120,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'Repository: enter the repository’s SSH URL (for example git@git.example.com:acme/project.git) and the branch to analyze. Artemis scans every repository — public or private — through a read-only deploy key it generates for it, which also proves you control the repository (see "Repository access (deploy keys)"). If it is a monorepo, turn on "This repository is a monorepo" and list the folders to scan (for example frontend and backend), choosing the stack of each one; the stack step then uses those choices.',
-            'Settings: choose the scan schedule, automatic actions, build environment and AI triage (see "Scan settings").',
+            'Settings: choose the scan schedule and an optional container image (see "Scan settings").',
             'Pipeline: choose which security stages run (see "DevSecOps pipeline").',
             'Stack: “Detect automatically” (recommended) lets Artemis read the repository’s manifest files (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) after the first successful “Test access” — nothing is executed — and set the stack, or the folders of a monorepo. Or select it yourself: React, Angular, Java + Spring, Python + Flask, Python + FastAPI or Python + Django. While detection is pending the repository shows “Detecting stack…”; once set, a sparkles symbol next to the stack means it was detected automatically and a person symbol means someone selected it.',
           ],
@@ -135,10 +135,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Scan schedule (optional feature, enabled by the Artemis administrators): every 6 hours, 24 hours or 7 days Artemis queues a scan of the default branch by itself — shown as “Scheduled” on the Pipelines page, by “Artemis scheduler”. The settings show the next scheduled scan in your time zone. Scheduled scans count toward the monthly scan limit and run like manual ones (access check, policies); a scan is skipped until the next interval when the limit is reached, access is not verified or a run of the repository is still queued or running. Until the feature is enabled for the organization the control is locked (“Available on request”) and scans run only when someone selects Run scan; a schedule saved earlier is kept but inactive. “On every push” is not available yet (it needs webhooks).',
-            '(Not available yet) Automatic actions on new CVE: open an issue in the repository, notify maintainers by e-mail and/or block merge requests that introduce new critical findings.',
-            '(Not available yet) Build environment: use the Dockerfile recommended by Artemis for the detected stack, or provide your own. A custom Dockerfile is audited before it is used.',
-            'AI triage: an optional feature the Artemis administrators enable per organization on request. Once enabled, reports get an AI-written summary and recommendations (see Reports). The automatic review of findings to flag likely false positives is not available yet: the option is shown locked (“Available on request · coming soon”, or “Enabled for your organization · coming soon” once enabled) and links to the Usage page.',
+            'Scan schedule (optional feature, enabled by the Artemis administrators): every 6 hours, 24 hours or 7 days Artemis queues a scan of the default branch by itself — shown as “Scheduled” on the Pipelines page, by “Artemis scheduler”. The settings show the next scheduled scan in your time zone. Scheduled scans count toward the monthly scan limit and run like manual ones (access check, policies); a scan is skipped until the next interval when the limit is reached, access is not verified or a run of the repository is still queued or running. Until the feature is enabled for the organization the control is locked (“Available on request”) and scans run only when someone selects Run scan; a schedule saved earlier is kept but inactive. Once it is enabled, the settings say “Your organization is allowed to use scheduled scans.”',
+            'Container image: optionally, a published image (for example ghcr.io/acme/app:1.4) for the container image scan stage.',
+            'AI triage: an optional feature the Artemis administrators enable per organization on request. Once enabled, the settings say “Your organization is allowed to use AI triage.”: reports get an AI-written summary and recommendations (see Reports) and findings can be explained with AI (see Vulnerabilities). Until then it is shown locked (“Available on request”) and links to the Usage page.',
           ],
         },
       ],
@@ -160,7 +159,6 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Build', 'Container image scan', 'Scans a published image (set under General settings, e.g. ghcr.io/acme/app:1.4) for vulnerable OS packages and libraries. Artemis pulls it from a public registry and never builds or runs it.', 'Trivy'],
             ['Build', 'SBOM generation', 'Produces a software bill of materials for each scan.', 'Syft'],
             ['Pre-deploy', 'Infrastructure as code', 'Checks Terraform, Kubernetes and Compose files for misconfigurations.', 'Trivy'],
-            ['Pre-deploy', 'Dynamic analysis (DAST)', 'Tests a running instance of the application. Not available yet.', 'OWASP ZAP'],
           ],
         },
         { kind: 'p', text: 'For each stage you can:' },
@@ -183,7 +181,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Any manual change shows the preset as "Custom". The summary shows how many stages are enabled and an estimated duration. Under "Pipeline as code" you can view and copy the equivalent configuration for GitHub Actions or GitLab CI.' },
-        { kind: 'note', text: 'Tip: start with "Recommended". Add DAST only when you have a staging environment the pipeline can reach.' },
+        { kind: 'note', text: 'Tip: start with "Recommended".' },
       ],
     },
     {
@@ -195,7 +193,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'The scanner clones the latest commit of the chosen branch over SSH with the repository’s deploy key, after first checking that the key still has access — if it was removed, the run stops right away, the repository shows “Authentication error” and scans stay locked until “Test access” succeeds again (the key is deleted from the scanner right after cloning) into an isolated, temporary workspace. For a monorepo, "Run scan" first asks which folders to scan (all are selected by default); each stage scans the chosen folders one after the other and combines the results, and the run page lists the folders it scanned. Re-running a run scans the same folders; file paths in findings stay relative to the repository root.',
-            'Each enabled stage runs its tool. DAST is not available yet and is skipped; the container image scan is skipped when no image is set.',
+            'Each enabled stage runs its tool. The container image scan is skipped when no image is set.',
             'Each stage passes, warns (findings below the fail threshold) or fails (findings at or above it). A failed stage stops the pipeline: the remaining stages are skipped and the run fails.',
             'The code copy is deleted. Findings, short tool logs and the SBOM summary are kept.',
           ],
@@ -225,7 +223,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'General tab: the stack (change it if the automatic detection got it wrong — your choice is never overwritten afterwards), monorepo folders and their stacks, container image, scan schedule, automatic actions, build environment and AI triage.',
+            'General tab: the stack (change it if the automatic detection got it wrong — your choice is never overwritten afterwards), monorepo folders and their stacks, container image, scan schedule and AI triage.',
             'Pipeline tab: stages, tools, fail thresholds and presets.',
             'Deploy Key tab: the repository’s deploy key, setup steps, server identity and access test (see "Repository access (deploy keys)").',
           ],
@@ -285,7 +283,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'CVSS v3.1 vector and a readable breakdown of each metric. Metrics highlighted in red make the vulnerability easier to exploit or more damaging.',
             'Remediation: the installed version, the first fixed version and a suggested upgrade command you can copy. When no fix exists, consider replacing or isolating the package.',
             'Affected repositories, with the pipeline stage and tool that detected the issue in each one.',
-            'AI triage: when the Artemis administrators enabled AI for your organization, "Explain with AI" writes a short explanation of the finding — impact, when it can be exploited, priority and fix — marked "AI-generated" (review it before acting: AI can make mistakes). It is never automatic and needs the “Triage findings” permission; viewers see explanations already made. The result is saved for the organization and reused for the same CVE in the same package version (or the same rule) in any repository, so asking again costs nothing. It is written in the organization’s default language. Only public identifiers and scanner data are sent to the AI provider (CVE or rule id, title and description — neither for secrets —, severity, CVSS, CWE, package and versions) plus the repository’s stack; never code, file paths, secret values or repository names. Up to 50 new explanations per organization per day; every attempt counts, including ones that fail. If the AI is busy, try again in a minute. Without AI it is shown locked.',
+            'AI triage: when the Artemis administrators enabled AI for your organization, "Explain with AI" writes a short explanation of the finding — impact, when it can be exploited, priority and fix — marked "AI-generated" (review it before acting: AI can make mistakes). It is never automatic and needs the “Triage findings” permission; viewers see explanations already made. The result is saved for the organization and reused for the same CVE in the same package version (or the same rule) in any repository, so asking again costs nothing. It is written in the organization’s default language. Only public identifiers and scanner data are sent to the AI provider (CVE or rule id, title and description — neither for secrets —, severity, CVSS, CWE, package and versions) plus the repository’s stack; never code, file paths, secret values or repository names. Up to 50 new explanations per organization per day; every attempt counts, including ones that fail. If the AI is busy, try again in a minute. When AI is enabled the card says “Your organization is allowed to use AI triage.”; without it the card is shown locked.',
             'References (NVD, package registry, CWE) and a timeline of what happened to the finding.',
           ],
         },
@@ -355,7 +353,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Executive summary: a short, non-technical overview for managers.',
             'Key indicators: new, fixed and still open findings, mean time to remediate and the percentage of findings fixed within the SLA.',
             'Findings trend: new and fixed findings per week. Hover over (or focus and use the arrow keys on) the chart to see each week; "Show data table" lists the same values.',
-            'Open findings by severity, top risks (open critical and high findings, with the package and the version that fixes them), OWASP Top 10 mapping and prioritized recommendations. The AI triage section (automatic review of findings) is shown locked until it becomes available.',
+            'Open findings by severity, top risks (open critical and high findings, with the package and the version that fixes them), OWASP Top 10 mapping and prioritized recommendations.',
           ],
         },
         { kind: 'p', text: 'Report texts follow the language selected in the top bar. Select "Export PDF" to print or save the report as PDF, or "Copy link" to share it with someone who has access to Artemis.' },
@@ -370,7 +368,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Pipeline gates: the minimum fail threshold of each stage. A repository may choose a stricter threshold but not a looser one — looser options are disabled in the pipeline editor, and runs always use the stricter of the two. Mark a stage as “Required” to run it in every repository: it shows “Required by the organization policy” and cannot be turned off. Stages that are not available yet cannot be required.',
+            'Pipeline gates: the minimum fail threshold of each stage. A repository may choose a stricter threshold but not a looser one — looser options are disabled in the pipeline editor, and runs always use the stricter of the two. Mark a stage as “Required” to run it in every repository: it shows “Required by the organization policy” and cannot be turned off.',
             'Remediation SLA: the maximum number of days (1 to 365) to fix a finding of each severity, counted from its first detection. Open and triaged findings show “Due in N days” or “Overdue” in Vulnerabilities, the finding page shows the date, and the dashboard counts the findings past their SLA.',
             'License policy: licenses that are allowed or denied (SPDX identifiers such as MPL-2.0, case-insensitive). The License compliance stage drops allowed licenses, reports denied ones as high severity and any other restrictive license as medium, for review; the stage fails according to its gate. A license cannot be both allowed and denied.',
             'Risk acceptances: findings accepted as known risks, with a justification (at least 10 characters) and an expiry date (at most one year). Accept a risk from a finding (“Accept risk”) or here with “Accept a risk”, using the finding reference (F-1101) or a CVE, which accepts every open finding of that CVE in the repository. Accepted findings never fail pipelines. When the date passes the finding is reopened automatically; “Revoke” reopens it right away, and reopening an accepted finding removes its acceptance.',
@@ -385,15 +383,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrations',
       blocks: [
-        { kind: 'p', text: 'The Integrations page connects Artemis to the tools your team already uses. Integrations are grouped by category: source control, CI/CD, notifications, issue tracking and vulnerability data. Only NIST NVD works today; the other integrations are shown with “Not available yet” until they are released.' },
-        {
-          kind: 'ul',
-          items: [
-            'Connected (green): the integration is active. Use "Configure" to set the account, channel or project it uses, or "Disconnect" to remove it.',
-            'Not connected: select "Connect" to authorize Artemis in the external tool.',
-            'Connection error (red): the credentials expired or were revoked. Select "Reconnect" to authorize again.',
-          ],
-        },
+        { kind: 'p', text: 'The Integrations page lists the vulnerability data Artemis uses and the SSH deploy keys of your repositories.' },
         { kind: 'p', text: 'The NIST NVD integration is always active and cannot be disconnected: it provides CVE records and CVSS scores. Its card shows the last synchronization.' },
         { kind: 'p', text: 'Under Vulnerability data, a card for each source lists every database and rule set the scanners use (NVD, GitHub Advisory Database, Linux distribution trackers, the Trivy and Grype databases, misconfiguration and license rules, Gitleaks and Artemis’s own code rules), what each one provides and which stage uses it. The databases are downloaded and searched locally; your code is never sent to them.' },
         { kind: 'p', text: 'Under "SSH deploy keys" you can see every key Artemis generated to clone your repositories (each repository has its own), with its fingerprint, repository and last use. Keys are created and rotated in each repository’s Deploy Key tab; select the repository to open it. "Revoke" deletes a key (scans of that repository fail until a new key is generated) — also remove it from the repository on your Git provider.' },
@@ -426,7 +416,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['View findings and reports', 'See every page of the organization', 'All roles'],
             ['Triage findings', 'Change finding status, manage risk acceptances, generate reports', 'Owner, Admin, Security analyst, Developer'],
             ['Configure pipelines', 'Add repositories, run and cancel scans, test repository access, edit repository settings, pipelines and policies', 'Owner, Admin, Security analyst'],
-            ['Manage integrations', 'Integrations, generating, rotating and revoking deploy keys, API tokens', 'Owner, Admin'],
+            ['Manage integrations', 'Integrations, generating, rotating and revoking deploy keys', 'Owner, Admin'],
             ['Manage team', 'Invitations, roles and organization settings', 'Owner, Admin'],
             ['Ownership and deletion', 'Transfer ownership, delete the organization', 'Owner'],
           ],
@@ -438,20 +428,15 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'settings',
       title: 'Organization settings',
       blocks: [
-        { kind: 'p', text: 'Settings in the sidebar holds options that apply to the whole organization, organized in tabs:' },
+        { kind: 'p', text: 'Settings in the sidebar holds options that apply to the whole organization, in two tabs:' },
         {
           kind: 'ul',
           items: [
-            'General: organization name, default language and time zone. The URL is always generated from the name and shown read-only. Renaming the organization is an optional feature the Artemis administrators enable per organization (until then the name is locked); renaming also changes the URL, so the page moves to the new address and old links stop working. Each member can still choose their own language in the top bar.',
-            '(Not available yet) Authentication: the OpenID Connect identity provider (Keycloak), issuer URL (must use https), client ID and session timeout. The client secret is never stored or displayed in Artemis: it is managed by your administrators in the deployment secrets, and the page only shows whether it is configured. Turn on "Enforce single sign-on" so members can only sign in through the identity provider.',
-            '(Not available yet) Notifications: choose which events (new critical CVE, pipeline failed, weekly report, SLA breached) are sent to each channel (e-mail, Slack, Microsoft Teams).',
-            '(Not available yet) API tokens: tokens let scripts and CI jobs call the Artemis API. Select "Create token", give it a name, an expiration and scopes. The token is shown only once: copy it before selecting "Done". Afterwards the list only shows its prefix and last four characters. Revoke tokens you no longer use.',
-            '(Not available yet) Data retention: how long findings history, pipeline logs and reports are kept. Older data is deleted permanently.',
-            'Danger zone: members other than the owner can leave the organization. The owner can delete it by typing its name exactly — this permanently deletes all its repositories, findings, pipeline runs, reports, policies, integrations, tokens and memberships, and cannot be undone.',
+            'General: organization name, default language and time zone. The URL is always generated from the name and shown read-only. Renaming the organization is an optional feature the Artemis administrators enable per organization (until then the name is locked); once it is enabled, the field says “Your organization is allowed to rename itself.” Renaming also changes the URL, so the page moves to the new address and old links stop working. Each member can still choose their own language in the top bar.',
+            'Danger zone: members other than the owner can leave the organization. The owner can delete it by typing its name exactly — this permanently deletes all its repositories, findings, pipeline runs, reports, policies, integrations and memberships, and cannot be undone.',
           ],
         },
-        { kind: 'p', text: 'On the General, Authentication, Notifications and Data retention tabs, select "Save changes" to apply. API tokens and the danger zone take effect immediately. Only owners and admins can change settings (API tokens: the "Manage integrations" permission); other roles see them read-only.' },
-        { kind: 'note', text: 'Tip: give API tokens only the scopes they need and the shortest practical expiration.' },
+        { kind: 'p', text: 'On the General tab, select "Save changes" to apply. The danger zone takes effect immediately. Only owners and admins can change settings; other roles see them read-only.' },
       ],
     },
 
@@ -470,7 +455,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['AI triage', 'AI explanations of findings (on request, on the finding page) and AI-written report summaries.'],
           ],
         },
-        { kind: 'note', text: 'Optional features are enabled per organization by the Artemis administrators — the people who run this Artemis instance, not your organization’s owner or admins. Locked controls say “Available on request”: ask the Artemis administrators to enable the feature.' },
+        { kind: 'note', text: 'Optional features are enabled per organization by the Artemis administrators — the people who run this Artemis instance, not your organization’s owner or admins. Locked controls say “Available on request”: ask the Artemis administrators to enable the feature. Enabled features show a short note such as “Your organization is allowed to use scheduled scans.”' },
       ],
     },
     {
@@ -497,7 +482,6 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['NVD', 'National Vulnerability Database, maintained by NIST; the source of CVE and CVSS data.'],
             ['SAST', 'Static Application Security Testing: analysis of source code without running it.'],
             ['SCA', 'Software Composition Analysis: analysis of third-party dependencies.'],
-            ['DAST', 'Dynamic Application Security Testing: testing a running application.'],
             ['SBOM', 'Software Bill of Materials: the inventory of components in a build.'],
             ['IaC', 'Infrastructure as Code: infrastructure defined in files such as Terraform.'],
             ['OIDC', 'OpenID Connect: the single sign-on protocol used to authenticate.'],
@@ -613,7 +597,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'Repositório: informe a URL SSH do repositório (por exemplo git@git.example.com:acme/projeto.git) e a branch a ser analisada. O Artemis analisa todo repositório — público ou privado — por meio de uma deploy key somente leitura que ele gera, o que também comprova que você controla o repositório (veja "Acesso aos repositórios (deploy keys)"). Se for um monorepo, ative "Este repositório é um monorepo" e liste as pastas a analisar (por exemplo frontend e backend), escolhendo a stack de cada uma; a etapa de stack passa a usar essas escolhas.',
-            'Configurações: escolha o agendamento, as ações automáticas, o ambiente de build e a triagem com IA (veja "Configurações da análise").',
+            'Configurações: escolha o agendamento e, opcionalmente, uma imagem de contêiner (veja "Configurações da análise").',
             'Pipeline: escolha quais etapas de segurança serão executadas (veja "Pipeline DevSecOps").',
             'Stack: “Detectar automaticamente” (recomendado) faz o Artemis ler os arquivos de manifesto do repositório (package.json, pom.xml, build.gradle, requirements.txt, pyproject.toml…) depois do primeiro “Testar acesso” bem-sucedido — nada é executado — e definir a stack, ou as pastas de um monorepo. Ou selecione você mesmo: React, Angular, Java + Spring, Python + Flask, Python + FastAPI ou Python + Django. Enquanto a detecção está pendente o repositório mostra “Detectando stack…”; depois, um símbolo de brilhos ao lado da stack indica que ela foi detectada automaticamente e um símbolo de pessoa indica que alguém a selecionou.',
           ],
@@ -628,10 +612,9 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Agendamento de análises (recurso opcional, habilitado pelos administradores do Artemis): a cada 6 horas, 24 horas ou 7 dias o Artemis coloca na fila, sozinho, uma análise da branch padrão — exibida como “Agendada” na página Pipelines, por “Artemis scheduler”. As configurações mostram a próxima análise agendada no seu fuso horário. As análises agendadas contam no limite mensal de análises e rodam como as manuais (verificação de acesso, políticas); uma análise é pulada até o próximo intervalo quando o limite foi atingido, o acesso não está verificado ou uma execução do repositório ainda está na fila ou rodando. Enquanto o recurso não estiver habilitado para a organização, o controle fica bloqueado (“Disponível mediante solicitação”) e as análises só rodam quando alguém seleciona Executar análise; um agendamento salvo antes é mantido, mas fica inativo. “A cada push” ainda não está disponível (exige webhooks).',
-            '(Ainda não disponível) Ações automáticas para novas CVEs: abrir uma issue no repositório, notificar mantenedores por e-mail e/ou bloquear merge requests que introduzam novos achados críticos.',
-            '(Ainda não disponível) Ambiente de build: use o Dockerfile recomendado pelo Artemis para a stack detectada ou forneça o seu. Um Dockerfile próprio é auditado antes do uso.',
-            'Triagem com IA: recurso opcional que os administradores do Artemis habilitam por organização mediante solicitação. Depois de habilitado, os relatórios recebem resumo e recomendações escritos por IA (veja Relatórios). A revisão automática dos achados para sinalizar prováveis falsos positivos ainda não está disponível: a opção aparece bloqueada (“Disponível mediante solicitação · em breve”, ou “Habilitado para sua organização · em breve” depois de habilitada) e leva à página de Uso.',
+            'Agendamento de análises (recurso opcional, habilitado pelos administradores do Artemis): a cada 6 horas, 24 horas ou 7 dias o Artemis coloca na fila, sozinho, uma análise da branch padrão — exibida como “Agendada” na página Pipelines, por “Artemis scheduler”. As configurações mostram a próxima análise agendada no seu fuso horário. As análises agendadas contam no limite mensal de análises e rodam como as manuais (verificação de acesso, políticas); uma análise é pulada até o próximo intervalo quando o limite foi atingido, o acesso não está verificado ou uma execução do repositório ainda está na fila ou rodando. Enquanto o recurso não estiver habilitado para a organização, o controle fica bloqueado (“Disponível mediante solicitação”) e as análises só rodam quando alguém seleciona Executar análise; um agendamento salvo antes é mantido, mas fica inativo. Depois de habilitado, as configurações mostram “Sua organização tem permissão para usar análises agendadas.”',
+            'Imagem de contêiner: opcionalmente, uma imagem publicada (por exemplo ghcr.io/acme/app:1.4) para a etapa de varredura da imagem de contêiner.',
+            'Triagem com IA: recurso opcional que os administradores do Artemis habilitam por organização mediante solicitação. Depois de habilitado, as configurações mostram “Sua organização tem permissão para usar a triagem com IA.”: os relatórios recebem resumo e recomendações escritos por IA (veja Relatórios) e os achados podem ser explicados com IA (veja Vulnerabilidades). Até lá, aparece bloqueado (“Disponível mediante solicitação”) e leva à página de Uso.',
           ],
         },
       ],
@@ -653,7 +636,6 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Build', 'Varredura da imagem de contêiner', 'Analisa uma imagem publicada (definida nas configurações gerais, por exemplo ghcr.io/acme/app:1.4) em busca de pacotes do SO e bibliotecas vulneráveis. O Artemis a baixa de um registry público e nunca a constrói nem a executa.', 'Trivy'],
             ['Build', 'Geração de SBOM', 'Gera uma lista de materiais de software a cada análise.', 'Syft'],
             ['Pré-deploy', 'Infraestrutura como código', 'Verifica arquivos Terraform, Kubernetes e Compose em busca de erros de configuração.', 'Trivy'],
-            ['Pré-deploy', 'Análise dinâmica (DAST)', 'Testa uma instância da aplicação em execução. Ainda não disponível.', 'OWASP ZAP'],
           ],
         },
         { kind: 'p', text: 'Para cada etapa você pode:' },
@@ -676,7 +658,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           ],
         },
         { kind: 'p', text: 'Qualquer alteração manual mostra o modelo como "Personalizado". O resumo mostra quantas etapas estão ativas e uma duração estimada. Em "Pipeline como código" você pode ver e copiar a configuração equivalente para GitHub Actions ou GitLab CI.' },
-        { kind: 'note', text: 'Dica: comece pelo modelo "Recomendado". Ative o DAST apenas quando houver um ambiente de homologação acessível pelo pipeline.' },
+        { kind: 'note', text: 'Dica: comece pelo modelo "Recomendado".' },
       ],
     },
     {
@@ -688,7 +670,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           kind: 'ol',
           items: [
             'O scanner clona o último commit da branch escolhida via SSH com a deploy key do repositório, depois de verificar que a chave ainda tem acesso — se ela foi removida, a execução para na hora, o repositório aparece como “Erro de autenticação” e as análises ficam bloqueadas até o “Testar acesso” funcionar de novo (a chave é apagada do scanner logo após o clone) em um espaço de trabalho isolado e temporário. Em um monorepo, "Executar análise" primeiro pergunta quais pastas analisar (todas vêm selecionadas); cada etapa analisa as pastas escolhidas uma após a outra e junta os resultados, e a página da execução lista as pastas analisadas. Executar novamente analisa as mesmas pastas; os caminhos de arquivo nos achados continuam relativos à raiz do repositório.',
-            'Cada etapa ativa executa sua ferramenta. O DAST ainda não está disponível e é pulado; a varredura de imagem é pulada quando nenhuma imagem está definida.',
+            'Cada etapa ativa executa sua ferramenta. A varredura de imagem é pulada quando nenhuma imagem está definida.',
             'Cada etapa passa, gera alerta (achados abaixo do critério de falha) ou falha (achados no critério ou acima). Uma etapa com falha interrompe o pipeline: as etapas seguintes são ignoradas e a execução falha.',
             'A cópia do código é apagada. Ficam os achados, logs curtos das ferramentas e o resumo do SBOM.',
           ],
@@ -718,7 +700,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Aba Geral: a stack (altere se a detecção automática errou — sua escolha nunca é sobrescrita depois), pastas do monorepo e suas stacks, imagem de contêiner, agendamento, ações automáticas, ambiente de build e triagem com IA.',
+            'Aba Geral: a stack (altere se a detecção automática errou — sua escolha nunca é sobrescrita depois), pastas do monorepo e suas stacks, imagem de contêiner, agendamento e triagem com IA.',
             'Aba Pipeline: etapas, ferramentas, critérios de falha e modelos.',
             'Aba Deploy Key: a deploy key do repositório, os passos de configuração, a identidade do servidor e o teste de acesso (veja "Acesso aos repositórios (deploy keys)").',
           ],
@@ -778,7 +760,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Vetor CVSS v3.1 e uma explicação de cada métrica. Métricas destacadas em vermelho tornam a vulnerabilidade mais fácil de explorar ou mais danosa.',
             'Correção: a versão instalada, a primeira versão corrigida e um comando de atualização sugerido que pode ser copiado. Quando não há correção, considere substituir ou isolar o pacote.',
             'Repositórios afetados, com a etapa do pipeline e a ferramenta que detectou o problema em cada um.',
-            'Triagem com IA: quando os administradores do Artemis habilitaram a IA para sua organização, "Explicar com IA" escreve uma explicação curta do achado — impacto, quando pode ser explorado, prioridade e correção — marcada como "Gerado por IA" (revise antes de agir: a IA pode cometer erros). Nunca é automática e exige a permissão “Triar achados”; leitores veem as explicações já feitas. O resultado fica salvo para a organização e é reutilizado para o mesmo CVE na mesma versão do pacote (ou a mesma regra) em qualquer repositório, então pedir de novo não custa nada. Ela é escrita no idioma padrão da organização. Só identificadores públicos e dados do scanner são enviados ao provedor de IA (CVE ou id da regra, título e descrição — nenhum dos dois para segredos —, severidade, CVSS, CWE, pacote e versões) e a stack do repositório; nunca código, caminhos de arquivo, valores de segredos ou nomes de repositórios. Até 50 novas explicações por organização por dia; toda tentativa conta, inclusive as que falham. Se a IA estiver ocupada, tente de novo em um minuto. Sem IA, aparece bloqueada.',
+            'Triagem com IA: quando os administradores do Artemis habilitaram a IA para sua organização, "Explicar com IA" escreve uma explicação curta do achado — impacto, quando pode ser explorado, prioridade e correção — marcada como "Gerado por IA" (revise antes de agir: a IA pode cometer erros). Nunca é automática e exige a permissão “Triar achados”; leitores veem as explicações já feitas. O resultado fica salvo para a organização e é reutilizado para o mesmo CVE na mesma versão do pacote (ou a mesma regra) em qualquer repositório, então pedir de novo não custa nada. Ela é escrita no idioma padrão da organização. Só identificadores públicos e dados do scanner são enviados ao provedor de IA (CVE ou id da regra, título e descrição — nenhum dos dois para segredos —, severidade, CVSS, CWE, pacote e versões) e a stack do repositório; nunca código, caminhos de arquivo, valores de segredos ou nomes de repositórios. Até 50 novas explicações por organização por dia; toda tentativa conta, inclusive as que falham. Se a IA estiver ocupada, tente de novo em um minuto. Com a IA habilitada, o cartão mostra “Sua organização tem permissão para usar a triagem com IA.”; sem ela, o cartão aparece bloqueado.',
             'Referências (NVD, registro do pacote, CWE) e uma linha do tempo do que aconteceu com o achado.',
           ],
         },
@@ -848,7 +830,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             'Resumo executivo: uma visão curta e não técnica para gestores.',
             'Indicadores: achados novos, corrigidos e ainda abertos, tempo médio de correção e o percentual de achados corrigidos dentro do SLA.',
             'Tendência de achados: achados novos e corrigidos por semana. Passe o mouse sobre o gráfico (ou foque nele e use as setas) para ver cada semana; "Mostrar tabela de dados" lista os mesmos valores.',
-            'Achados abertos por severidade, principais riscos (achados críticos e altos abertos, com o pacote e a versão que os corrige), mapeamento OWASP Top 10 e recomendações priorizadas. A seção de triagem com IA (revisão automática dos achados) aparece bloqueada até estar disponível.',
+            'Achados abertos por severidade, principais riscos (achados críticos e altos abertos, com o pacote e a versão que os corrige), mapeamento OWASP Top 10 e recomendações priorizadas.',
           ],
         },
         { kind: 'p', text: 'Os textos do relatório seguem o idioma selecionado na barra superior. Selecione "Exportar PDF" para imprimir ou salvar o relatório em PDF, ou "Copiar link" para compartilhá-lo com alguém que tenha acesso ao Artemis.' },
@@ -863,7 +845,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
         {
           kind: 'ul',
           items: [
-            'Critérios do pipeline: o critério de falha mínimo de cada etapa. Um repositório pode escolher um critério mais rígido, mas não mais permissivo — as opções mais permissivas ficam desativadas no editor de pipeline, e as execuções sempre usam o mais rígido dos dois. Marque uma etapa como “Obrigatória” para rodá-la em todos os repositórios: ela mostra “Obrigatória pela política da organização” e não pode ser desligada. Etapas ainda não disponíveis não podem ser obrigatórias.',
+            'Critérios do pipeline: o critério de falha mínimo de cada etapa. Um repositório pode escolher um critério mais rígido, mas não mais permissivo — as opções mais permissivas ficam desativadas no editor de pipeline, e as execuções sempre usam o mais rígido dos dois. Marque uma etapa como “Obrigatória” para rodá-la em todos os repositórios: ela mostra “Obrigatória pela política da organização” e não pode ser desligada.',
             'SLA de correção: o número máximo de dias (de 1 a 365) para corrigir um achado de cada severidade, contado a partir da primeira detecção. Achados abertos e triados mostram “Vence em N dias” ou “Atrasado” em Vulnerabilidades, a página do achado mostra a data e o painel conta os achados fora do prazo.',
             'Política de licenças: licenças permitidas ou proibidas (identificadores SPDX como MPL-2.0, sem diferenciar maiúsculas). A etapa de Conformidade de licenças ignora as permitidas, reporta as proibidas com severidade alta e qualquer outra licença restritiva como média, para revisão; a etapa falha conforme o seu critério. Uma licença não pode ser permitida e proibida ao mesmo tempo.',
             'Aceitações de risco: achados aceitos como riscos conhecidos, com justificativa (pelo menos 10 caracteres) e data de expiração (no máximo um ano). Aceite um risco a partir do achado (“Aceitar risco”) ou aqui com “Aceitar um risco”, usando a referência do achado (F-1101) ou uma CVE, que aceita todos os achados abertos dessa CVE no repositório. Achados aceitos nunca falham pipelines. Quando a data passa, o achado é reaberto automaticamente; “Revogar” o reabre na hora, e reabrir um achado aceito remove a sua aceitação.',
@@ -878,15 +860,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'integrations',
       title: 'Integrações',
       blocks: [
-        { kind: 'p', text: 'A página Integrações conecta o Artemis às ferramentas que sua equipe já usa. As integrações são agrupadas por categoria: controle de versão, CI/CD, notificações, gestão de issues e dados de vulnerabilidades. Hoje só o NIST NVD funciona; as demais integrações aparecem como “Ainda não disponível” até serem lançadas.' },
-        {
-          kind: 'ul',
-          items: [
-            'Conectado (verde): a integração está ativa. Use "Configurar" para definir a conta, o canal ou o projeto usado, ou "Desconectar" para removê-la.',
-            'Não conectado: selecione "Conectar" para autorizar o Artemis na ferramenta externa.',
-            'Erro de conexão (vermelho): as credenciais expiraram ou foram revogadas. Selecione "Reconectar" para autorizar novamente.',
-          ],
-        },
+        { kind: 'p', text: 'A página Integrações lista os dados de vulnerabilidades que o Artemis usa e as deploy keys SSH dos seus repositórios.' },
         { kind: 'p', text: 'A integração com o NIST NVD está sempre ativa e não pode ser desconectada: ela fornece os registros de CVE e as pontuações CVSS. O card mostra a última sincronização.' },
         { kind: 'p', text: 'Em Dados de vulnerabilidades, um cartão por fonte lista todas as bases e conjuntos de regras usados pelos scanners (NVD, GitHub Advisory Database, rastreadores de distribuições Linux, as bases do Trivy e do Grype, regras de configuração e de licenças, Gitleaks e as regras de código do próprio Artemis), o que cada uma fornece e qual etapa a utiliza. As bases são baixadas e consultadas localmente; seu código nunca é enviado a elas.' },
         { kind: 'p', text: 'Em "Deploy keys SSH" você vê todas as chaves que o Artemis gerou para clonar seus repositórios (cada repositório tem a sua), com impressão digital, repositório e último uso. As chaves são criadas e trocadas na aba Deploy Key de cada repositório; selecione o repositório para abri-la. "Revogar" apaga uma chave (as análises desse repositório falham até uma nova chave ser gerada) — remova-a também do repositório no seu provedor Git.' },
@@ -919,7 +893,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Ver achados e relatórios', 'Ver todas as páginas da organização', 'Todos os papéis'],
             ['Triar achados', 'Mudar o status de achados, gerenciar aceites de risco, gerar relatórios', 'Proprietário, Administrador, Analista de segurança, Desenvolvedor'],
             ['Configurar pipelines', 'Adicionar repositórios, executar e cancelar análises, testar o acesso a repositórios, editar configurações de repositórios, pipelines e políticas', 'Proprietário, Administrador, Analista de segurança'],
-            ['Gerenciar integrações', 'Integrações, gerar, trocar e revogar deploy keys, tokens de API', 'Proprietário, Administrador'],
+            ['Gerenciar integrações', 'Integrações, gerar, trocar e revogar deploy keys', 'Proprietário, Administrador'],
             ['Gerenciar equipe', 'Convites, papéis e configurações da organização', 'Proprietário, Administrador'],
             ['Propriedade e exclusão', 'Transferir a propriedade, excluir a organização', 'Proprietário'],
           ],
@@ -931,20 +905,15 @@ export const HELP: Record<Lang, HelpSection[]> = {
       id: 'settings',
       title: 'Configurações da organização',
       blocks: [
-        { kind: 'p', text: 'Configurações, na barra lateral, reúne opções que valem para toda a organização, organizadas em abas:' },
+        { kind: 'p', text: 'Configurações, na barra lateral, reúne opções que valem para toda a organização, em duas abas:' },
         {
           kind: 'ul',
           items: [
-            'Geral: nome da organização, idioma padrão e fuso horário. A URL é sempre gerada a partir do nome e aparece somente para leitura. Renomear a organização é um recurso opcional que os administradores do Artemis habilitam por organização (até lá o nome fica bloqueado); renomear também muda a URL, então a página vai para o novo endereço e links antigos deixam de funcionar. Cada membro ainda pode escolher o próprio idioma na barra superior.',
-            '(Ainda não disponível) Autenticação: provedor de identidade OpenID Connect (Keycloak), URL do emissor (deve usar https), client ID e tempo limite da sessão. O client secret nunca é armazenado nem exibido no Artemis: ele é gerenciado pelos administradores nos segredos da implantação, e a página mostra apenas se está configurado. Ative "Exigir login único (SSO)" para que os membros só entrem pelo provedor de identidade.',
-            '(Ainda não disponível) Notificações: escolha quais eventos (nova CVE crítica, pipeline falhou, relatório semanal, SLA excedido) são enviados para cada canal (e-mail, Slack, Microsoft Teams).',
-            '(Ainda não disponível) Tokens de API: tokens permitem que scripts e jobs de CI chamem a API do Artemis. Selecione "Criar token" e informe nome, validade e escopos. O token é exibido uma única vez: copie-o antes de selecionar "Concluir". Depois disso a lista mostra apenas o prefixo e os quatro últimos caracteres. Revogue tokens que não usa mais.',
-            '(Ainda não disponível) Retenção de dados: por quanto tempo o histórico de achados, os logs de pipeline e os relatórios são mantidos. Dados mais antigos são excluídos permanentemente.',
-            'Zona de perigo: membros que não são o proprietário podem sair da organização. O proprietário pode excluí-la digitando o nome exato — isso apaga permanentemente todos os repositórios, achados, execuções de pipeline, relatórios, políticas, integrações, tokens e vínculos de membros, sem possibilidade de desfazer.',
+            'Geral: nome da organização, idioma padrão e fuso horário. A URL é sempre gerada a partir do nome e aparece somente para leitura. Renomear a organização é um recurso opcional que os administradores do Artemis habilitam por organização (até lá o nome fica bloqueado); depois de habilitado, o campo mostra “Sua organização tem permissão para se renomear.” Renomear também muda a URL, então a página vai para o novo endereço e links antigos deixam de funcionar. Cada membro ainda pode escolher o próprio idioma na barra superior.',
+            'Zona de perigo: membros que não são o proprietário podem sair da organização. O proprietário pode excluí-la digitando o nome exato — isso apaga permanentemente todos os repositórios, achados, execuções de pipeline, relatórios, políticas, integrações e vínculos de membros, sem possibilidade de desfazer.',
           ],
         },
-        { kind: 'p', text: 'Nas abas Geral, Autenticação, Notificações e Retenção de dados, selecione "Salvar alterações" para aplicar. Tokens de API e a zona de perigo têm efeito imediato. Somente proprietários e administradores podem alterar as configurações (tokens de API: permissão "Gerenciar integrações"); os demais papéis as veem somente para leitura.' },
-        { kind: 'note', text: 'Dica: dê aos tokens de API apenas os escopos necessários e a menor validade possível.' },
+        { kind: 'p', text: 'Na aba Geral, selecione "Salvar alterações" para aplicar. A zona de perigo tem efeito imediato. Somente proprietários e administradores podem alterar as configurações; os demais papéis as veem somente para leitura.' },
       ],
     },
 
@@ -963,7 +932,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Triagem com IA', 'Explicações de achados por IA (mediante solicitação, na página do achado) e resumos de relatórios escritos por IA.'],
           ],
         },
-        { kind: 'note', text: 'Os recursos opcionais são habilitados por organização pelos administradores do Artemis — as pessoas que operam esta instância do Artemis, não o proprietário nem os administradores da sua organização. Controles bloqueados mostram “Disponível mediante solicitação”: peça aos administradores do Artemis para habilitar o recurso.' },
+        { kind: 'note', text: 'Os recursos opcionais são habilitados por organização pelos administradores do Artemis — as pessoas que operam esta instância do Artemis, não o proprietário nem os administradores da sua organização. Controles bloqueados mostram “Disponível mediante solicitação”: peça aos administradores do Artemis para habilitar o recurso. Recursos habilitados mostram uma nota curta, como “Sua organização tem permissão para usar análises agendadas.”' },
       ],
     },
     {
@@ -990,7 +959,6 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['NVD', 'National Vulnerability Database, mantida pelo NIST; fonte dos dados de CVE e CVSS.'],
             ['SAST', 'Static Application Security Testing: análise do código-fonte sem executá-lo.'],
             ['SCA', 'Software Composition Analysis: análise de dependências de terceiros.'],
-            ['DAST', 'Dynamic Application Security Testing: teste de uma aplicação em execução.'],
             ['SBOM', 'Software Bill of Materials: inventário dos componentes de um build.'],
             ['IaC', 'Infrastructure as Code: infraestrutura definida em arquivos como Terraform.'],
             ['OIDC', 'OpenID Connect: protocolo de login único usado na autenticação.'],

@@ -8,6 +8,8 @@
           {{ i18n.t('ob.settings.scheduleLocked') }}
         </a>
       </span>
+    } @else {
+      <app-feature-granted feature="scheduledScans" />
     }
   </label>
   <select
@@ -18,20 +20,12 @@
     (change)="setSchedule($event)"
   >
     @for (opt of schedules; track opt.value) {
-      <option
-        [value]="opt.value"
-        [selected]="opt.value === settings().schedule"
-        [disabled]="opt.value === 'push' && settings().schedule !== 'push'"
-      >
-        {{ i18n.t(opt.label) }}@if (opt.value === 'push') { ({{ i18n.t('unavailable.tag') }})}
-      </option>
+      <option [value]="opt.value" [selected]="opt.value === settings().schedule">{{ i18n.t(opt.label) }}</option>
     }
   </select>
   <span id="interval-hint" class="hint">
     @if (!scheduledScans()) {
       {{ i18n.t(timed() ? 'ob.settings.scheduleInactive' : 'ob.settings.scheduleLockedHint') }}
-    } @else if (settings().schedule === 'push') {
-      {{ i18n.t('unavailable.push') }}
     } @else if (nextScan(); as next) {
       {{ i18n.t('ob.settings.nextScan') }}: {{ next | date: 'yyyy-MM-dd HH:mm' }} · {{ i18n.t('ob.settings.scheduleQuota') }}
     } @else if (timed()) {
@@ -39,49 +33,6 @@
     }
   </span>
 </div>
-
-<fieldset disabled>
-  <legend>{{ i18n.t('ob.settings.actions') }} <app-unavailable [hint]="'unavailable.actions'" /></legend>
-  @for (action of actions; track action.value) {
-    <label class="check">
-      <input
-        type="checkbox"
-        [checked]="settings().automaticActions.includes(action.value)"
-        (change)="toggleAction(action.value, $any($event.target).checked)"
-      />
-      {{ i18n.t(action.label) }}
-    </label>
-  }
-</fieldset>
-
-<fieldset disabled>
-  <legend>{{ i18n.t('ob.settings.dockerfile') }} <app-unavailable [hint]="'unavailable.dockerfile'" /></legend>
-  <div class="options">
-    <label class="option" [class.selected]="settings().dockerfileMode === 'recommended'">
-      <input type="radio" name="dockerfile" [checked]="settings().dockerfileMode === 'recommended'" (change)="setDockerfileMode('recommended')" />
-      <strong>{{ i18n.t('ob.settings.dockerfile.recommended') }}</strong>
-      <span class="muted">{{ i18n.t('ob.settings.dockerfile.recommendedDesc') }}</span>
-    </label>
-    <label class="option" [class.selected]="settings().dockerfileMode === 'custom'">
-      <input type="radio" name="dockerfile" [checked]="settings().dockerfileMode === 'custom'" (change)="setDockerfileMode('custom')" />
-      <strong>{{ i18n.t('ob.settings.dockerfile.custom') }}</strong>
-      <span class="muted">{{ i18n.t('ob.settings.dockerfile.customDesc') }}</span>
-    </label>
-  </div>
-  @if (settings().dockerfileMode === 'custom') {
-    <div class="field">
-      <label for="dockerfile">Dockerfile</label>
-      <textarea
-        id="dockerfile"
-        class="input"
-        required
-        placeholder="FROM node:22-alpine&#10;WORKDIR /app&#10;..."
-        [value]="settings().customDockerfile ?? ''"
-        (input)="setCustomDockerfile($event)"
-      ></textarea>
-    </div>
-  }
-</fieldset>
 
 <div class="field">
   <label for="container-image">{{ i18n.t('ob.settings.image') }}</label>
@@ -99,26 +50,19 @@
   <span id="container-image-hint" class="hint">{{ i18n.t('ob.settings.imageHint') }}</span>
 </div>
 
-<div class="toggle-row locked">
+<div class="toggle-row" [class.locked]="!aiTriage()">
   <div>
-    <strong id="ai-label">{{ i18n.t('ob.settings.ai') }}</strong>
-    <p class="muted" id="ai-desc">{{ i18n.t('ob.settings.aiDesc') }}</p>
+    <strong>{{ i18n.t('ob.settings.ai') }}</strong>
+    <p class="muted">{{ i18n.t('ob.settings.aiDesc') }}</p>
   </div>
-  <div class="lock">
-    <a class="tag" [routerLink]="'/usage' | orgLink" [title]="i18n.t('feature.ask')">
-      <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="currentColor" d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2m-7-2a2 2 0 0 1 4 0v2h-4zm2 11a2 2 0 1 1 0-4 2 2 0 0 1 0 4" />
-      </svg>
-      {{ i18n.t(org.aiLabel()) }}
-    </a>
-    <button
-      type="button"
-      role="switch"
-      class="switch"
-      aria-labelledby="ai-label"
-      aria-describedby="ai-desc"
-      aria-checked="false"
-      disabled
-    ></button>
-  </div>
+  @if (aiTriage()) {
+    <app-feature-granted feature="aiTriage" />
+  } @else {
+    <div class="lock">
+      <a class="tag" [routerLink]="'/usage' | orgLink" [title]="i18n.t('feature.ask')">
+        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="lock" /></svg>
+        {{ i18n.t('feature.locked') }}
+      </a>
+    </div>
+  }
 </div>

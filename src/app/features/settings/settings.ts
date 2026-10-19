@@ -1,32 +1,16 @@
-import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { problemCode, problemMessage } from '../../core/api/api';
-import {
-  ApiToken,
-  NotificationChannel,
-  NotificationEvent,
-  OrganizationApi,
-  OrganizationSettings,
-  RetentionPeriod,
-  SessionTimeout,
-  TokenScope,
-  Member,
-  apiTokensUrl,
-  membersUrl,
-  organizationSettingsUrl,
-} from '../../core/api/organization';
+import { Member, OrganizationApi, OrganizationSettings, membersUrl, organizationSettingsUrl } from '../../core/api/organization';
 import { I18n, TranslationKey } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
 import { RoleNotice } from '../../shared/role-notice';
-import { Unavailable } from '../../shared/unavailable';
-import { Paginator, paginate } from '../../shared/paginator';
+import { FeatureGranted } from '../../shared/feature-granted';
 import { Router } from '@angular/router';
 import { OrgContext } from '../../core/org/org-context';
 import { slugify } from '../../core/org/slug';
 
-type Tab = 'general' | 'auth' | 'notifications' | 'tokens' | 'retention' | 'danger';
-type RetentionField = keyof OrganizationSettings['retention'];
+type Tab = 'general' | 'danger';
 
 const SAVE_ERRORS: Record<string, TranslationKey> = {
   'feature-not-enabled': 'settings.renameLocked',
@@ -34,11 +18,9 @@ const SAVE_ERRORS: Record<string, TranslationKey> = {
   'slug-reserved': 'orgs.error.slugReserved',
 };
 
-const SCOPES: TokenScope[] = ['findings:read', 'scans:write', 'reports:read', 'pipelines:write'];
-
 @Component({
   selector: 'app-settings',
-  imports: [DatePipe, RequestState, RoleNotice, Unavailable, Paginator],
+  imports: [RequestState, RoleNotice, FeatureGranted],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -48,7 +30,6 @@ export class Settings {
   protected readonly org = inject(OrgContext);
   private readonly router = inject(Router);
   protected readonly canEdit = computed(() => this.org.can('team'));
-  protected readonly canManageTokens = computed(() => this.org.can('integrations'));
   protected readonly isOwner = computed(() => this.org.current()?.role === 'owner');
   // Only the owner can hand the organization over; candidates are the other active members.
   private readonly members = httpResource<Member[]>(() => (this.isOwner() ? membersUrl() : undefined), { defaultValue: [] });
@@ -69,38 +50,15 @@ export class Settings {
     return f.general.name.trim() === this.remote.value()?.general.name ? f.general.slug : slugify(f.general.name);
   });
 
-  protected readonly tabs: Tab[] = ['general', 'auth', 'notifications', 'tokens', 'retention', 'danger'];
+  protected readonly tabs: Tab[] = ['general', 'danger'];
   protected readonly tab = signal<Tab>('general');
-  // Tokens and deletion act immediately, so they have no save bar.
-  protected readonly hasSaveBar = computed(() => this.canEdit() && !['tokens', 'danger'].includes(this.tab()));
+  // The danger zone acts immediately, so it has no save bar.
+  protected readonly hasSaveBar = computed(() => this.canEdit() && this.tab() !== 'danger');
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
   protected readonly saveError = signal<string | null>(null);
 
   protected readonly timezones = ['America/Sao_Paulo', 'UTC', 'America/New_York', 'Europe/London', 'Europe/Lisbon'];
-  protected readonly sessions: SessionTimeout[] = ['1h', '8h', '24h', '7d'];
-
-  protected readonly events: NotificationEvent[] = ['criticalCve', 'pipelineFailed', 'weeklyReport', 'slaBreach'];
-  protected readonly channels: { id: NotificationChannel; label: string }[] = [
-    { id: 'email', label: 'E-mail' },
-    { id: 'slack', label: 'Slack' },
-    { id: 'teams', label: 'Microsoft Teams' },
-  ];
-
-  protected readonly scopes = SCOPES;
-  protected readonly tokens = httpResource<ApiToken[]>(() => apiTokensUrl(), { defaultValue: [] });
-  protected readonly tokenPager = paginate(this.tokens.value);
-  protected readonly creatingToken = signal(false);
-  protected readonly newToken = signal<string | null>(null);
-  protected readonly copied = signal(false);
-  protected readonly tokenError = signal<string | null>(null);
-
-  protected readonly retention: { key: TranslationKey; field: RetentionField }[] = [
-    { key: 'settings.retention.findings', field: 'findings' },
-    { key: 'settings.retention.logs', field: 'logs' },
-    { key: 'settings.retention.reports', field: 'reports' },
-  ];
-  protected readonly retentionOptions: RetentionPeriod[] = ['90', '180', '365', '730', 'forever'];
 
   protected readonly confirmName = signal('');
   protected readonly deleteMessage = signal<string | null>(null);
@@ -114,46 +72,12 @@ export class Settings {
     return this.i18n.t(`settings.tab.${tab}`);
   }
 
-  protected eventLabel(event: NotificationEvent): string {
-    return this.i18n.t(`settings.notif.${event}`);
-  }
-
-  protected sessionLabel(session: SessionTimeout): string {
-    return this.i18n.t(`settings.auth.session.${session}`);
-  }
-
-  protected retentionLabel(option: RetentionPeriod): string {
-    return this.i18n.t(`settings.retention.${option}`);
-  }
-
   protected value(event: Event): string {
     return (event.target as HTMLInputElement | HTMLSelectElement).value;
   }
 
   protected patchGeneral(change: Partial<OrganizationSettings['general']>): void {
     this.form.update((f) => f && { ...f, general: { ...f.general, ...change } });
-  }
-
-  protected patchAuth(change: Partial<OrganizationSettings['authentication']>): void {
-    this.form.update((f) => f && { ...f, authentication: { ...f.authentication, ...change } });
-  }
-
-  protected setRetention(field: RetentionField, event: Event): void {
-    const period = this.value(event) as RetentionPeriod;
-    this.form.update((f) => f && { ...f, retention: { ...f.retention, [field]: period } });
-  }
-
-  protected notifies(event: NotificationEvent, channel: NotificationChannel): boolean {
-    return this.form()?.notifications.some((n) => n.event === event && n.channel === channel) ?? false;
-  }
-
-  protected toggleNotification(event: NotificationEvent, channel: NotificationChannel): void {
-    this.form.update((f) => {
-      if (!f) return f;
-      const others = f.notifications.filter((n) => !(n.event === event && n.channel === channel));
-      const notifications = this.notifies(event, channel) ? others : [...others, { event, channel }];
-      return { ...f, notifications };
-    });
   }
 
   protected save(): void {
@@ -184,47 +108,6 @@ export class Settings {
   protected cancel(): void {
     this.form.set(this.remote.value());
     this.saveError.set(null);
-  }
-
-  protected createToken(event: SubmitEvent): void {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const data = new FormData(form);
-    this.tokenError.set(null);
-    this.api
-      .createToken(
-        String(data.get('name') ?? '').trim(),
-        data.getAll('scopes').map(String) as TokenScope[],
-        Number(data.get('expiry')),
-      )
-      .subscribe({
-        next: (created) => {
-          this.tokens.update((list) => [...list, created.token]);
-          this.newToken.set(created.secret);
-          this.creatingToken.set(false);
-          form.reset();
-        },
-        error: (err) => this.tokenError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
-      });
-  }
-
-  protected async copyToken(): Promise<void> {
-    await navigator.clipboard.writeText(this.newToken() ?? '');
-    this.copied.set(true);
-    setTimeout(() => this.copied.set(false), 2000);
-  }
-
-  protected dismissToken(): void {
-    this.newToken.set(null);
-    this.copied.set(false);
-  }
-
-  protected revokeToken(id: string): void {
-    this.tokenError.set(null);
-    this.api.revokeToken(id).subscribe({
-      next: () => this.tokens.update((list) => list.filter((t) => t.id !== id)),
-      error: (err) => this.tokenError.set(problemMessage(err) ?? this.i18n.t('api.saveError')),
-    });
   }
 
   protected setConfirmName(event: Event): void {

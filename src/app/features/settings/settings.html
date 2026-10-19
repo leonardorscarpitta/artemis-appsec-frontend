@@ -24,12 +24,12 @@
 <app-request-state [resource]="remote" />
 
 @if (tab() !== 'danger') {
-  <app-role-notice [permission]="tab() === 'tokens' ? 'integrations' : 'team'" />
+  <app-role-notice permission="team" />
 }
 
 @if (form(); as f) {
 <section class="card panel" id="settings-panel" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()" [class.danger-zone]="tab() === 'danger'">
-  <fieldset class="contents" [disabled]="tab() === 'danger' ? false : tab() === 'tokens' ? !canManageTokens() : !canEdit()">
+  <fieldset class="contents" [disabled]="tab() !== 'danger' && !canEdit()">
   @switch (tab()) {
     @case ('general') {
       <div class="grid-2">
@@ -53,6 +53,8 @@
               </span>
               <span class="hint">{{ i18n.t('settings.renameLocked') }}</span>
             </span>
+          } @else {
+            <app-feature-granted feature="organizationRename" />
           }
         </div>
         <div class="field">
@@ -80,240 +82,6 @@
           </select>
         </div>
       </div>
-    }
-
-    @case ('auth') {
-      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.authentication') }}</p>
-      <fieldset class="contents" disabled>
-      <p class="muted">{{ i18n.t('settings.auth.desc') }}</p>
-      <div class="grid-2">
-        <div class="field">
-          <span class="label-text">{{ i18n.t('settings.auth.provider') }}</span>
-          <span class="input static">{{ f.authentication.provider }}</span>
-        </div>
-        <div class="field">
-          <label for="auth-issuer">{{ i18n.t('settings.auth.issuer') }}</label>
-          <input
-            id="auth-issuer"
-            class="input mono"
-            type="url"
-            required
-            [value]="f.authentication.issuer"
-            (input)="patchAuth({ issuer: value($event) })"
-          />
-        </div>
-        <div class="field">
-          <label for="auth-client">{{ i18n.t('settings.auth.clientId') }}</label>
-          <input
-            id="auth-client"
-            class="input mono"
-            required
-            [value]="f.authentication.clientId"
-            (input)="patchAuth({ clientId: value($event) })"
-          />
-        </div>
-        <div class="field">
-          <span class="label-text" id="secret-label">{{ i18n.t('settings.auth.clientSecret') }}</span>
-          <span class="input static mono" aria-labelledby="secret-label" aria-describedby="secret-hint">
-            {{ f.authentication.clientSecretConfigured ? '••••••••••••••••' : i18n.t('settings.auth.secretNotSet') }}
-          </span>
-          <span id="secret-hint" class="hint">{{ i18n.t('settings.auth.secretHint') }}</span>
-        </div>
-        <div class="field">
-          <label for="auth-session">{{ i18n.t('settings.auth.session') }}</label>
-          <select id="auth-session" class="input" (change)="patchAuth({ sessionTimeout: $any(value($event)) })">
-            @for (s of sessions; track s) {
-              <option [value]="s" [selected]="s === f.authentication.sessionTimeout">{{ sessionLabel(s) }}</option>
-            }
-          </select>
-        </div>
-      </div>
-      <div class="toggle-row">
-        <div>
-          <strong id="enforce-label">{{ i18n.t('settings.auth.enforce') }}</strong>
-          <p class="muted">{{ i18n.t('settings.auth.enforceDesc') }}</p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          class="switch"
-          aria-labelledby="enforce-label"
-          [attr.aria-checked]="f.authentication.enforceSso"
-          (click)="patchAuth({ enforceSso: !f.authentication.enforceSso })"
-        ></button>
-      </div>
-      </fieldset>
-    }
-
-    @case ('notifications') {
-      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.notifications') }}</p>
-      <fieldset class="contents" disabled>
-      <p class="muted">{{ i18n.t('settings.notif.desc') }}</p>
-      <div class="table-wrap">
-        <table class="table notif">
-          <thead>
-            <tr>
-              <th scope="col">{{ i18n.t('settings.notif.event') }}</th>
-              @for (channel of channels; track channel.id) {
-                <th scope="col" class="center">{{ channel.label }}</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (event of events; track event) {
-              <tr>
-                <th scope="row">{{ eventLabel(event) }}</th>
-                @for (channel of channels; track channel.id) {
-                  <td class="center">
-                    <input
-                      type="checkbox"
-                      [checked]="notifies(event, channel.id)"
-                      [attr.aria-label]="eventLabel(event) + ' – ' + channel.label"
-                      (change)="toggleNotification(event, channel.id)"
-                    />
-                  </td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      </fieldset>
-    }
-
-    @case ('tokens') {
-      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.apiTokens') }}</p>
-      <div class="section-head">
-        <p class="muted">{{ i18n.t('settings.tokens.desc') }}</p>
-        <button type="button" class="btn primary" disabled [title]="i18n.t('unavailable.apiTokens')">{{ i18n.t('settings.tokens.create') }}</button>
-      </div>
-
-      @if (tokenError(); as message) {
-        <p class="error" role="alert">{{ message }}</p>
-      }
-
-      @if (newToken(); as token) {
-        <div class="new-token" role="status">
-          <strong>{{ i18n.t('settings.tokens.newTitle') }}</strong>
-          <p>{{ i18n.t('settings.tokens.newWarning') }}</p>
-          <div class="copy-row">
-            <code class="input static">{{ token }}</code>
-            <button type="button" class="btn" (click)="copyToken()">
-              {{ copied() ? i18n.t('settings.tokens.copied') : i18n.t('settings.tokens.copy') }}
-            </button>
-          </div>
-          <button type="button" class="btn primary done" (click)="dismissToken()">{{ i18n.t('settings.tokens.done') }}</button>
-        </div>
-      }
-
-      @if (creatingToken()) {
-        <form class="token-form" (submit)="createToken($event)">
-          <div class="field">
-            <label for="token-name">{{ i18n.t('settings.tokens.name') }}</label>
-            <input id="token-name" name="name" class="input" required autocomplete="off" />
-          </div>
-          <div class="field">
-            <label for="token-expiry">{{ i18n.t('settings.tokens.expiry') }}</label>
-            <select id="token-expiry" name="expiry" class="input">
-              <option value="30">{{ i18n.t('settings.tokens.expiry.30') }}</option>
-              <option value="90" selected>{{ i18n.t('settings.tokens.expiry.90') }}</option>
-              <option value="365">{{ i18n.t('settings.tokens.expiry.365') }}</option>
-            </select>
-          </div>
-          <fieldset class="wide">
-            <legend>{{ i18n.t('settings.tokens.scopes') }}</legend>
-            <div class="scopes">
-              @for (scope of scopes; track scope) {
-                <label class="check mono">
-                  <input type="checkbox" name="scopes" [value]="scope" [checked]="scope === 'findings:read'" />
-                  {{ scope }}
-                </label>
-              }
-            </div>
-          </fieldset>
-          <div class="form-actions wide">
-            <button type="button" class="btn ghost" (click)="creatingToken.set(false)">{{ i18n.t('settings.tokens.cancel') }}</button>
-            <button type="submit" class="btn primary">{{ i18n.t('settings.tokens.generate') }}</button>
-          </div>
-        </form>
-      }
-
-      @if (tokens.value().length) {
-        <div class="table-wrap bordered">
-          <table class="table stack">
-            <thead>
-              <tr>
-                <th scope="col">{{ i18n.t('settings.tokens.name') }}</th>
-                <th scope="col">{{ i18n.t('settings.tokens.hint') }}</th>
-                <th scope="col">{{ i18n.t('settings.tokens.scopes') }}</th>
-                <th scope="col">{{ i18n.t('settings.tokens.created') }}</th>
-                <th scope="col">{{ i18n.t('settings.tokens.expires') }}</th>
-                <th scope="col">{{ i18n.t('settings.tokens.lastUsed') }}</th>
-                <th scope="col"><span class="sr-only">{{ i18n.t('settings.tokens.revoke') }}</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (t of tokenPager.items(); track t.id) {
-                <tr>
-                  <td class="primary-cell">
-                    <strong>{{ t.name }}</strong>
-                    @if (t.expired) {
-                      <span class="tag">{{ i18n.t('settings.tokens.expired') }}</span>
-                    }
-                  </td>
-                  <td class="mono" [attr.data-label]="i18n.t('settings.tokens.hint')">{{ t.hint }}</td>
-                  <td [attr.data-label]="i18n.t('settings.tokens.scopes')">
-                    <span class="scope-tags">
-                      @for (s of t.scopes; track s) {
-                        <span class="tag mono">{{ s }}</span>
-                      }
-                    </span>
-                  </td>
-                  <td class="muted" [attr.data-label]="i18n.t('settings.tokens.created')">{{ t.createdAt | date: 'yyyy-MM-dd' }}</td>
-                  <td class="muted" [attr.data-label]="i18n.t('settings.tokens.expires')">{{ t.expiresAt | date: 'yyyy-MM-dd' }}</td>
-                  <td class="muted" [attr.data-label]="i18n.t('settings.tokens.lastUsed')">
-                    {{ t.lastUsedAt ? (t.lastUsedAt | date: 'yyyy-MM-dd') : i18n.t('settings.tokens.never') }}
-                  </td>
-                  <td class="num" data-label="">
-                    @if (canManageTokens()) {
-                    <button
-                      type="button"
-                      class="btn danger-text"
-                      [attr.aria-label]="i18n.t('settings.tokens.revoke') + ': ' + t.name"
-                      (click)="revokeToken(t.id)"
-                    >
-                      {{ i18n.t('settings.tokens.revoke') }}
-                    </button>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-          <app-paginator [pager]="tokenPager" />
-        </div>
-      } @else {
-        <p class="muted">{{ i18n.t('settings.tokens.empty') }}</p>
-      }
-    }
-
-    @case ('retention') {
-      <p class="unavailable-note"><app-unavailable /> {{ i18n.t('unavailable.retention') }}</p>
-      <fieldset class="contents" disabled>
-      <p class="muted">{{ i18n.t('settings.retention.desc') }}</p>
-      <div class="grid-3">
-        @for (item of retention; track item.key) {
-          <div class="field">
-            <label [for]="'ret-' + $index">{{ i18n.t(item.key) }}</label>
-            <select class="input" [id]="'ret-' + $index" (change)="setRetention(item.field, $event)">
-              @for (opt of retentionOptions; track opt) {
-                <option [value]="opt" [selected]="opt === f.retention[item.field]">{{ retentionLabel(opt) }}</option>
-              }
-            </select>
-          </div>
-        }
-      </div>
-      </fieldset>
     }
 
     @case ('danger') {
