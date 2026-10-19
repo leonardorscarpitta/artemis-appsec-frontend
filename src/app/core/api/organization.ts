@@ -90,6 +90,13 @@ export interface MyInvitation {
   expiresAt: string;
 }
 
+/** What an invitation link offers, read before joining (the token is not used up). */
+export interface InvitationPreview {
+  organizationName: string;
+  organizationSlug: string;
+  role: Role;
+}
+
 /** A role's permissions in the current organization; `editable`: the signed-in user may change them. */
 export interface RoleInfo {
   role: Role;
@@ -201,6 +208,11 @@ export class OrganizationApi {
   /** The slug is derived from the name by the API. */
   createOrganization(name: string): Observable<OrganizationSummary> {
     return this.http.post<OrganizationSummary>(apiUrl('/organizations'), { name });
+  }
+
+  /** Reads the organization and role of an invitation link without using it. */
+  previewInvitationLink(token: string): Observable<InvitationPreview> {
+    return this.http.post<InvitationPreview>(`${myInvitationsUrl()}/preview`, { token });
   }
 
   /** Joins the organization of an invitation link; the token works once. */
