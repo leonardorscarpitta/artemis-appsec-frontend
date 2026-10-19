@@ -54,10 +54,10 @@ docker compose exec frontend npx ng build --configuration development
 
 ### Production image
 
-`Dockerfile` builds the production bundle and serves it with `nginx-unprivileged` (non-root, port 8080, `nginx/default.conf`): SPA fallback to `index.html`, hashed assets cached as immutable, `index.html` revalidated. Every response carries the headers in `nginx/security-headers.conf`:
+`Dockerfile` builds the production bundle (`node:22.23-alpine`) and serves it with `nginx-unprivileged:1.30-alpine` (current stable; non-root, port 8080, `nginx/default.conf`): SPA fallback to `index.html`, hashed assets cached as immutable, `index.html` revalidated, `/invite/<token>` served with `no-store` and no access log (the one-time token never reaches the log). Every response carries the headers in `nginx/security-headers.conf`:
 
 - `Content-Security-Policy`: `default-src 'self'`; scripts from the app only plus the sha256 of each inline `<script>` in the built `index.html` (the theme bootstrap) — computed during `docker build`, so changing that script needs no manual update; `connect-src`/`form-action` allow the identity provider; `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'self'`. Styles need `'unsafe-inline'` (Angular component styles); critical-CSS inlining is turned off in the production build because its `onload` handler would be blocked.
-- `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, geolocation off) and `Strict-Transport-Security` (effective once the TLS proxy in front serves HTTPS).
+- `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` (keeps invitation tokens out of `Referer`), `Cross-Origin-Opener-Policy: same-origin` (sign-in/out are full redirects, no popups), `Permissions-Policy` (camera, microphone, geolocation off) and `Strict-Transport-Security` (effective once the TLS proxy in front serves HTTPS).
 
 ```sh
 docker build -t artemisappsec-web .
@@ -98,7 +98,7 @@ In-app pages live under the organization slug: `/<org>/<page>` (e.g. `/acme/vuln
 | `/login` | Sign in or create an account (redirects to Keycloak) |
 | `/auth/callback` | OpenID Connect redirect target; completes sign-in, then goes to the requested page if the user may open it, else to their only organization or to `/organizations` (`landingUrl`) |
 | `/organizations` | Organization picker: the user's organizations, invitations to their account e-mail (accept/decline) and "Create organization" (the creator becomes owner; one Free organization per account → `free-organization-limit`) |
-| `/invite/:token` | Accepts a one-time invitation link (`POST /me/invitations/accept` `{token}`), then opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
+| `/invite/:token` | Shows a one-time invitation link (`POST /me/invitations/preview` `{token}` → organization and role, token not used) and asks “Join <org> as <role>?”; **Join** accepts it (`POST /me/invitations/accept` `{token}`) and opens the organization's dashboard; sign-in/registration keeps the link as `returnUrl` (`INVITE_LINK` in `org-context.ts`) |
 | `/dashboard` | Security overview: KPI tiles (sparklines and deltas vs the first day of the trend period, derived client-side from the trends series; relative last-scan time), one stacked severity bar, trends for the last 30/90 days (`GET /dashboard/trends?days=&tz=<browser time zone>`: open findings by severity, new vs fixed per week, mean time to remediate, pipeline runs per day), open findings by kind and top repositories (link to `/vulnerabilities?kind=|repository=|severity=|status=`, which pre-fills the filters). Charts are hand-rolled SVG/HTML in `features/dashboard/charts/` (no chart library; `sparkline.ts` for the KPI tiles); loading uses skeletons; fills use the dashboard-scoped `--chart-*` tokens (severity hues re-stepped for adjacent marks, checked for color-vision deficiency in both themes) |
 | `/vulnerabilities`, `/vulnerabilities/:cve` | Findings list (search, filters, sort) and finding detail |
 | `/repositories`, `/repositories/:name` | Connected repositories and repository settings (General / Pipeline / Deploy Key tabs — `?tab=access` opens Access; monorepo folders + stacks via `shared/monorepo-folders.ts`, also used in onboarding; "Remove repository…" on the General tab opens a dialog with "Also delete everything linked to this repository" (unchecked = keep history → `DELETE /repositories/{name}`; checked → `?purge=true`). The list page shows "Removed repositories" (`GET /removed-repositories`, "Delete history" → `DELETE /removed-repositories/{id}`). Findings and runs of removed repositories carry `repositoryRemoved` and are shown with `shared/repo-name.ts` (“Removed repository” tag, no links, no re-run) |
@@ -168,7 +168,9 @@ Sign-in uses Keycloak as the OpenID Connect provider with the Artemis login them
 
 ## Invitations
 
-Invitations are one-time links (Artemis sends no e-mails yet, and e-mail verification is off, so matching by e-mail would let anyone who registers the invited address join). `POST /invitations` and `…/{id}/resend` return a `token` once; the Team page shows `${origin}/invite/<token>` with a Copy button and never again. Resending replaces the token, so older links stop working.
+Invitations are one-time links (Artemis sends no e-mails yet, and e-mail verification is off, so matching by e-mail would let anyone who registers the invited address join). `POST /invitations` and `…/{id}/resend` return a `token` once; the Team page shows `${origin}/invite/<token>` with a Copy button and never again. Resending replaces the token, so older links stop working. Opening a link never joins by itself: the invitee confirms the organization and role first, so a link sent by someone else can't add an account to an organization silently.
+
+The `orgInterceptor` adds `X-Artemis-Organization` from the URL only when a request doesn't set it; requests that name their own organization (the home workspace cards) keep it.
 
 ## Talking to the API
 
