@@ -88,9 +88,9 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'The report type and the length of its period; counts of findings detected, fixed and open, mean time to remediate, SLA compliance, open findings by severity and by kind, and how many are past their deadline; the number of open findings per OWASP Top 10 category',
+                'The length of the report period; counts of findings detected, fixed and open, mean time to remediate, SLA compliance, open findings by severity and by kind, and how many are past their deadline; the number of open findings per OWASP Top 10 category',
                 'For up to 8 top risks: the public CVE or the scanner rule id, the finding title (not for secrets), severity, CVSS score, CWE, package name, installed and fixed versions, kind and age in days',
-                'Dependency (SBOM) reports instead send: component counts per ecosystem, license identifiers with their counts, how many components have no license, up to 8 vulnerable components (package name, installed and fixed versions, severity, CVE ids), up to 200 dependency names with their versions and ecosystem (only names that look like package identifiers, so the AI can point out little-known or suspicious packages) and the public container image references configured for image scanning. Package authors and other metadata from the SBOM are not sent',
+                'When the SBOM topic is chosen: component counts per ecosystem, license identifiers with their counts, how many components have no license, up to 8 vulnerable components (package name, installed and fixed versions, severity, CVE ids), up to 200 dependency names with their versions and ecosystem (only names that look like package identifiers, so the AI can point out little-known or suspicious packages) and the public container image references configured for image scanning. Package authors and other metadata from the SBOM are not sent',
               ],
             },
             { kind: 'p', text: 'Never sent:' },
@@ -245,9 +245,9 @@ export const LEGAL: Record<LegalDocument, Record<Lang, LegalText>> = {
             {
               kind: 'ul',
               items: [
-                'O tipo do relatório e a duração do período; contagens de achados detectados, corrigidos e abertos, tempo médio de correção, conformidade com o SLA, achados abertos por severidade e por tipo, e quantos passaram do prazo; o número de achados abertos por categoria do OWASP Top 10',
+                'A duração do período do relatório; contagens de achados detectados, corrigidos e abertos, tempo médio de correção, conformidade com o SLA, achados abertos por severidade e por tipo, e quantos passaram do prazo; o número de achados abertos por categoria do OWASP Top 10',
                 'Para até 8 principais riscos: o CVE público ou o id da regra do scanner, o título do achado (exceto para segredos), severidade, nota CVSS, CWE, nome do pacote, versões instalada e corrigida, tipo e idade em dias',
-                'Relatórios de dependências (SBOM) enviam em vez disso: contagens de componentes por ecossistema, identificadores de licença com suas contagens, quantos componentes não têm licença, até 8 componentes vulneráveis (nome do pacote, versões instalada e corrigida, severidade, ids de CVE), até 200 nomes de dependências com versão e ecossistema (apenas nomes com formato de identificador de pacote, para que a IA aponte pacotes pouco conhecidos ou suspeitos) e as referências públicas de imagens de contêiner configuradas para a análise de imagens. Autores de pacotes e outros metadados do SBOM não são enviados',
+                'Quando o tópico SBOM é escolhido: contagens de componentes por ecossistema, identificadores de licença com suas contagens, quantos componentes não têm licença, até 8 componentes vulneráveis (nome do pacote, versões instalada e corrigida, severidade, ids de CVE), até 200 nomes de dependências com versão e ecossistema (apenas nomes com formato de identificador de pacote, para que a IA aponte pacotes pouco conhecidos ou suspeitos) e as referências públicas de imagens de contêiner configuradas para a análise de imagens. Autores de pacotes e outros metadados do SBOM não são enviados',
               ],
             },
             { kind: 'p', text: 'Nunca enviado:' },
