@@ -49,6 +49,7 @@
           }
         </select>
       </div>
+      @if (type() !== 'dependencies') {
       <div class="field">
         <label for="report-period">{{ i18n.t('reports.form.period') }}</label>
         <select id="report-period" class="input" (change)="period.set($any(value($event)))">
@@ -57,6 +58,9 @@
           }
         </select>
       </div>
+      } @else {
+        <p class="muted field-note">{{ i18n.t('reports.form.sbomNote') }}</p>
+      }
     </div>
     @if (submitError(); as error) {
       <p class="error" role="alert">{{ error }}</p>
@@ -109,7 +113,11 @@
           <td [attr.data-label]="i18n.t('reports.col.type')"><span class="tag">{{ typeLabel(report.type) }}</span></td>
           <td [attr.data-label]="i18n.t('reports.col.scope')">{{ report.scope ?? i18n.t('reports.scope.org') }}</td>
           <td class="muted period" [attr.data-label]="i18n.t('reports.col.period')">
-            <span><span class="date">{{ report.periodStart }}</span> – <span class="date">{{ report.periodEnd }}</span></span>
+            @if (report.type === 'dependencies') {
+              <span>{{ i18n.t('reports.deps.latest') }}</span>
+            } @else {
+              <span><span class="date">{{ report.periodStart }}</span> – <span class="date">{{ report.periodEnd }}</span></span>
+            }
           </td>
           <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
           <td [attr.data-label]="i18n.t('reports.col.generatedBy')">{{ authorLabel(report.generatedBy) }}</td>

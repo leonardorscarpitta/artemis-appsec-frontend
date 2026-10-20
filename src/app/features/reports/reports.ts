@@ -48,7 +48,7 @@ export class Reports {
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);
 
-  protected readonly types: ReportType[] = ['summary', 'compliance'];
+  protected readonly types: ReportType[] = ['summary', 'compliance', 'dependencies'];
   protected readonly periods: ReportPeriod[] = ['week', 'month', 'quarter'];
 
   protected readonly type = signal<ReportType>('summary');

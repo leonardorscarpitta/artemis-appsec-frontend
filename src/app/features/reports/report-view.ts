@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ReportDetails, ReportError, ReportType, ReportsApi, reportUrl } from '../../core/api/reports';
+import { ComponentConcern, ImageStanding, ReportDetails, ReportError, ReportType, ReportsApi, reportUrl } from '../../core/api/reports';
 import { problemMessage } from '../../core/api/api';
 import { SPARKLE_ICON } from '../../shared/stack-source';
 import { I18n } from '../../core/i18n';
@@ -88,6 +88,26 @@ export class ReportView {
 
   protected readonly owaspMax = computed(() => Math.max(1, ...(this.content()?.owasp ?? []).map((o) => o.findings)));
 
+  /** License or ecosystem counts as bars; "no license" is shown as its own row. */
+  protected readonly licenseRows = computed(() => {
+    const dep = this.content()?.dependencies;
+    if (!dep) return [];
+    const rows = dep.licenses.map((l) => ({ name: l.license, count: l.components }));
+    if (dep.withoutLicense) rows.push({ name: this.i18n.t('reports.deps.noLicense'), count: dep.withoutLicense });
+    return bars(rows);
+  });
+  protected readonly ecosystemRows = computed(() =>
+    bars(Object.entries(this.content()?.dependencies?.ecosystems ?? {}).map(([name, count]) => ({ name, count }))),
+  );
+
+  protected concernLabel(concern: ComponentConcern): string {
+    return this.i18n.t(`reports.deps.concern.${concern}`);
+  }
+
+  protected standingLabel(standing: ImageStanding): string {
+    return this.i18n.t(`reports.deps.standing.${standing}`);
+  }
+
   protected typeLabel(type: ReportType): string {
     return this.i18n.t(`reports.type.${type}`);
   }
@@ -101,4 +121,9 @@ export class ReportView {
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 2000);
   }
+}
+
+function bars(rows: { name: string; count: number }[]): { name: string; count: number; percent: number }[] {
+  const max = Math.max(1, ...rows.map((r) => r.count));
+  return rows.map((r) => ({ ...r, percent: (r.count / max) * 100 }));
 }
