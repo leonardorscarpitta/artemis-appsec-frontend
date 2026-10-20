@@ -10,7 +10,7 @@
     <div>
       <p class="eyebrow">{{ typeLabel(report.type) }} · {{ report.scope ?? i18n.t('reports.scope.org') }}</p>
       <h1>{{ report.title }}</h1>
-      <p>{{ report.periodStart }} – {{ report.periodEnd }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</p>
+      <p>{{ report.type === 'dependencies' ? i18n.t('reports.deps.latest') : report.periodStart + ' – ' + report.periodEnd }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</p>
     </div>
     <div class="page-actions">
       <button type="button" class="btn" (click)="share()">
@@ -43,6 +43,197 @@
       }
     </section>
 
+    @if (detail.dependencies; as dep) {
+    <dl class="kpis">
+      <div class="card">
+        <dt>{{ i18n.t('reports.deps.components') }}</dt>
+        <dd>{{ dep.components }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.deps.unique') }}</dt>
+        <dd>{{ dep.unique }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.deps.vulnerable') }}</dt>
+        <dd>{{ dep.vulnerable }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.deps.noLicense') }}</dt>
+        <dd>{{ dep.withoutLicense }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.deps.repositories') }}</dt>
+        <dd>{{ dep.repositories.length }}</dd>
+      </div>
+    </dl>
+
+    <section class="card" aria-labelledby="supply-title">
+      <div class="card-header">
+        <h2 id="supply-title">{{ i18n.t('reports.deps.supply.title') }}</h2>
+        @if (dep.componentNotes) {
+          <span class="tag ai-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="sparkle" /></svg>
+            {{ i18n.t('reports.ai.badge') }}
+          </span>
+        }
+      </div>
+      @if (dep.componentNotes; as notes) {
+        <p class="muted note">{{ i18n.t('reports.deps.supply.desc') }}</p>
+        @if (notes.length) {
+          <ul class="notes">
+            @for (n of notes; track n.component) {
+              <li>
+                <span class="mono">{{ n.component }}</span>
+                <span class="tag">{{ concernLabel(n.concern) }}</span>
+                <span>{{ n.note }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>{{ i18n.t('reports.deps.supply.none') }}</p>
+        }
+        @if (dep.imageNotes?.length) {
+          <h3>{{ i18n.t('reports.deps.images') }}</h3>
+          <ul class="notes">
+            @for (n of dep.imageNotes; track n.image) {
+              <li>
+                <span class="mono">{{ n.image }}</span>
+                <span class="tag">{{ standingLabel(n.standing) }}</span>
+                <span>{{ n.note }}</span>
+              </li>
+            }
+          </ul>
+        }
+        <p class="ai-disclaimer">{{ i18n.t('reports.ai.disclaimer') }}</p>
+      } @else {
+        <p class="muted">{{ i18n.t('reports.deps.supply.noAi') }}</p>
+      }
+    </section>
+
+    <section class="card table-card" aria-labelledby="deps-repos-title">
+      <div class="card-header">
+        <h2 id="deps-repos-title">{{ i18n.t('reports.deps.sboms') }}</h2>
+      </div>
+      <table class="table stack">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('col.repository') }}</th>
+            <th scope="col">{{ i18n.t('reports.deps.run') }}</th>
+            <th scope="col" class="num">{{ i18n.t('reports.deps.components') }}</th>
+            <th scope="col" class="num">{{ i18n.t('reports.deps.vulnerable') }}</th>
+            <th scope="col" class="num">{{ i18n.t('reports.deps.noLicense') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of dep.repositories; track r.repository) {
+            <tr>
+              <td class="primary-cell">
+                <strong>{{ r.repository }}</strong>
+                @if (r.folders.length) {
+                  <span class="muted risk-title">{{ r.folders.join(', ') }}</span>
+                }
+                @if (r.image) {
+                  <span class="muted risk-title mono">{{ r.image }}</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('reports.deps.run')">
+                <a class="mono" [routerLink]="['/pipelines', r.runNumber] | orgLink">#{{ r.runNumber }}</a>
+                <span class="muted fix">{{ r.scannedAt | date: 'yyyy-MM-dd HH:mm' }}</span>
+              </td>
+              <td class="num" [attr.data-label]="i18n.t('reports.deps.components')">{{ r.components }}</td>
+              <td class="num" [attr.data-label]="i18n.t('reports.deps.vulnerable')">{{ r.vulnerable }}</td>
+              <td class="num" [attr.data-label]="i18n.t('reports.deps.noLicense')">{{ r.withoutLicense }}</td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="5" class="muted">{{ i18n.t('reports.deps.noSbom') }}</td></tr>
+          }
+        </tbody>
+      </table>
+      @if (dep.withoutSbom.length) {
+        <p class="muted note without-sbom">{{ i18n.t('reports.deps.withoutSbom') }} {{ dep.withoutSbom.join(', ') }}</p>
+      }
+    </section>
+
+    <section class="card table-card" aria-labelledby="deps-vuln-title">
+      <div class="card-header">
+        <h2 id="deps-vuln-title">{{ i18n.t('reports.deps.vulnTitle') }}</h2>
+        @if (dep.vulnerable > dep.vulnerableComponents.length) {
+          <span class="muted note">{{ i18n.t('reports.deps.vulnShown').replace('{n}', '' + dep.vulnerableComponents.length).replace('{total}', '' + dep.vulnerable) }}</span>
+        }
+      </div>
+      <table class="table stack">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('col.package') }}</th>
+            <th scope="col">{{ i18n.t('col.repository') }}</th>
+            <th scope="col">{{ i18n.t('reports.risks.id') }}</th>
+            <th scope="col">{{ i18n.t('col.severity') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of dep.vulnerableComponents; track $index) {
+            <tr>
+              <td class="primary-cell">
+                <span class="mono">{{ v.name }}&#64;{{ v.version }}</span>
+                @if (v.fixedVersion) {
+                  <span class="muted fix">{{ i18n.t('reports.risks.fix') }} {{ v.fixedVersion }}</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('col.repository')">{{ v.repository }}</td>
+              <td class="mono" [attr.data-label]="i18n.t('reports.risks.id')">{{ v.ids.join(', ') }}@if (v.vulnerabilities > v.ids.length) { +{{ v.vulnerabilities - v.ids.length }} }</td>
+              <td [attr.data-label]="i18n.t('col.severity')"><app-severity-badge [level]="v.severity" /></td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="4" class="muted">{{ i18n.t('reports.deps.noVuln') }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="licenses-title">
+        <div class="card-header">
+          <h2 id="licenses-title">{{ i18n.t('reports.deps.licenses') }}</h2>
+        </div>
+        <ul class="breakdown wide">
+          @for (l of licenseRows(); track l.name) {
+            <li>
+              <span class="name mono">{{ l.name }}</span>
+              <span class="track"><span class="fill" [style.width.%]="l.percent"></span></span>
+              <span class="count">{{ l.count }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+      <section class="card" aria-labelledby="ecosystems-title">
+        <div class="card-header">
+          <h2 id="ecosystems-title">{{ i18n.t('reports.deps.ecosystems') }}</h2>
+        </div>
+        <ul class="breakdown wide">
+          @for (e of ecosystemRows(); track e.name) {
+            <li>
+              <span class="name mono">{{ e.name }}</span>
+              <span class="track"><span class="fill" [style.width.%]="e.percent"></span></span>
+              <span class="count">{{ e.count }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section class="card" aria-labelledby="recs-title">
+      <div class="card-header">
+        <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
+      </div>
+      <ol class="recs">
+        @for (rec of detail.recommendations; track $index) {
+          <li>{{ rec }}</li>
+        }
+      </ol>
+    </section>
+    } @else {
     <dl class="kpis">
       <div class="card">
         <dt>{{ i18n.t('reports.kpi.opened') }}</dt>
@@ -181,6 +372,7 @@
         </tbody>
       </table>
     </section>
+    }
   </div>
   } @else if (report.status === 'failed') {
     <div class="card failed" role="alert">

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Severity } from '../domain';
 import { apiUrl } from './api';
 
-export type ReportType = 'summary' | 'compliance';
+export type ReportType = 'summary' | 'compliance' | 'dependencies';
 export type ReportAuthor = 'schedule' | 'user';
 export type ReportStatus = 'ready' | 'generating' | 'failed';
 /** Who wrote the summary and recommendations. */
@@ -66,6 +66,43 @@ export interface ReportContent {
   aiNotice: ReportAiNotice | null;
   /** Set when the AI text is written in the organization's language rather than the reader's. */
   textLanguage: 'en-US' | 'pt-BR' | null;
+  /** Only in dependency (SBOM) reports. */
+  dependencies: Dependencies | null;
+}
+
+export type ComponentConcern = 'unknown-publisher' | 'low-adoption' | 'typosquat-risk' | 'unmaintained' | 'deprecated' | 'license' | 'other';
+export type ImageStanding = 'official' | 'widely-used' | 'unknown';
+
+/** Built from the latest SBOM of each repository; the notes are the AI supply-chain review (null without AI). */
+export interface Dependencies {
+  components: number;
+  unique: number;
+  vulnerable: number;
+  withoutLicense: number;
+  ecosystems: Record<string, number>;
+  licenses: { license: string; components: number }[];
+  repositories: {
+    repository: string;
+    runNumber: number;
+    scannedAt: string;
+    folders: string[];
+    components: number;
+    vulnerable: number;
+    withoutLicense: number;
+    image: string | null;
+  }[];
+  vulnerableComponents: {
+    repository: string;
+    name: string;
+    version: string;
+    fixedVersion: string | null;
+    severity: Severity;
+    vulnerabilities: number;
+    ids: string[];
+  }[];
+  withoutSbom: string[];
+  componentNotes: { component: string; concern: ComponentConcern; note: string }[] | null;
+  imageNotes: { image: string; standing: ImageStanding; note: string }[] | null;
 }
 
 export interface ReportDetails {
