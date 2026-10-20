@@ -204,3 +204,4 @@ Artemis is fully open source under the [MIT License](LICENSE): anyone may use, c
 ## About
 
 Artemis is a **fictional product** created for an academic presentation and developed by [leonardorscarpitta](https://github.com/leonardorscarpitta). The developer claims no ownership of the code or of the name: there is no Artemis company, "Artemis" is not a registered trademark, and the project is not affiliated with NASA's Artemis program or any other product named Artemis. The in-app texts (Privacy Policy, Terms of Use, footer) are written as if Artemis were a real service, for the demonstration. Anyone running their own instance is responsible for it and for the data it stores.
+- Usage limit: `core/api/limits.ts` (`PlatformLimits`) reads the public `GET /limits`; static texts in `home-content.ts`, `help-content.ts` and `legal-content.ts` use the `{scans}` placeholder, filled by `PlatformLimits.fill()` in the home and help components (40 until the API answers).

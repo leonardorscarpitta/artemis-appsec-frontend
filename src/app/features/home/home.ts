@@ -10,6 +10,7 @@ import { Logo } from '../../shared/logo';
 import { SeverityBadge } from '../../shared/severity-badge';
 import { ThemeToggle } from '../../shared/theme-toggle';
 import { HOME } from './home-content';
+import { PlatformLimits } from '../../core/api/limits';
 import { HomeWorkspace } from './home-workspace';
 import { HOME_PREVIEW } from './home-preview';
 import { UserBadge } from '../../shared/user-badge';
@@ -23,7 +24,8 @@ import { UserBadge } from '../../shared/user-badge';
 export class Home {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(Auth);
-  protected readonly c = computed(() => HOME[this.i18n.lang()]);
+  private readonly limits = inject(PlatformLimits);
+  protected readonly c = computed(() => this.limits.fill(HOME[this.i18n.lang()]));
 
   protected readonly preview = HOME_PREVIEW;
   private readonly org = inject(OrgContext);
