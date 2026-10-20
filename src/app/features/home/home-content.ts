@@ -68,7 +68,7 @@ export const HOME: Record<Lang, HomeContent> = {
       lead: 'Artemis is free: no plans, no payments, no credit card.',
       card: 'Every organization includes',
       included: [
-        '25 scans per organization each month',
+        '{scans} scans per organization each month',
         'Secret, SAST, dependency, license, Dockerfile, container image and IaC scanning',
         'Configurable DevSecOps pipeline and policies',
         'Dashboard, findings and pipeline history',
@@ -159,7 +159,7 @@ export const HOME: Record<Lang, HomeContent> = {
       lead: 'O Artemis é gratuito: sem planos, sem pagamentos, sem cartão de crédito.',
       card: 'Toda organização inclui',
       included: [
-        '25 análises por organização a cada mês',
+        '{scans} análises por organização a cada mês',
         'Varredura de segredos, SAST, dependências, licenças, Dockerfile, imagens de contêiner e IaC',
         'Pipeline DevSecOps configurável e políticas',
         'Painel, achados e histórico de pipelines',
