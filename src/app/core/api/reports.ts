@@ -4,7 +4,11 @@ import { Observable } from 'rxjs';
 import { Severity } from '../domain';
 import { apiUrl } from './api';
 
+/** New reports are all `summary`; the other types belong to older reports. */
 export type ReportType = 'summary' | 'compliance' | 'dependencies';
+/** Optional topics; the figures (indicators, trend, severities, top risks, OWASP) are always included. */
+export type ReportSection = 'summary' | 'recommendations' | 'sbom';
+export const REPORT_SECTIONS: ReportSection[] = ['summary', 'recommendations', 'sbom'];
 export type ReportAuthor = 'schedule' | 'user';
 export type ReportStatus = 'ready' | 'generating' | 'failed';
 /** Who wrote the summary and recommendations. */
@@ -18,7 +22,8 @@ export interface ReportSummary {
   id: string;
   title: string;
   type: ReportType;
-  /** Repository name, or null for the whole organization. */
+  sections: ReportSection[];
+  /** Repository name, or null for all of the organization's repositories. */
   scope: string | null;
   periodStart: string;
   periodEnd: string;
@@ -55,7 +60,8 @@ export interface OwaspCategory {
 }
 
 export interface ReportContent {
-  summary: string;
+  /** Null when the executive summary topic was not chosen. */
+  summary: string | null;
   kpis: { opened: number; fixed: number; open: number; mttrDays: number; slaCompliance: number };
   trend: TrendPoint[];
   severity: Record<Severity, number>;
@@ -112,7 +118,7 @@ export interface ReportDetails {
 }
 
 export interface GenerateReport {
-  type: ReportType;
+  sections: ReportSection[];
   scope: string | null;
   period: ReportPeriod;
 }

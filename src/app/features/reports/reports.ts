@@ -4,7 +4,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { problemMessage } from '../../core/api/api';
 import { ProjectSummary, repositoriesUrl } from '../../core/api/projects';
-import { ReportAuthor, ReportError, ReportPeriod, ReportStatus, ReportSummary, ReportType, ReportsApi, reportsUrl } from '../../core/api/reports';
+import { REPORT_SECTIONS, ReportAuthor, ReportError, ReportPeriod, ReportSection, ReportStatus, ReportSummary, ReportsApi, reportsUrl } from '../../core/api/reports';
 import { OrgContext } from '../../core/org/org-context';
 import { I18n } from '../../core/i18n';
 import { RequestState } from '../../shared/request-state';
@@ -48,10 +48,10 @@ export class Reports {
   protected readonly submitting = signal(false);
   protected readonly submitError = signal<string | null>(null);
 
-  protected readonly types: ReportType[] = ['summary', 'compliance', 'dependencies'];
+  protected readonly allSections = REPORT_SECTIONS;
   protected readonly periods: ReportPeriod[] = ['week', 'month', 'quarter'];
 
-  protected readonly type = signal<ReportType>('summary');
+  protected readonly sections = signal<ReadonlySet<ReportSection>>(new Set(['summary', 'recommendations']));
   protected readonly scope = signal('');
   protected readonly period = signal<ReportPeriod>('week');
 
@@ -64,8 +64,17 @@ export class Reports {
     });
   }
 
-  protected typeLabel(type: ReportType): string {
-    return this.i18n.t(`reports.type.${type}`);
+  protected sectionLabel(section: ReportSection): string {
+    return this.i18n.t(`reports.section.${section}`);
+  }
+
+  protected toggleSection(section: ReportSection, on: boolean): void {
+    this.sections.update((current) => {
+      const next = new Set(current);
+      if (on) next.add(section);
+      else next.delete(section);
+      return next;
+    });
   }
 
   protected authorLabel(author: ReportAuthor): string {
@@ -97,7 +106,8 @@ export class Reports {
   protected generate(): void {
     this.submitting.set(true);
     this.submitError.set(null);
-    this.api.generate({ type: this.type(), scope: this.scope() || null, period: this.period() }).subscribe({
+    const sections = this.allSections.filter((s) => this.sections().has(s));
+    this.api.generate({ sections, scope: this.scope() || null, period: this.period() }).subscribe({
       next: () => {
         this.submitting.set(false);
         this.formOpen.set(false);
