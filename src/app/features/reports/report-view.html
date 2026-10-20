@@ -8,9 +8,9 @@
 } @else if (report(); as report) {
   <header class="page-header">
     <div>
-      <p class="eyebrow">{{ typeLabel(report.type) }} · {{ report.scope ?? i18n.t('reports.scope.org') }}</p>
+      <p class="eyebrow">{{ report.scope ?? i18n.t('reports.scope.org') }}</p>
       <h1>{{ report.title }}</h1>
-      <p>{{ report.type === 'dependencies' ? i18n.t('reports.deps.latest') : report.periodStart + ' – ' + report.periodEnd }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</p>
+      <p>{{ report.periodStart }} – {{ report.periodEnd }} · {{ i18n.t('reports.generatedOn') }} {{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</p>
     </div>
     <div class="page-actions">
       <button type="button" class="btn" (click)="share()">
@@ -22,6 +22,7 @@
 
   @if (content(); as detail) {
   <div class="report">
+    @if (detail.summary) {
     <section class="card summary" aria-labelledby="summary-title">
       <div class="summary-header">
         <h2 id="summary-title">{{ i18n.t('reports.summary.title') }}</h2>
@@ -42,8 +43,130 @@
         <p class="ai-disclaimer">{{ i18n.t(detail.aiNotice === 'limit' ? 'reports.ai.limit' : 'reports.ai.unavailable') }}</p>
       }
     </section>
+    }
+
+    <dl class="kpis">
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.opened') }}</dt>
+        <dd>{{ detail.kpis.opened }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.fixed') }}</dt>
+        <dd>{{ detail.kpis.fixed }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.open') }}</dt>
+        <dd>{{ detail.kpis.open }}</dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.mttr') }}</dt>
+        <dd>{{ detail.kpis.mttrDays }} <small>{{ i18n.t(detail.kpis.mttrDays === 1 ? 'reports.day' : 'reports.days') }}</small></dd>
+      </div>
+      <div class="card">
+        <dt>{{ i18n.t('reports.kpi.sla') }}</dt>
+        <dd>{{ detail.kpis.slaCompliance }}%</dd>
+      </div>
+    </dl>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="trend-title">
+        <div class="card-header">
+          <h2 id="trend-title">{{ i18n.t('reports.trend.title') }}</h2>
+          <span class="muted note">{{ i18n.t('reports.trend.desc') }}</span>
+        </div>
+        <app-trend-chart [data]="detail.trend" />
+      </section>
+
+      <section class="card" aria-labelledby="sev-title">
+        <div class="card-header">
+          <h2 id="sev-title">{{ i18n.t('reports.severity.title') }}</h2>
+        </div>
+        <ul class="breakdown">
+          @for (s of severity(); track s.severity) {
+            <li>
+              <span class="name">{{ s.label }}</span>
+              <span class="track"><span class="fill" [style.width.%]="s.percent" [style.background]="'var(--sev-' + s.severity + ')'"></span></span>
+              <span class="count">{{ s.count }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section class="card table-card" aria-labelledby="risks-title">
+      <div class="card-header">
+        <h2 id="risks-title">{{ i18n.t('reports.risks.title') }}</h2>
+      </div>
+      <table class="table stack">
+        <thead>
+          <tr>
+            <th scope="col">{{ i18n.t('reports.risks.id') }}</th>
+            <th scope="col">{{ i18n.t('col.repository') }}</th>
+            <th scope="col">{{ i18n.t('col.package') }}</th>
+            <th scope="col">{{ i18n.t('col.cvss') }}</th>
+            <th scope="col" class="num">{{ i18n.t('reports.risks.age') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (risk of detail.topRisks; track $index) {
+            <tr>
+              <td class="primary-cell">
+                @if (isCve(risk.cve)) {
+                  <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + risk.cve" target="_blank" rel="noopener">{{ risk.cve }}</a>
+                } @else {
+                  <span class="mono">{{ risk.cve }}</span>
+                }
+                @if (risk.title) {
+                  <span class="risk-title">{{ risk.title }}</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('col.repository')">{{ risk.repository }}</td>
+              <td [attr.data-label]="i18n.t('col.package')">
+                @if (risk.packageName) {
+                  <span class="mono">{{ risk.packageName }}</span>
+                  @if (risk.fixedVersion) {
+                    <span class="muted fix">{{ i18n.t('reports.risks.fix') }} {{ risk.fixedVersion }}</span>
+                  }
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="risk.cvss" [level]="risk.severity" /></td>
+              <td class="num" [attr.data-label]="i18n.t('reports.risks.age')">{{ risk.ageDays }} {{ i18n.t(risk.ageDays === 1 ? 'reports.day' : 'reports.days') }}</td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="5" class="muted">{{ i18n.t('reports.risks.none') }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    @if (detail.recommendations.length) {
+    <section class="card" aria-labelledby="recs-title">
+      <div class="card-header">
+        <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
+        @if (detail.narrative === 'ai') {
+          <span class="tag ai-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" [attr.d]="sparkle" /></svg>
+            {{ i18n.t('reports.ai.badge') }}
+          </span>
+        }
+      </div>
+      @if (!detail.summary && detail.aiNotice) {
+        <p class="ai-disclaimer recs-note">{{ i18n.t(detail.aiNotice === 'limit' ? 'reports.ai.limit' : 'reports.ai.unavailable') }}</p>
+      }
+      <ol class="recs">
+        @for (rec of detail.recommendations; track $index) {
+          <li>{{ rec }}</li>
+        }
+      </ol>
+    </section>
+    }
 
     @if (detail.dependencies; as dep) {
+    <h2 class="part-title">{{ i18n.t('reports.section.sbom') }}</h2>
+
     <dl class="kpis">
       <div class="card">
         <dt>{{ i18n.t('reports.deps.components') }}</dt>
@@ -222,125 +345,7 @@
         </ul>
       </section>
     </div>
-
-    <section class="card" aria-labelledby="recs-title">
-      <div class="card-header">
-        <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
-      </div>
-      <ol class="recs">
-        @for (rec of detail.recommendations; track $index) {
-          <li>{{ rec }}</li>
-        }
-      </ol>
-    </section>
-    } @else {
-    <dl class="kpis">
-      <div class="card">
-        <dt>{{ i18n.t('reports.kpi.opened') }}</dt>
-        <dd>{{ detail.kpis.opened }}</dd>
-      </div>
-      <div class="card">
-        <dt>{{ i18n.t('reports.kpi.fixed') }}</dt>
-        <dd>{{ detail.kpis.fixed }}</dd>
-      </div>
-      <div class="card">
-        <dt>{{ i18n.t('reports.kpi.open') }}</dt>
-        <dd>{{ detail.kpis.open }}</dd>
-      </div>
-      <div class="card">
-        <dt>{{ i18n.t('reports.kpi.mttr') }}</dt>
-        <dd>{{ detail.kpis.mttrDays }} <small>{{ i18n.t(detail.kpis.mttrDays === 1 ? 'reports.day' : 'reports.days') }}</small></dd>
-      </div>
-      <div class="card">
-        <dt>{{ i18n.t('reports.kpi.sla') }}</dt>
-        <dd>{{ detail.kpis.slaCompliance }}%</dd>
-      </div>
-    </dl>
-
-    <div class="grid">
-      <section class="card" aria-labelledby="trend-title">
-        <div class="card-header">
-          <h2 id="trend-title">{{ i18n.t('reports.trend.title') }}</h2>
-          <span class="muted note">{{ i18n.t('reports.trend.desc') }}</span>
-        </div>
-        <app-trend-chart [data]="detail.trend" />
-      </section>
-
-      <section class="card" aria-labelledby="sev-title">
-        <div class="card-header">
-          <h2 id="sev-title">{{ i18n.t('reports.severity.title') }}</h2>
-        </div>
-        <ul class="breakdown">
-          @for (s of severity(); track s.severity) {
-            <li>
-              <span class="name">{{ s.label }}</span>
-              <span class="track"><span class="fill" [style.width.%]="s.percent" [style.background]="'var(--sev-' + s.severity + ')'"></span></span>
-              <span class="count">{{ s.count }}</span>
-            </li>
-          }
-        </ul>
-      </section>
-    </div>
-
-    <section class="card table-card" aria-labelledby="risks-title">
-      <div class="card-header">
-        <h2 id="risks-title">{{ i18n.t('reports.risks.title') }}</h2>
-      </div>
-      <table class="table stack">
-        <thead>
-          <tr>
-            <th scope="col">{{ i18n.t('reports.risks.id') }}</th>
-            <th scope="col">{{ i18n.t('col.repository') }}</th>
-            <th scope="col">{{ i18n.t('col.package') }}</th>
-            <th scope="col">{{ i18n.t('col.cvss') }}</th>
-            <th scope="col" class="num">{{ i18n.t('reports.risks.age') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (risk of detail.topRisks; track $index) {
-            <tr>
-              <td class="primary-cell">
-                @if (isCve(risk.cve)) {
-                  <a class="mono" [href]="'https://nvd.nist.gov/vuln/detail/' + risk.cve" target="_blank" rel="noopener">{{ risk.cve }}</a>
-                } @else {
-                  <span class="mono">{{ risk.cve }}</span>
-                }
-                @if (risk.title) {
-                  <span class="risk-title">{{ risk.title }}</span>
-                }
-              </td>
-              <td [attr.data-label]="i18n.t('col.repository')">{{ risk.repository }}</td>
-              <td [attr.data-label]="i18n.t('col.package')">
-                @if (risk.packageName) {
-                  <span class="mono">{{ risk.packageName }}</span>
-                  @if (risk.fixedVersion) {
-                    <span class="muted fix">{{ i18n.t('reports.risks.fix') }} {{ risk.fixedVersion }}</span>
-                  }
-                } @else {
-                  <span class="muted">—</span>
-                }
-              </td>
-              <td [attr.data-label]="i18n.t('col.cvss')"><app-severity-badge [cvss]="risk.cvss" [level]="risk.severity" /></td>
-              <td class="num" [attr.data-label]="i18n.t('reports.risks.age')">{{ risk.ageDays }} {{ i18n.t(risk.ageDays === 1 ? 'reports.day' : 'reports.days') }}</td>
-            </tr>
-          }
-          @empty {
-            <tr><td colspan="5" class="muted">{{ i18n.t('reports.risks.none') }}</td></tr>
-          }
-        </tbody>
-      </table>
-    </section>
-
-    <section class="card" aria-labelledby="recs-title">
-      <div class="card-header">
-        <h2 id="recs-title">{{ i18n.t('reports.recs.title') }}</h2>
-      </div>
-      <ol class="recs">
-        @for (rec of detail.recommendations; track $index) {
-          <li>{{ rec }}</li>
-        }
-      </ol>
-    </section>
+    }
 
     <section class="card table-card" aria-labelledby="owasp-title">
       <div class="card-header">
@@ -372,7 +377,6 @@
         </tbody>
       </table>
     </section>
-    }
   </div>
   } @else if (report.status === 'failed') {
     <div class="card failed" role="alert">

@@ -178,7 +178,7 @@ The `orgInterceptor` adds `X-Artemis-Organization` from the URL only when a requ
 - **Writes** go through the module's client service (e.g. `ProjectsApi`) with `HttpClient`; show `problemMessage(err)` on failure.
 - Types in `core/api/*.ts` mirror the backend JSON exactly (same enum strings).
 - AI: report texts, the supply chain review of dependency (SBOM) reports and per-finding explanations (`/findings/{id}/insight`) come from the API.
-- Reports: `summary`, `compliance` and `dependencies` (latest SBOM of each repository; no period, `report-view` renders its own sections). On a CVE page status changes apply to the repository chosen in the Status card (`scope`), never to every repository with that CVE.
+- Reports: one type with optional topics (`REPORT_SECTIONS`: executive summary, recommendations, SBOM — checkboxes in the form, chips in the list); "Project" select with "All projects". `report-view` always renders the figures and adds each topic present in the content (older compliance/dependencies reports still open). On a CVE page status changes apply to the repository chosen in the Status card (`scope`), never to every repository with that CVE.
 
 ## Internationalization
 

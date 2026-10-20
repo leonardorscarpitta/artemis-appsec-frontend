@@ -33,14 +33,6 @@
     <h2>{{ i18n.t('reports.form.title') }}</h2>
     <div class="fields">
       <div class="field">
-        <label for="report-type">{{ i18n.t('reports.form.type') }}</label>
-        <select id="report-type" class="input" (change)="type.set($any(value($event)))">
-          @for (t of types; track t) {
-            <option [value]="t" [selected]="t === type()">{{ typeLabel(t) }}</option>
-          }
-        </select>
-      </div>
-      <div class="field">
         <label for="report-scope">{{ i18n.t('reports.form.scope') }}</label>
         <select id="report-scope" class="input" (change)="scope.set(value($event))">
           <option value="" [selected]="!scope()">{{ i18n.t('reports.scope.org') }}</option>
@@ -49,7 +41,6 @@
           }
         </select>
       </div>
-      @if (type() !== 'dependencies') {
       <div class="field">
         <label for="report-period">{{ i18n.t('reports.form.period') }}</label>
         <select id="report-period" class="input" (change)="period.set($any(value($event)))">
@@ -58,10 +49,20 @@
           }
         </select>
       </div>
-      } @else {
-        <p class="muted field-note">{{ i18n.t('reports.form.sbomNote') }}</p>
-      }
     </div>
+    <fieldset class="topics">
+      <legend>{{ i18n.t('reports.form.topics') }}</legend>
+      <p class="muted topics-note">{{ i18n.t('reports.form.topicsNote') }}</p>
+      @for (s of allSections; track s) {
+        <label class="topic">
+          <input type="checkbox" [checked]="sections().has(s)" (change)="toggleSection(s, $any($event.target).checked)" />
+          <span>{{ sectionLabel(s) }}</span>
+        </label>
+      }
+      @if (sections().has('sbom')) {
+        <p class="muted topics-note">{{ i18n.t('reports.form.sbomNote') }}</p>
+      }
+    </fieldset>
     @if (submitError(); as error) {
       <p class="error" role="alert">{{ error }}</p>
     }
@@ -89,7 +90,7 @@
     <thead>
       <tr>
         <th scope="col">{{ i18n.t('reports.col.title') }}</th>
-        <th scope="col">{{ i18n.t('reports.col.type') }}</th>
+        <th scope="col">{{ i18n.t('reports.col.topics') }}</th>
         <th scope="col">{{ i18n.t('reports.col.scope') }}</th>
         <th scope="col">{{ i18n.t('reports.col.period') }}</th>
         <th scope="col">{{ i18n.t('reports.col.generatedAt') }}</th>
@@ -110,14 +111,18 @@
               <span class="title">{{ report.title }}</span>
             }
           </td>
-          <td [attr.data-label]="i18n.t('reports.col.type')"><span class="tag">{{ typeLabel(report.type) }}</span></td>
+          <td [attr.data-label]="i18n.t('reports.col.topics')">
+            <span class="topic-tags">
+              @for (s of report.sections; track s) {
+                <span class="tag">{{ sectionLabel(s) }}</span>
+              } @empty {
+                <span class="muted">—</span>
+              }
+            </span>
+          </td>
           <td [attr.data-label]="i18n.t('reports.col.scope')">{{ report.scope ?? i18n.t('reports.scope.org') }}</td>
           <td class="muted period" [attr.data-label]="i18n.t('reports.col.period')">
-            @if (report.type === 'dependencies') {
-              <span>{{ i18n.t('reports.deps.latest') }}</span>
-            } @else {
-              <span><span class="date">{{ report.periodStart }}</span> – <span class="date">{{ report.periodEnd }}</span></span>
-            }
+            <span><span class="date">{{ report.periodStart }}</span> – <span class="date">{{ report.periodEnd }}</span></span>
           </td>
           <td class="muted mono" [attr.data-label]="i18n.t('reports.col.generatedAt')">{{ report.generatedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
           <td [attr.data-label]="i18n.t('reports.col.generatedBy')">{{ authorLabel(report.generatedBy) }}</td>

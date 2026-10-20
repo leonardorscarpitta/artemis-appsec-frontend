@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ComponentConcern, ImageStanding, ReportDetails, ReportError, ReportType, ReportsApi, reportUrl } from '../../core/api/reports';
+import { ComponentConcern, ImageStanding, ReportDetails, ReportError, ReportsApi, reportUrl } from '../../core/api/reports';
 import { problemMessage } from '../../core/api/api';
 import { SPARKLE_ICON } from '../../shared/stack-source';
 import { I18n } from '../../core/i18n';
@@ -106,10 +106,6 @@ export class ReportView {
 
   protected standingLabel(standing: ImageStanding): string {
     return this.i18n.t(`reports.deps.standing.${standing}`);
-  }
-
-  protected typeLabel(type: ReportType): string {
-    return this.i18n.t(`reports.type.${type}`);
   }
 
   protected print(): void {
