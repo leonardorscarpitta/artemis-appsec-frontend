@@ -30,7 +30,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Sidebar: navigation grouped into Overview, Security and Configuration. Badges show the number of open vulnerabilities and connected repositories.',
             'New project button: starts the flow to connect a new repository.',
-            'Bottom of the sidebar: scans used this month against the monthly limit (25 per organization), this help page and the current organization. Select the organization to switch to another one or to open "All organizations".',
+            'Bottom of the sidebar: scans used this month against the monthly limit ({scans} per organization), this help page and the current organization. Select the organization to switch to another one or to open "All organizations".',
             'Top bar: language selector (English or Portuguese), light/dark theme toggle and sign out. Language and theme are remembered in your browser.',
             'Addresses: every page lives under your organization, for example /acme/vulnerabilities. Links you share point to the same page for your colleagues.',
             'Lists: tables with more than 15 items show 15 per page, with the range shown (for example “Showing 16–30 of 42”) and buttons to move between pages. Changing a filter, the search or the sort order goes back to the first page.',
@@ -209,7 +209,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['License', 'Trivy', 'Package and the license that conflicts with your policy.'],
           ],
         },
-        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against the organization’s monthly limit (25 scans), unless it ends before any stage runs (for example the access check or the clone fails, or it is cancelled while queued): then the run page says it did not count and the scan is given back.' },
+        { kind: 'p', text: 'Findings that are no longer reported by a later scan are marked as fixed automatically. Each run counts as one scan against the organization’s monthly limit ({scans} scans), unless it ends before any stage runs (for example the access check or the clone fails, or it is cancelled while queued): then the run page says it did not count and the scan is given back.' },
         { kind: 'note', text: 'Scans run entirely on Artemis’s own infrastructure with open-source tools (see Third-party notices). Your code is never sent to third-party scanning services.' },
       ],
     },
@@ -448,7 +448,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Usage and optional features',
       blocks: [
         { kind: 'p', text: 'Artemis is free: there are no plans, prices or payments. Configuration → Usage shows how many scans your organization ran this month, the limit and when the counter starts again, and which optional features are enabled for it.' },
-        { kind: 'p', text: 'Every organization can run 25 scans per calendar month (UTC). Each pipeline run counts as one scan — manual, scheduled, first scans and re-runs; runs that end before any stage runs (access check or clone failed, cancelled while queued, runner stopped) do not count. The usage also appears at the bottom of the sidebar and on the home page; when the limit is reached, new runs are refused until the next month.' },
+        { kind: 'p', text: 'Every organization can run {scans} scans per calendar month (UTC). Each pipeline run counts as one scan — manual, scheduled, first scans and re-runs; runs that end before any stage runs (access check or clone failed, cancelled while queued, runner stopped) do not count. The usage also appears at the bottom of the sidebar and on the home page; when the limit is reached, new runs are refused until the next month.' },
         {
           kind: 'table',
           head: ['Optional feature', 'What it does'],
@@ -510,7 +510,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
           items: [
             'Barra lateral: navegação agrupada em Visão geral, Segurança e Configuração. Os indicadores mostram a quantidade de vulnerabilidades abertas e de repositórios conectados.',
             'Botão Novo projeto: inicia o fluxo para conectar um novo repositório.',
-            'Rodapé da barra lateral: análises usadas no mês em relação ao limite mensal (25 por organização), esta página de ajuda e a organização atual. Selecione a organização para trocar por outra ou abrir "Todas as organizações".',
+            'Rodapé da barra lateral: análises usadas no mês em relação ao limite mensal ({scans} por organização), esta página de ajuda e a organização atual. Selecione a organização para trocar por outra ou abrir "Todas as organizações".',
             'Barra superior: seletor de idioma (inglês ou português), alternância entre tema claro e escuro e sair. Idioma e tema ficam salvos no seu navegador.',
             'Endereços: todas as páginas ficam sob a sua organização, por exemplo /acme/vulnerabilities. Links compartilhados levam seus colegas à mesma página.',
             'Listas: tabelas com mais de 15 itens mostram 15 por página, com o intervalo exibido (por exemplo “Exibindo 16–30 de 42”) e botões para navegar entre as páginas. Alterar um filtro, a busca ou a ordenação volta para a primeira página.',
@@ -689,7 +689,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
             ['Licença', 'Trivy', 'Pacote e a licença que conflita com a sua política.'],
           ],
         },
-        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal da organização (25 análises), a menos que termine antes de qualquer etapa rodar (por exemplo, se a verificação de acesso ou o clone falhar, ou se for cancelada ainda na fila): nesse caso a página da execução informa que ela não contou e a análise é devolvida.' },
+        { kind: 'p', text: 'Achados que não aparecem mais em uma análise posterior são marcados como corrigidos automaticamente. Cada execução conta como uma análise no limite mensal da organização ({scans} análises), a menos que termine antes de qualquer etapa rodar (por exemplo, se a verificação de acesso ou o clone falhar, ou se for cancelada ainda na fila): nesse caso a página da execução informa que ela não contou e a análise é devolvida.' },
         { kind: 'note', text: 'As análises rodam inteiramente na infraestrutura do Artemis com ferramentas de código aberto (veja Avisos de terceiros). Seu código nunca é enviado a serviços de análise de terceiros.' },
       ],
     },
@@ -928,7 +928,7 @@ export const HELP: Record<Lang, HelpSection[]> = {
       title: 'Uso e recursos opcionais',
       blocks: [
         { kind: 'p', text: 'O Artemis é gratuito: não há planos, preços nem pagamentos. Configuração → Uso mostra quantas análises sua organização executou neste mês, o limite e quando o contador recomeça, e quais recursos opcionais estão habilitados para ela.' },
-        { kind: 'p', text: 'Cada organização pode executar 25 análises por mês do calendário (UTC). Cada execução de pipeline conta como uma análise — manuais, agendadas, primeiras análises e reexecuções; execuções que terminam antes de qualquer etapa rodar (verificação de acesso ou clone com falha, cancelada na fila, runner interrompido) não contam. O uso também aparece no rodapé da barra lateral e na página inicial; ao atingir o limite, novas execuções são recusadas até o mês seguinte.' },
+        { kind: 'p', text: 'Cada organização pode executar {scans} análises por mês do calendário (UTC). Cada execução de pipeline conta como uma análise — manuais, agendadas, primeiras análises e reexecuções; execuções que terminam antes de qualquer etapa rodar (verificação de acesso ou clone com falha, cancelada na fila, runner interrompido) não contam. O uso também aparece no rodapé da barra lateral e na página inicial; ao atingir o limite, novas execuções são recusadas até o mês seguinte.' },
         {
           kind: 'table',
           head: ['Recurso opcional', 'O que faz'],
